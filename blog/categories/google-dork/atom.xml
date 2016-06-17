@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Google Dork | tick.Tack]]></title>
+  <link href="http://newdominic.github.io/blog/categories/google-dork/atom.xml" rel="self"/>
+  <link href="http://newdominic.github.io/"/>
+  <updated>2016-06-17T21:51:18+08:00</updated>
+  <id>http://newdominic.github.io/</id>
+  <author>
+    <name><![CDATA[DMC]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Google Adavanced Search Operators]]></title>
+    <link href="http://newdominic.github.io/blog/2016/05/03/google_advanced_search_operators/"/>
+    <updated>2016-05-03T09:51:45+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/05/03/google_advanced_search_operators</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<p><strong>allinanchor:</strong> 查詢文字須全部在鏈結用的文字內出現；不可與其他operator同時使用。</p>
+
+<p><strong>allintext:</strong> 查詢文字須全部在頁面內出現。</p>
+
+<p><strong>allintitle:</strong> 一般搜尋時，查詢文字須全部在頁面的標題內出現；圖像搜尋時，查詢文字須全部在圖像檔名裡出現；Google News搜尋時，查詢文字須全部在文章標題內出現。</p>
+
+<p><strong>allinurl:</strong> 一般搜尋時，查詢文字須全部在URL內出現；Google News搜尋時，功能同allintitle:。</p>
+
+<p><strong>author:</strong> Google Groups限定，針對作者名稱搜尋。</p>
+
+<p><strong>cache:</strong> cache:URL；取得頁面的快取版本。</p>
+
+<p><strong>define:</strong> 查詢字、詞、片語定義。</p>
+
+<p><strong>ext:</strong> 同filetype:。</p>
+
+<p><strong>filetype:</strong> 針對副檔名搜尋。</p>
+
+<p><strong>group:</strong> Google Groups限定，針對群組名稱搜尋相關文章。</p>
+
+<p><strong>id:</strong> 同info:。</p>
+
+<p><strong>inanchor:</strong> 查詢文字須在鏈結用的文字內出現。</p>
+
+<p><strong>info:</strong> info:URL；顯示該URL相關資訊。</p>
+
+<p><strong>insubject:</strong> Google Groups限定，針對標題搜尋相關文章。</p>
+
+<p><strong>intext:</strong> intext:term；查詢文字須在頁面內出現。</p>
+
+<p><strong>intitle:</strong> 查詢文字須在頁面的標題內出現。</p>
+
+<p><strong>inurl:</strong> 查詢文字須在URL內出現。</p>
+
+<p><strong>link:</strong> link:URL；搜尋有鏈結指向URL的頁面。</p>
+
+<p><strong>location:</strong> Google News限定，針對地區搜尋相關文章。</p>
+
+<p><strong>movie:</strong> 查詢電影資訊。</p>
+
+<p><strong>related:</strong> relader:URL；查詢類似於URL的頁面。</p>
+
+<p><strong>site:</strong> 針對特定網域搜尋。</p>
+
+<p><strong>source:</strong> Google News限定，針對新聞來源搜尋相關文章。</p>
+
+<p><strong>weather</strong> 查詢天氣狀況。</p>
+]]></content>
+  </entry>
+  
+</feed>

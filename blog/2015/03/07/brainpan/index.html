@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Brainpan 1 - My Octopress Blog</title>
+  <title>Brainpan 1 - tick.Tack</title>
   <meta name="author" content="DMC">
 
   
-  <meta name="description" content="周末Brainpan 1一日遊，依舊是Vulnhub的Vulnerable Machine，作者是superkojiman # Nmap 6.46 scan initiated Thu Jan 1 13:22:09 2015 as: nmap -sV -p- -Pn -o nmap.out 192 &hellip;">
+  <meta name="description" content="周末Brainpan 1一日遊，依舊是Vulnhub的Vulnerable Machine，作者是superkojiman nmap掃描目標，掃出9999和10000上有東西 # Nmap 6.46 scan initiated Thu Jan 1 13:22:09 2015 as: nmap - &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +21,7 @@
   <link rel="canonical" href="http://newdominic.github.io/blog/2015/03/07/brainpan/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
@@ -36,9 +36,7 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
-  
-    <h2>身為一名程式設計師，研究資安也是很合理的事情</h2>
+  <h1><a href="/">tick.Tack</a></h1>
   
 </hgroup>
 
@@ -92,6 +90,8 @@
 
 <hr />
 
+<p>nmap掃描目標，掃出9999和10000上有東西</p>
+
 <pre><code># Nmap 6.46 scan initiated Thu Jan  1 13:22:09 2015 as: nmap -sV -p- -Pn -o nmap.out 192.168.2.155
 Nmap scan report for 192.168.2.155
 Host is up (0.00020s latency).
@@ -136,7 +136,7 @@ Service detection performed. Please report any incorrect results at http://nmap.
 # Nmap done at Thu Jan  1 13:22:50 2015 -- 1 IP address (1 host up) scanned in 40.75 seconds
 </code></pre>
 
-<p>掃出9999和10000上有東西，先連上9999試試看</p>
+<p>9999看起來有很特別的內容，先連上9999試試看</p>
 
 <pre><code>_|                            _|
 _|_|_|    _|  _|_|    _|_|_|      _|_|_|    _|_|_|      _|_|_|  _|_|_|
@@ -497,7 +497,7 @@ uid=0(root) gid=0(root) groups=0(root)
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/03/07/brainpan/" data-via="" data-counturl="http://newdominic.github.io/blog/2015/03/07/brainpan/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/03/07/brainpan/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/03/07/brainpan/" >Tweet</a>
   
   
   
@@ -509,6 +509,8 @@ uid=0(root) gid=0(root) groups=0(root)
         <a class="basic-alignment left" href="/blog/2015/03/02/Sokar/" title="Previous Post: Sokar">&laquo; Sokar</a>
       
       
+        <a class="basic-alignment right" href="/blog/2015/03/07/brainpan2/" title="Next Post: Brainpan 2">Brainpan 2 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -518,15 +520,27 @@ uid=0(root) gid=0(root) groups=0(root)
 <aside class="sidebar">
   
     <section>
-  <h1>Recent Posts</h1>
+  <h1>最近文章</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/03/07/brainpan/">Brainpan 1</a>
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/03/02/Sokar/">Sokar</a>
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
       </li>
     
   </ul>
@@ -543,7 +557,7 @@ uid=0(root) gid=0(root) groups=0(root)
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - DMC -
+  Copyright &copy; 2016 - DMC -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

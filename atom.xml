@@ -4,7 +4,7 @@
   <title><![CDATA[tick.Tack]]></title>
   <link href="http://newdominic.github.io/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-18T11:59:54+08:00</updated>
+  <updated>2016-06-18T12:05:28+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -195,7 +195,9 @@ exit
 SHayslett@red:/home/JKanode$
 </code></pre>
 
-<p>Looks like we found peter&rsquo;s password here. Now it&rsquo;s time to switch to peter&rsquo;s account.</p>
+<p>Looks like we have peter&rsquo;s password here. Now it&rsquo;s time to switch to peter&rsquo;s account.</p>
+
+<p>(Not sure if this is the second way to get the limited shell)</p>
 
 <pre><code>SHayslett@red:/home/JKanode$ ssh peter@localhost
 The authenticity of host 'localhost (127.0.0.1)' can't be established.

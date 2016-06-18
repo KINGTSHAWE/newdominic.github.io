@@ -4,7 +4,7 @@
   <title><![CDATA[tick.Tack]]></title>
   <link href="http://newdominic.github.io/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-18T12:05:28+08:00</updated>
+  <updated>2016-06-18T12:10:58+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -253,7 +253,7 @@ drwx------  2 peter peter  4096 Jun  6 23:17 .cache
 
 <p>&lsquo;.sudo_as_admin_successful&rsquo;</p>
 
-<p>Looks like peter has sudo access before. Let&rsquo;s give it a try.</p>
+<p>Looks like peter had sudo access before. Let&rsquo;s give it a try.</p>
 
 <pre><code>red% sudo -l
 

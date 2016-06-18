@@ -4,7 +4,7 @@
   <title><![CDATA[tick.Tack]]></title>
   <link href="http://newdominic.github.io/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-17T22:15:47+08:00</updated>
+  <updated>2016-06-18T11:59:54+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -41,7 +41,6 @@ PORT     STATE  SERVICE
 139/tcp  open   netbios-ssn
 666/tcp  open   doom
 3306/tcp open   mysql
-12380/tcp 
 MAC Address: 08:00:27:F5:FB:B3 (Cadmus Computer Systems)
 
 Nmap done: 1 IP address (1 host up) scanned in 8.43 seconds

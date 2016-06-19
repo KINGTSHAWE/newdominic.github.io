@@ -4,7 +4,7 @@
   <title><![CDATA[tick.Tack]]></title>
   <link href="http://newdominic.github.io/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-19T20:32:03+08:00</updated>
+  <updated>2016-06-19T20:32:40+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -14,11 +14,11 @@
 
   
   <entry>
-    <title type="html"><![CDATA[VulnOSv2]]></title>
+    <title type="html"><![CDATA[VulnOS: 2]]></title>
     <link href="http://newdominic.github.io/blog/2016/06/18/vulnosv2/"/>
     <updated>2016-06-18T18:00:45+08:00</updated>
     <id>http://newdominic.github.io/blog/2016/06/18/vulnosv2</id>
-    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/vulnos-2,147/">VulnOSv2: 1</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/vulnos-2,147/">VulnOS: 2</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
 
 <!--more-->
 

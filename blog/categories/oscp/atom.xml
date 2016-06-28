@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Oscp | tick.Tack]]></title>
+  <link href="http://newdominic.github.io/blog/categories/oscp/atom.xml" rel="self"/>
+  <link href="http://newdominic.github.io/"/>
+  <updated>2016-06-29T00:34:21+08:00</updated>
+  <id>http://newdominic.github.io/</id>
+  <author>
+    <name><![CDATA[DMC]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Offensive Security Certified Professional]]></title>
+    <link href="http://newdominic.github.io/blog/2016/06/29/PWK_and_OSCP/"/>
+    <updated>2016-06-29T17:01:31+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/06/29/PWK_and_OSCP</id>
+    <content type="html"><![CDATA[<p>最近剛考過了<a href="https://www.offensive-security.com/">Offensive Security</a>的
+<a href="https://www.offensive-security.com/information-security-certifications/oscp-offensive-security-certified-professional/">Offensive Security Certified Professional(OSCP)</a>的認證，寫篇文章來記錄一下。</p>
+
+<!--more-->
+
+
+<hr />
+
+<h2>Penetration Testing with Kali Linux</h2>
+
+<p>在考OSCP的認證之前，必須先註冊Offensive Security的一門線上訓練課程：<a href="https://www.offensive-security.com/information-security-training/penetration-testing-training-kali-linux/">Penetration Testing With Kali linux(PWK)</a></p>
+
+<p>這個課程會提供一份近400頁的講義和一系列長達7.5小時的教學影片。講義和影片的內容是根據滲透測試的基本流程，介紹各個階段可能會使用到的工具和用法，以及一些常見的漏洞和攻擊手法。</p>
+
+<p>除了教材以外，最重要的是會獲得登入VPN Lab的權限：一個讓學生實際演練滲透測試的虛擬空間。這個VPN Lab由超過50台的電腦構成，裡面切成四個子網域，學生要應用先前習得的知識在裡面進行滲透測試。</p>
+
+<p>每個學生都有配給每天可以重開機的次數，但因為這個空間是與其他人共用的，所以有機會遇到明明用對方法但打半天打不下來、攻略到一半的電腦突然被其他人重開機，或是不小心看到前一個人的解法的情況。另外，雖然在這個空間沒有法律問題，但是你只能針對官方允許的機器進行攻擊。如果有影響其他學生權益的情形發生，輕則會被短暫停權，重則可能永久無法參與任何課程與考試，所以針對其他學生的攻擊都是不被允許的。</p>
+
+<p>學生的最終目標是獲得全部電腦的最高權限以及取得flag。Lab內的電腦難度不一，但基本上都是在現實生活中可能遇到的弱點，像是透過SQL injection獲得管理員帳密、設定檔不小心給予過高的權限、使用者帳密直接硬寫在程式碼裡面或是使用現有的kernel exploit取得root權限等。不過也會有需要因應Lab內的客製化程式自行撰寫exploit的時候。</p>
+
+<p>在滲透測試的過程中，要養成隨時做筆記的習慣。不論是掃描的結果、曾經嘗試過利用哪個漏洞，或是看到了可疑的程式碼，通通都記錄下來。當Lab的使用時間結束後，可以回傳Lab的滲透測試報告和講義中的習題答案，這時候筆記就派上用場了。如果選擇回傳，報告和習題答案分別可以在OSCP的測試分數最多各加五分，也就是最多10分的額外分數。</p>
+
+<p>最後，官方有提供線上的Live Support，解題過程中如果有遇到問題或是想要額外的重開機次數都能直接去找管理員。不過要注意的是，他們的中心思想是&#8221;TRY HARDER&#8221;，所以任何不到位的問題都只會得到&#8221;TRY HARDER&#8221;的回覆。這種時候就只能繼續榨乾腦汁或是在PWK的學生論壇上跟其他人討論了。</p>
+
+<h2>Offensive Security Certified Professional</h2>
+
+<p>當Lab時間結束之後，如果沒有再延長時間的話，要在90天內完成OSCP的測驗，官方會另外提供OSCP測驗用的VPN權限與專屬網段。</p>
+
+<p>測驗的內容跟Lab一樣，都是要實際進行滲透測試並拿到flag當作證明。只是測驗有時間的限制，最多有24個小時可以運用，更重要的是要在測驗時間結束之後的24個小時內將報告回傳，報告才是評分的標準。</p>
+
+<p>測驗的題型基本上不會重複，每個人拿到的題目可能不一樣，通過的分數也可能不一樣。官方也聲明最後只會告知你測驗結果，不會告訴你實際獲得的分數。</p>
+
+<p>我的測驗題目有五題，滿分是100，當天早上六點開始。我在前3個小時很快就拿下兩題，在倒數8個小時的時候拿下第四題，這個時候分數看起來很穩了，就一邊整理一邊打瞌睡一邊進行第五題，但很可惜的是直到最後還是沒把第五題打下來。</p>
+
+<p>當天睡到下午起來，花了約五個小時整理報告。盡力將測試流程、exploit code、附圖和修復方法都寫得很完善、文法也沒問題，就回傳給官方了。他們也很有效率地在隔天晚上就通知我測驗結果。</p>
+
+<h2>TRY HARDER</h2>
+
+<p>我不是很喜歡死記知識。會挑OSCP作為第一張證照，就是因為Offensive Security重視實際操作。除了教材的內容外，更重要的是，在這期間內為了攻略Lab所做的各種嘗試，和各種壓榨google吐出答案的過程，讓我學到了更多的東西。 接下來等逆向工程的知識再做一點補強之後，想來挑戰<a href="http://www.offensive-security.com/information-security-training/cracking-the-perimeter/">CTP</a>和<a href="https://www.offensive-security.com/information-security-certifications/osce-offensive-security-certified-expert/">OSCE</a>。Always TRY HARDER!</p>
+
+<p><strong>相關連結</strong></p>
+
+<p><a href="https://www.offensive-security.com/documentation/penetration-testing-with-kali.pdf">PWK講義大綱</a></p>
+]]></content>
+  </entry>
+  
+</feed>

